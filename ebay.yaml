@@ -1,0 +1,26 @@
+# ebaysdk API Configurations
+
+name: ebay_api_config
+    
+# Trading - External
+api.ebay.com:
+    password: <password>
+    username: <username>
+    appid: <appid>
+    certid: <certid>
+    devid: <devid>
+    token:
+    version: 671
+    https: 1
+
+# Shopping
+open.api.ebay.com:
+    appid: <appid>
+    certid: <certid>
+    devid: <devid>
+    version: 671
+
+# Finding/Merchandising
+svcs.ebay.com:
+    appid: <appid>
+    version: 1.0.0
