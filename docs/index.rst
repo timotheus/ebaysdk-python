@@ -1,4 +1,4 @@
-Welcome to the ebaysdk for Ptyhon
+Welcome to the ebaysdk for Python
 =================================
 
 Welcome to the eBay SDK for Python. This SDK cuts development time and simplifies tasks like error handling and enables you to make Finding, Shopping, Merchandising, and Trading API calls. In Addition, the SDK comes with RSS and HTML back-end libraries.
