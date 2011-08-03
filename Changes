@@ -1,0 +1,14 @@
+Changes for ebaysdk
+
+- add proxy support
+
+0.0.3 Wed May 11 11:03:58 PDT 2011
+- fix escape username/password
+- fix error handling
+- cleanup doctests
+
+0.0.2 Fri Aug 20 17:25:25 PDT 2010
+- fix download link 
+
+0.0.1 Initial Release
+
