@@ -1,0 +1,7 @@
+build/
+dist/
+tkebay.yaml
+ebaysdk.egg-info/
+*.swp
+*.pyc
+.svn
