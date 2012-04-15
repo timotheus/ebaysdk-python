@@ -38,6 +38,9 @@ class object_dict(dict):
     def __setattr__(self, item, value):
         self.__setitem__(item, value)
 
+    def getvalue(self, item, value=None):
+        return self.get(item, {}).get('value', value)
+
 class xml2dict(object):
 
     def __init__(self):
@@ -84,11 +87,6 @@ class xml2dict(object):
 
     def fromstring(self, s):
         """parse a string"""
-        
-        if not s:
-            return object_dict({})
-            #print "fromstring:" + s
-        
         t = ET.fromstring(s)
         root_tag, root_tree = self._namespace_split(t.tag, self._parse_node(t))
         return object_dict({root_tag: root_tree})
@@ -98,9 +96,10 @@ class dict2xml:
     xml = ""
     level = 0
 
-    def __init__(self):
+    def __init__(self,encoding=None):
         self.xml = ""
         self.level = 0
+        self.encoding = encoding
 
     def __del__(self):
         pass
@@ -111,31 +110,51 @@ class dict2xml:
     def setLevel(self,Level):
         self.level = Level
 
+    def tostring(self,d):
+        return self.dict2xml(d)
+
     def dict2xml(self,map):
-        if (str(type(map)) == "<class 'object_dict.object_dict'>" or str(type(map)) == "<type 'dict'>"):
+        if type(map) == object_dict or type(map) == dict:
             for key, value in map.items():
-                if (str(type(value)) == "<class 'object_dict.object_dict'>" or str(type(value)) == "<type 'dict'>"):
+                if type(value) == object_dict or type(value) == dict:
                     if(len(value) > 0):
-                        self.xml += "\t"*self.level
+                        self.xml += "  "*self.level
                         self.xml += "<%s>\n" % (key)
                         self.level += 1
                         self.dict2xml(value)
                         self.level -= 1
-                        self.xml += "\t"*self.level
+                        self.xml += "  "*self.level
                         self.xml += "</%s>\n" % (key)
                     else:
-                        self.xml += "\t"*(self.level)
+                        self.xml += "  "*(self.level)
                         self.xml += "<%s></%s>\n" % (key,key)
-                    #end if
+                elif type(value) == list:
+                    for v in value:
+                        self.dict2xml({key:v})
                 else:
-                    self.xml += "\t"*(self.level)
-                    self.xml += "<%s>%s</%s>\n" % (key,value, key)
-                #end if
+                    self.xml += "  "*(self.level)
+                    self.xml += "<%s>%s</%s>\n" % (key,self.encode(value),key)
         else:
-            self.xml += "\t"*self.level
-            self.xml += "<%s>%s</%s>\n" % (key,value, key)
-
+            self.xml += "  "*self.level
+            self.xml += "<%s>%s</%s>\n" % (key,self.encode(value),key)
         return self.xml
+
+    def encode(self,str1):
+        if type(str1) != str and type(str1) != unicode:
+            str1 = str(str1)
+        if self.encoding:
+            str1 = str1.encode(self.encoding)
+        str2 = ''
+        for c in str1:
+            if c == '&':
+                str2 += '&#x26;'
+            elif c == '<':
+                str2 += '&#x60;'
+            elif c == '>':
+                str2 += '&#x62;'
+            else:
+                str2 += c
+        return str2
 
 def list_to_xml(name, l, stream):
    for d in l:
@@ -165,10 +184,6 @@ def dict_to_xml(d, root_node_name, stream):
       stream.write('>')
       stream.write(nodes_str)
       stream.write('\n</%s>' % root_node_name)
-
-def escape(html):
-    """Returns the given HTML with ampersands, quotes and carets encoded."""
-    return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
 
 def dict_from_xml(xml):
    """ Load a dict from a XML string """

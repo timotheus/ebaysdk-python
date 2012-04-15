@@ -1,6 +1,5 @@
 recursive-include ebaysdk *.py
-recursive-include test *.py
-prune ebaysdk/contrib
+recursive-include tests *.py
 include ebay.yaml
 include Changes
-
+include INSTALL

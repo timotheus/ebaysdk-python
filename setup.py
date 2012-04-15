@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+#from distutils.core import setup
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,13 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-try:
-  from setuptools import setup, find_packages
-except ImportError:
-  from distutils.core import setup
+#try:
+from setuptools import setup, find_packages
+#except ImportError:
+#  from distutils.core import setup
 
 import sys
-import ebaysdk
+
+execfile('./ebaysdk/__init__.py')
+VERSION = __version__
 
 long_desc = """This SDK cuts development time and simplifies tasks like 
 error handling and enables you to make Finding, Shopping, Merchandising, 
@@ -25,7 +31,7 @@ HTML back-end libraries."""
 
 setup(
     name="ebaysdk",
-    version="0.0.3",
+    version=VERSION,
     description="Simple and Extensible eBay SDK for Python",
     author="Tim Keefer",
     author_email="tim@timkeefer.com",
@@ -33,8 +39,8 @@ setup(
     license="Apache Software License",
     packages=find_packages(),
     provides=['ebaysdk'],
-    install_requires=['BeautifulSoup', 'PyYAML', 'elementtree'],
-    test_suite='test',
+    install_requires=['BeautifulSoup', 'PyYAML', 'pycurl', 'elementtree'],
+    test_suite='tests',
     long_description=long_desc,
     classifiers=[
       'Topic :: Internet :: WWW/HTTP',
