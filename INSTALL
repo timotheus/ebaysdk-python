@@ -1,0 +1,20 @@
+
+Dependancy: pycurl
+
+    How to install pycurl on Mac
+
+    1) Install Fink
+       http://www.finkproject.org/download/
+       
+    2) Install libssh2, libcurl4-shlibs
+       sudo /sw/bin/apt-get install libssh2
+       sudo /sw/bin/apt-get -q0 -f install libcurl4-shlibs
+
+    3) Download pycurl from http://pycurl.sourceforge.net/download/
+
+    4) Extract and install pycurl 
+       tar -zxvf pycurl-7.16.4.tar.gz 
+       cd pycurl-7.16.4 
+       sudo env ARCHFLAGS="-arch i386" python setup.py install --curl-config=/sw/bin/curl-config
+
+    

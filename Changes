@@ -1,6 +1,9 @@
 Changes for ebaysdk
 
-- add proxy support
+0.0.4
+- moved from httplib to pycurl
+  * pycurl was chosen because of its https/proxy support and
+    that it's thread-safe.
 
 0.0.3 Wed May 11 11:03:58 PDT 2011
 - fix escape username/password
