@@ -1,12 +1,14 @@
 import os, sys, re
 import string, StringIO, base64
 import yaml, pycurl, urllib
+from types import DictType, ListType
 
 from xml.dom.minidom import parseString, Node
 from BeautifulSoup import BeautifulStoneSoup
 from types import DictType 
 
-from ebaysdk.utils import object_dict, xml2dict, dict2xml, dict_to_xml
+from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct
+
 
 VERSION = (0, 1, 3)
 
@@ -112,16 +114,23 @@ class ebaybase(object):
     def _reset(self):
         self._response_content = None
         self._response_dom     = None
+        self._response_obj     = None
         self._response_soup    = None
         self._response_dict    = None
         self._response_error   = None
         
     def do(self, verb, call_data=dict()):
-        return self.execute(verb,call_data)
+        return self.execute(verb, call_data)
                     
-    def execute(self, verb, xml):
-        self.verb        = verb
-        self.call_xml    = xml
+    def execute(self, verb, data):
+        self.verb = verb
+
+        if type(data) == DictType:
+            self.call_xml = dict2xml(data, roottag=None)
+        elif type(data) == ListType:
+            self.call_xml = list2xml(data, roottag=None)
+        else:    
+            self.call_xml = data
 
         self._reset()    
         self._response_content = self._execute_http_request()
@@ -136,6 +145,12 @@ class ebaybase(object):
         
         return self._response_soup
         
+    def response_obj(self):
+        if not self._response_obj:
+            self._response_obj = make_struct(self.response_dict())
+        
+        return self._response_obj
+            
     def response_dom(self):
         if not self._response_dom:
             dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))) )
@@ -257,8 +272,8 @@ class shopping(ebaybase):
     shopping(debug=False, domain='open.api.ebay.com', uri='/shopping', method='POST', https=False, siteid=0, response_encoding='XML', request_encoding='XML', config_file='ebay.yaml')
     
     >>> s = shopping()
-    >>> s.execute('FindItemsAdvanced', tag('CharityID', '3897'))
-    >>> print s.v('Ack')
+    >>> s.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> print s.response_obj().Ack
     Success
     >>> print s.error()
     <BLANKLINE>
@@ -313,7 +328,7 @@ class html(ebaybase):
     
     >>> h = html()
     >>> h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
-    >>> print h.v('rss', 'channel', 'ttl')
+    >>> print h.response_obj().rss.channel.ttl
     60
     >>> title = h.response_dom().getElementsByTagName('title')[0]
     >>> print nodeText( title )
@@ -416,8 +431,11 @@ class trading(ebaybase):
     http://developer.ebay.com/products/trading/
     
     >>> t = trading()
-    >>> t.execute('GetCharities', tag('CharityID', '3897'))        
-    >>> nodeText(t.response_dom().getElementsByTagName('Name')[0])
+    >>> t.execute('GetCharities', { 'CharityID': 3897 }) 
+    >>> charity_name = ''
+    >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
+    ...   charity_name = nodeText(t.response_dom().getElementsByTagName('Name')[0])
+    >>> print charity_name 
     u'Sunshine Kids Foundation'
     >>> print t.error()
     <BLANKLINE>
@@ -505,17 +523,18 @@ class finding(ebaybase):
     http://developer.ebay.com/products/finding/
     
     >>> f = finding()
-    >>> f.execute('findItemsAdvanced', tag('keywords', 'shoes'))        
-    >>> print f.v('itemSearchURL') != ''
-    True
-    >>> items = f.v('searchResult', 'item')    
-    >>> print len(items)
-    100
-    >>> print f.v('ack')
-    Success
-    >>> print f.error()
+    >>> f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+    >>> error = f.error()
+    >>> print error
     <BLANKLINE>
-    >>> print nodeText(f.response_dom().getElementsByTagName('ack')[0])
+    
+    >>> if len( error ) <= 0:
+    ...   print f.response_obj().itemSearchURL != ''
+    ...   items = f.response_obj().searchResult.item    
+    ...   print len(items)
+    ...   print f.response_obj().ack
+    True
+    100
     Success
     
     """
