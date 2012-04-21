@@ -13,16 +13,16 @@ In order to use eBay aspects of this utility you must first register with eBay t
 
 Example::
 
-    from ebaysdk import finding, tag, nodeText
+    from ebaysdk import finding, nodeText
 
     f = finding()
-    f.execute('findItemsAdvanced', tag('keywords', 'shoes'))        
+    f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
     dom    = f.response_dom()
     mydict = f.response_dict()
+    myobj  = f.response_obj()
 
-    # shortcut to response data
-    print f.v('itemSearchURL')
+    print myobj.itemSearchURL
 
     # process the response via DOM
     items = dom.getElementsByTagName('item')
