@@ -1,5 +1,12 @@
 Changes for ebaysdk
 
+0.0.5
+- added response_obj() which turns a dict into a Struct
+  e.g. { a : { 'name' : 'tim' } } can be accessed like a.name
+- add support to dict args in the execute call. execute will now check the 
+  data type and convert to xml if necessary
+- clean doctests
+    
 0.0.4
 - moved from httplib to pycurl
   * pycurl was chosen because of its https/proxy support and

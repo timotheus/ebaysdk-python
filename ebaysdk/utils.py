@@ -1,10 +1,8 @@
-try:
-    import xml.etree.ElementTree as ET
-except:
-    import cElementTree as ET # for 2.4
-
+# encoding: utf-8
+import xml.etree.ElementTree as ET
 import re
-        
+from StringIO import StringIO
+       
 class object_dict(dict):
     """object view of dict, you can 
     >>> a = object_dict()
@@ -92,227 +90,439 @@ class xml2dict(object):
         return object_dict({root_tag: root_tree})
 
 
-class dict2xml:
-    xml = ""
-    level = 0
+# Basic conversation goal here is converting a dict to an object allowing
+# more comfortable access. `Struct()` and `make_struct()` are used to archive
+# this goal.
+# See http://stackoverflow.com/questions/1305532/convert-python-dict-to-object for the inital Idea
+#
+# The reasoning for this is the observation that we ferry arround hundreds of dicts via JSON
+# and accessing them as `obj['key']` is tiresome after some time. `obj.key` is much nicer.
+class Struct(object):
+    """Emulate a cross over between a dict() and an object()."""
+    def __init__(self, entries, default=None, nodefault=False):
+        # ensure all keys are strings and nothing else
+        entries = dict([(str(x), y) for x, y in entries.items()])
+        self.__dict__.update(entries)
+        self.__default = default
+        self.__nodefault = nodefault
 
-    def __init__(self,encoding=None):
-        self.xml = ""
-        self.level = 0
-        self.encoding = encoding
+    def __getattr__(self, name):
+        """Emulate Object access.
 
-    def __del__(self):
-        pass
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.a
+        'b'
+        >>> obj.foobar
+        'c'
 
-    def setXml(self,Xml):
-        self.xml = Xml
-
-    def setLevel(self,Level):
-        self.level = Level
-
-    def tostring(self,d):
-        return self.dict2xml(d)
-
-    def dict2xml(self,map):
-        if type(map) == object_dict or type(map) == dict:
-            for key, value in map.items():
-                if type(value) == object_dict or type(value) == dict:
-                    if(len(value) > 0):
-                        self.xml += "  "*self.level
-                        self.xml += "<%s>\n" % (key)
-                        self.level += 1
-                        self.dict2xml(value)
-                        self.level -= 1
-                        self.xml += "  "*self.level
-                        self.xml += "</%s>\n" % (key)
-                    else:
-                        self.xml += "  "*(self.level)
-                        self.xml += "<%s></%s>\n" % (key,key)
-                elif type(value) == list:
-                    for v in value:
-                        self.dict2xml({key:v})
-                else:
-                    self.xml += "  "*(self.level)
-                    self.xml += "<%s>%s</%s>\n" % (key,self.encode(value),key)
-        else:
-            self.xml += "  "*self.level
-            self.xml += "<%s>%s</%s>\n" % (key,self.encode(value),key)
-        return self.xml
-
-    def encode(self,str1):
-        if type(str1) != str and type(str1) != unicode:
-            str1 = str(str1)
-        if self.encoding:
-            str1 = str1.encode(self.encoding)
-        str2 = ''
-        for c in str1:
-            if c == '&':
-                str2 += '&#x26;'
-            elif c == '<':
-                str2 += '&#x60;'
-            elif c == '>':
-                str2 += '&#x62;'
-            else:
-                str2 += c
-        return str2
-
-def list_to_xml(name, l, stream):
-   for d in l:
-      dict_to_xml(d, name, stream)
-
-def dict_to_xml(d, root_node_name, stream):
-   """ Transform a dict into a XML, writing to a stream """
-   stream.write('\n<' + root_node_name)
-   attributes = StringIO() 
-   nodes = StringIO()
-   for item in d.items():
-      key, value = item
-      if isinstance(value, dict):
-         dict_to_xml(value, key, nodes)
-      elif isinstance(value, list):
-         list_to_xml(key, value, nodes)
-      elif isinstance(value, str) or isinstance(value, unicode):
-         attributes.write('\n  %s="%s" ' % (key, value))
-      else:
-         raise TypeError('sorry, we support only dicts, lists and strings')
-
-   stream.write(attributes.getvalue())
-   nodes_str = nodes.getvalue()
-   if len(nodes_str) == 0:
-      stream.write('/>')
-   else:
-      stream.write('>')
-      stream.write(nodes_str)
-      stream.write('\n</%s>' % root_node_name)
-
-def dict_from_xml(xml):
-   """ Load a dict from a XML string """
-
-   def list_to_dict(l, ignore_root = True):
-      """ Convert our internal format list to a dict. We need this
-          because we use a list as a intermediate format during xml load """
-      root_dict = {}
-      inside_dict = {}
-      # index 0: node name
-      # index 1: attributes list
-      # index 2: children node list
-      root_dict[l[0]] = inside_dict
-      inside_dict.update(l[1])
-      # if it's a node containing lot's of nodes with same name,
-      # like <list><item/><item/><item/><item/><item/></list>
-      for x in l[2]:
-         d = list_to_dict(x, False)
-         for k, v in d.iteritems():
-            if not inside_dict.has_key(k):
-               inside_dict[k] = []
-
-            inside_dict[k].append(v)
-
-      ret = root_dict
-      if ignore_root:
-          ret = root_dict.values()[0]
-
-      return ret
-
-   class M:
-      """ This is our expat event sink """
-      def __init__(self):
-         self.lists_stack = []
-         self.current_list = None
-      def start_element(self, name, attrs):
-         l = []
-         # root node?
-         if self.current_list is None:
-            self.current_list = [name, attrs, l]
-         else:
-            self.current_list.append([name, attrs, l])
-
-         self.lists_stack.append(self.current_list)
-         self.current_list = l         
-         pass
-
-      def end_element(self, name):
-         self.current_list = self.lists_stack.pop()
-      def char_data(self, data):
-         # We don't write char_data to file (beyond \n and spaces).
-         # What to do? Raise?
-         pass
-
-   p = expat.ParserCreate()
-   m = M()
-
-   p.StartElementHandler = m.start_element
-   p.EndElementHandler = m.end_element
-   p.CharacterDataHandler = m.char_data
-
-   p.Parse(xml)
-
-   d = list_to_dict(m.current_list)
-
-   return d
-
-class ConfigHolder:
-    def __init__(self, d=None):
+        `hasattr` results in strange behaviour if you give a default value. This might change in the future.
+        >>> hasattr(obj, 'a')
+        True
+        >>> hasattr(obj, 'foobar')
+        True
         """
-        Init from dict d
-        """
-        if d is None:
-            self.d = {}
-        else:
-            self.d = d
-
-    def __str__(self):
-        return self.d.__str__()
-
-    __repr__ = __str__
-
-    def load_from_xml(self, xml):
-        self.d = dict_from_xml(xml)
-
-    def load_from_dict(self, d):
-        self.d = d
-
-    def get_must_exist(self, key):
-        v = self.get(key)
-
-        if v is None:
-            raise KeyError('the required config key "%s" was not found' % key)
-
-        return v
+        if name.startswith('_'):
+            # copy expects __deepcopy__, __getnewargs__ to raise AttributeError
+            # see http://groups.google.com/group/comp.lang.python/browse_thread/thread/6ac8a11de4e2526f/
+            # e76b9fbb1b2ee171?#e76b9fbb1b2ee171
+            raise AttributeError("'<Struct>' object has no attribute '%s'" % name)
+        if self.__nodefault:
+            raise AttributeError("'<Struct>' object has no attribute '%s'" % name)
+        return self.__default
 
     def __getitem__(self, key):
+        """Emulate dict like access.
+
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj['a']
+        'b'
+
+        While the standard dict access via [key] uses the default given when creating the struct,
+        access via get(), results in None for keys not set. This might be considered a bug and
+        should change in the future.
+        >>> obj['foobar']
+        'c'
+        >>> obj.get('foobar')
+        'c'
         """
-        Support for config['path/key'] syntax
-        """
-        return self.get_must_exist(key)
+        # warnings.warn("dict_accss[foo] on a Struct, use object_access.foo instead",
+        #                DeprecationWarning, stacklevel=2)
+        if self.__nodefault:
+            return self.__dict__[key]
+        return self.__dict__.get(key, self.__default)
 
     def get(self, key, default=None):
+        """Emulate dictionary access.
+
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.get('a')
+        'b'
+        >>> obj.get('foobar')
+        'c'
         """
-        Get from config using a filesystem-like syntax
+        if key in self.__dict__:
+            return self.__dict__[key]
+        if not self.__nodefault:
+            return self.__default
+        return default
 
-        value = 'start/sub/key' will
-        return config_map['start']['sub']['key']
+    def __contains__(self, item):
+        """Emulate dict 'in' functionality.
+
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> 'a' in obj
+        True
+        >>> 'foobar' in obj
+        False
         """
-        try:
-            d = self.d
+        return item in self.__dict__
 
-            path = key.split('/')
-            # handle 'key/subkey[2]/value/'
-            if path[-1] == '' :
-                path = path[:-1]
+    def __nonzero__(self):
+        """Returns whether the instance evaluates to False"""
+        return bool(self.items())
 
-            for x in path[:len(path)-1]:
-                i = x.find('[')
-                if i:
-                   if x[-1] != ']':
-                      raise Exception('invalid syntax')
-                   index = int(x[i+1:-1])
+    def has_key(self, item):
+        """Emulate dict.has_key() functionality.
 
-                   d = d[x[:i]][index]
-                else:
-                   d = d[x]
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.has_key('a')
+        True
+        >>> obj.has_key('foobar')
+        False
+        """
+        return item in self
 
-            return d[path[-1]]
+    def items(self):
+        """Emulate dict.items() functionality.
 
-        except:
-            return default
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.items()
+        [('a', 'b')]
+        """
+        return [(k, v) for (k, v) in self.__dict__.items() if not k.startswith('_Struct__')]
+
+    def keys(self):
+        """Emulate dict.keys() functionality.
+
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.keys()
+        ['a']
+        """
+        return [k for (k, _v) in self.__dict__.items() if not k.startswith('_Struct__')]
+
+    def values(self):
+        """Emulate dict.values() functionality.
+
+        >>> obj = Struct({'a': 'b'}, default='c')
+        >>> obj.values()
+        ['b']
+        """
+        return [v for (k, v) in self.__dict__.items() if not k.startswith('_Struct__')]
+
+    def __repr__(self):
+        return "<Struct: %r>" % dict(self.items())
+
+    def as_dict(self):
+        """Return a dict representing the content of this struct."""
+        return self.__dict__
+
+
+def make_struct(obj, default=None, nodefault=False):
+    """Converts a dict to an object, leaves objects untouched.
+
+    Someting like obj.vars() = dict() - Read Only!
+
+    >>> obj = make_struct(dict(foo='bar'))
+    >>> obj.foo
+    'bar'
+
+    `make_struct` leaves objects alone.
+    >>> class MyObj(object): pass
+    >>> data = MyObj()
+    >>> data.foo = 'bar'
+    >>> obj = make_struct(data)
+    >>> obj.foo
+    'bar'
+
+    `make_struct` also is idempotent
+    >>> obj = make_struct(make_struct(dict(foo='bar')))
+    >>> obj.foo
+    'bar'
+
+    `make_struct` recursively handles dicts and lists of dicts
+    >>> obj = make_struct(dict(foo=dict(bar='baz')))
+    >>> obj.foo.bar
+    'baz'
+
+    >>> obj = make_struct([dict(foo='baz')])
+    >>> obj
+    [<Struct: {'foo': 'baz'}>]
+    >>> obj[0].foo
+    'baz'
+
+    >>> obj = make_struct(dict(foo=dict(bar=dict(baz='end'))))
+    >>> obj.foo.bar.baz
+    'end'
+
+    >>> obj = make_struct(dict(foo=[dict(bar='baz')]))
+    >>> obj.foo[0].bar
+    'baz'
+    >>> obj.items()
+    [('foo', [<Struct: {'bar': 'baz'}>])]
+    """
+    if type(obj) == type(Struct):
+        return obj
+    if (not hasattr(obj, '__dict__')) and hasattr(obj, 'iterkeys'):
+        # this should be a dict
+        struc = Struct(obj, default, nodefault)
+        # handle recursive sub-dicts
+        for key, val in obj.items():
+            setattr(struc, key, make_struct(val, default, nodefault))
+        return struc
+    elif hasattr(obj, '__delslice__') and hasattr(obj, '__getitem__'):
+        #
+        return [make_struct(v, default, nodefault) for v in obj]
+    else:
+        return obj
+
+
+# Code is based on http://code.activestate.com/recipes/573463/
+def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
+    """Helper Function for XML conversion."""
+    # we can't convert bare lists
+    assert not isinstance(dictitem, list)
+
+    if isinstance(dictitem, dict):
+        for (tag, child) in sorted(dictitem.iteritems()):
+            if isinstance(child, list):
+                # iterate through the array and convert
+                listelem = ET.Element(tag)
+                parent.append(listelem)
+                for listchild in child:
+                    elem = ET.Element(listnames.get(tag, 'item'))
+                    listelem.append(elem)
+                    _convert_dict_to_xml_recurse(elem, listchild, listnames)
+            else:
+                elem = ET.Element(tag)
+                parent.append(elem)
+                _convert_dict_to_xml_recurse(elem, child, listnames)
+    elif not dictitem is None:
+        parent.text = unicode(dictitem)
+
+
+def dict2et(xmldict, roottag='data', listnames=None):
+    """Converts a dict to an ElementTree.
+
+    Converts a dictionary to an XML ElementTree Element::
+
+    >>> data = {"nr": "xq12", "positionen": [{"m": 12}, {"m": 2}]}
+    >>> root = dict2et(data)
+    >>> ET.tostring(root)
+    '<data><nr>xq12</nr><positionen><item><m>12</m></item><item><m>2</m></item></positionen></data>'
+
+    Per default ecerything ins put in an enclosing '<data>' element. Also per default lists are converted
+    to collecitons of `<item>` elements. But by provding a mapping between list names and element names,
+    you van generate different elements::
+
+    >>> data = {"positionen": [{"m": 12}, {"m": 2}]}
+    >>> root = dict2et(data, roottag='xml')
+    >>> ET.tostring(root)
+    '<xml><positionen><item><m>12</m></item><item><m>2</m></item></positionen></xml>'
+
+    >>> root = dict2et(data, roottag='xml', listnames={'positionen': 'position'})
+    >>> ET.tostring(root)
+    '<xml><positionen><position><m>12</m></position><position><m>2</m></position></positionen></xml>'
+
+    >>> data = {"kommiauftragsnr":2103839, "anliefertermin":"2009-11-25", "prioritaet": 7,
+    ... "ort": u"Hücksenwagen",
+    ... "positionen": [{"menge": 12, "artnr": "14640/XL", "posnr": 1},],
+    ... "versandeinweisungen": [{"guid": "2103839-XalE", "bezeichner": "avisierung48h",
+    ...                          "anweisung": "48h vor Anlieferung unter 0900-LOGISTIK avisieren"},
+    ... ]}
+
+    >>> print ET.tostring(dict2et(data, 'kommiauftrag',
+    ... listnames={'positionen': 'position', 'versandeinweisungen': 'versandeinweisung'}))
+    ...  # doctest: +SKIP
+    '''<kommiauftrag>
+    <anliefertermin>2009-11-25</anliefertermin>
+    <positionen>
+        <position>
+            <posnr>1</posnr>
+            <menge>12</menge>
+            <artnr>14640/XL</artnr>
+        </position>
+    </positionen>
+    <ort>H&#xC3;&#xBC;cksenwagen</ort>
+    <versandeinweisungen>
+        <versandeinweisung>
+            <bezeichner>avisierung48h</bezeichner>
+            <anweisung>48h vor Anlieferung unter 0900-LOGISTIK avisieren</anweisung>
+            <guid>2103839-XalE</guid>
+        </versandeinweisung>
+    </versandeinweisungen>
+    <prioritaet>7</prioritaet>
+    <kommiauftragsnr>2103839</kommiauftragsnr>
+    </kommiauftrag>'''
+    """
+
+    if not listnames:
+        listnames = {}
+    root = ET.Element(roottag)
+    _convert_dict_to_xml_recurse(root, xmldict, listnames)
+    return root
+
+
+def list2et(xmllist, root, elementname):
+    """Converts a list to an ElementTree.
+
+        See also dict2et()
+    """
+
+    basexml = dict2et({root: xmllist}, 'xml', listnames={root: elementname})
+    return basexml.find(root)
+
+
+def dict2xml(datadict, roottag='data', listnames=None, pretty=False):
+    """Converts a dictionary to an UTF-8 encoded XML string.
+
+    See also dict2et()
+    """
+    root = dict2et(datadict, roottag, listnames)
+    return to_string(root, pretty=pretty)
+
+
+def list2xml(datalist, roottag, elementname, pretty=False):
+    """Converts a list to an UTF-8 encoded XML string.
+
+    See also dict2et()
+    """
+    root = list2et(datalist, roottag, elementname)
+    return to_string(root, pretty=pretty)
+
+
+def to_string(root, encoding='utf-8', pretty=False):
+    """Converts an ElementTree to a string"""
+
+    if pretty:
+        indent(root)
+
+    tree = ET.ElementTree(root)
+    fileobj = StringIO()
+    #fileobj.write('<?xml version="1.0" encoding="%s"?>' % encoding)
+    if pretty:
+        fileobj.write('\n')
+    tree.write(fileobj, 'utf-8')
+    return fileobj.getvalue()
+
+
+# From http://effbot.org/zone/element-lib.htm
+# prettyprint: Prints a tree with each node indented according to its depth. This is
+# done by first indenting the tree (see below), and then serializing it as usual.
+# indent: Adds whitespace to the tree, so that saving it as usual results in a prettyprinted tree.
+# in-place prettyprint formatter
+
+def indent(elem, level=0):
+    """XML prettyprint: Prints a tree with each node indented according to its depth."""
+    i = "\n" + level * " "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + " "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for child in elem:
+            indent(child, level + 1)
+        if child:
+            if not child.tail or not child.tail.strip():
+                child.tail = i
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
+
+
+def test():
+    """Simple selftest."""
+
+    data = {"guid": "3104247-7",
+            "menge": 7,
+            "artnr": "14695",
+            "batchnr": "3104247"}
+    xmlstr = dict2xml(data, roottag='warenzugang')
+    assert xmlstr == ('<?xml version="1.0" encoding="utf-8"?><warenzugang><artnr>14695</artnr>'
+                      '<batchnr>3104247</batchnr><guid>3104247-7</guid><menge>7</menge></warenzugang>')
+
+    data = {"kommiauftragsnr": 2103839,
+     "anliefertermin": "2009-11-25",
+     "fixtermin": True,
+     "prioritaet": 7,
+     "info_kunde": "Besuch H. Gerlach",
+     "auftragsnr": 1025575,
+     "kundenname": "Ute Zweihaus 400424990",
+     "kundennr": "21548",
+     "name1": "Uwe Zweihaus",
+     "name2": "400424990",
+     "name3": "",
+     u"strasse": u"Bahnhofstr. 2",
+     "land": "DE",
+     "plz": "42499",
+     "ort": u"Hücksenwagen",
+     "positionen": [{"menge": 12,
+                     "artnr": "14640/XL",
+                     "posnr": 1},
+                    {"menge": 4,
+                     "artnr": "14640/03",
+                     "posnr": 2},
+                    {"menge": 2,
+                     "artnr": "10105",
+                     "posnr": 3}],
+     "versandeinweisungen": [{"guid": "2103839-XalE",
+                              "bezeichner": "avisierung48h",
+                              "anweisung": "48h vor Anlieferung unter 0900-LOGISTIK avisieren"},
+                             {"guid": "2103839-GuTi",
+                              "bezeichner": "abpackern140",
+                              "anweisung": u"Paletten höchstens auf 140 cm Packen"}]
+    }
+
+    xmlstr = dict2xml(data, roottag='kommiauftrag')
+
+    data = {"kommiauftragsnr": 2103839,
+     "positionen": [{"menge": 4,
+                     "artnr": "14640/XL",
+                     "posnr": 1,
+                     "nve": "23455326543222553"},
+                    {"menge": 8,
+                     "artnr": "14640/XL",
+                     "posnr": 1,
+                     "nve": "43255634634653546"},
+                    {"menge": 4,
+                     "artnr": "14640/03",
+                     "posnr": 2,
+                     "nve": "43255634634653546"},
+                    {"menge": 2,
+                     "artnr": "10105",
+                     "posnr": 3,
+                     "nve": "23455326543222553"}],
+     "nves": [{"nve": "23455326543222553",
+               "gewicht": 28256,
+               "art": "paket"},
+              {"nve": "43255634634653546",
+               "gewicht": 28256,
+                "art": "paket"}]}
+
+    xmlstr = dict2xml(data, roottag='rueckmeldung')
+    print xmlstr
+
+if __name__ == '__main__':
+    import doctest
+    import sys
+    failure_count, test_count = doctest.testmod()
+    d = make_struct({
+        'item1': 'string',
+        'item2': ['dies', 'ist', 'eine', 'liste'],
+        'item3': dict(dies=1, ist=2, ein=3, dict=4),
+        'item4': 10,
+        'item5': [dict(dict=1, in_einer=2, liste=3)]})
+    test()
+    sys.exit(failure_count)
+
