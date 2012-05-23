@@ -383,8 +383,9 @@ class html(ebaybase):
                 request_url = request_url + '?' + urllib.urlencode(self.call_data)
 
             if self.method == 'POST':
-                curl.setopt( pycurl.POST, True )
-                curl.setopt( pycurl.POSTFIELDS, str( request_xm ) )
+                request_xml = self._build_request_xml()
+                curl.setopt(pycurl.POST, True)
+                curl.setopt(pycurl.POSTFIELDS, str(request_xml))
             
             curl.setopt(pycurl.FOLLOWLOCATION, 1)
             curl.setopt(pycurl.URL, str(request_url))
