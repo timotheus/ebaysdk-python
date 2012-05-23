@@ -1,5 +1,24 @@
 Changes for ebaysdk
 
+- modify dict2xml to handle nodes with array content
+
+for example,
+{ 
+    'keywords': 'shoes', 
+    'paginationInput': { 'pageNumber': 1 }, 
+    'itemFilter': [ 
+        { 'name': 'MinBids', 'value': 10 }, 
+        { 'name': 'MaxBids', 'value': 14 }
+    ],
+}
+<?xml version='1.0' encoding='utf-8'?>
+<findItemsAdvancedRequest xmlns="http://www.ebay.com/marketplace/search/v1/services">
+<itemFilter><name>MinBids</name><value>10</value></itemFilter>
+<itemFilter><name>MaxBids</name><value>14</value></itemFilter>
+<keywords>shoes</keywords>
+<paginationInput><pageNumber>1</pageNumber></paginationInput>
+</findItemsAdvancedRequest>
+
 0.0.5
 - added response_obj() which turns a dict into a Struct
   e.g. { a : { 'name' : 'tim' } } can be accessed like a.name
