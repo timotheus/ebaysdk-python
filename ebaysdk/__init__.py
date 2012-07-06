@@ -10,7 +10,7 @@ from types import DictType
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct
 
 
-VERSION = (0, 1, 3)
+VERSION = (0, 1, 6)
 
 
 def get_version():
