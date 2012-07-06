@@ -296,10 +296,11 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
         for (tag, child) in sorted(dictitem.iteritems()):
             if isinstance(child, list):
                 # iterate through the array and convert
-                listelem = ET.Element(tag)
+                listelem = ET.Element(None)
+                listelem2 = ET.Element(tag)
                 parent.append(listelem)
                 for listchild in child:
-                    elem = ET.Element(listnames.get(tag, 'item'))
+                    elem = ET.Element(listnames.get(tag, listelem2.tag))
                     listelem.append(elem)
                     _convert_dict_to_xml_recurse(elem, listchild, listnames)
             else:
@@ -382,15 +383,16 @@ def list2et(xmllist, root, elementname):
     return basexml.find(root)
 
 
-def dict2xml(datadict, roottag='data', listnames=None, pretty=False):
-    """Converts a dictionary to an UTF-8 encoded XML string.
-
+def dict2xml(datadict, roottag='TRASHME', listnames=None, pretty=False):
+    """
+    Converts a dictionary to an UTF-8 encoded XML string.
     See also dict2et()
     """
     root = dict2et(datadict, roottag, listnames)
-    return to_string(root, pretty=pretty)
-
-
+    
+    xml = to_string(root, pretty=pretty)
+    return xml.replace('<%s>' % roottag, '').replace('</%s>' % roottag, '')
+    
 def list2xml(datalist, roottag, elementname, pretty=False):
     """Converts a list to an UTF-8 encoded XML string.
 

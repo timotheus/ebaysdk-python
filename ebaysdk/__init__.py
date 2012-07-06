@@ -126,9 +126,9 @@ class ebaybase(object):
         self.verb = verb
 
         if type(data) == DictType:
-            self.call_xml = dict2xml(data, roottag=None)
+            self.call_xml = dict2xml(data, roottag='TRASHME')
         elif type(data) == ListType:
-            self.call_xml = list2xml(data, roottag=None)
+            self.call_xml = list2xml(data, roottag='TRASHME')
         else:    
             self.call_xml = data
 

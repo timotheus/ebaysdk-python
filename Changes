@@ -1,5 +1,8 @@
 Changes for ebaysdk
 
+0.0.6
+
+- support older version of Element tree
 - modify dict2xml to handle nodes with array content
 
 for example,
