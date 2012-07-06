@@ -437,7 +437,7 @@ class trading(ebaybase):
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
     ...   charity_name = nodeText(t.response_dom().getElementsByTagName('Name')[0])
     >>> print charity_name 
-    u'Sunshine Kids Foundation'
+    Sunshine Kids Foundation
     >>> print t.error()
     <BLANKLINE>
     """
