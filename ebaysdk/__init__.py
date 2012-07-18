@@ -454,6 +454,7 @@ class trading(ebaybase):
         username=None,
         password=None,
         token=None,
+        iaf_token=None,
         appid=None,
         certid=None,
         devid=None,
@@ -484,13 +485,14 @@ class trading(ebaybase):
         self.api_config['username']=username or self.api_config.get('username')
         self.api_config['password']=password or self.api_config.get('password')
         self.api_config['token']=token or self.api_config.get('token')
+        self.api_config['iaf_token']=iaf_token or self.api_config.get('iaf_token')
         self.api_config['appid']=appid or self.api_config.get('appid')
         self.api_config['certid']=certid or self.api_config.get('certid')
         self.api_config['devid']=devid or self.api_config.get('devid')
         self.api_config['version']=version or self.api_config.get('compatability') or self.api_config.get('version')
 
     def _build_request_headers(self):
-        return {
+        headers = {
             "X-EBAY-API-COMPATIBILITY-LEVEL": self.api_config.get('version', ''),
             "X-EBAY-API-DEV-NAME": self.api_config.get('devid', ''),
             "X-EBAY-API-APP-NAME": self.api_config.get('appid',''),
@@ -499,25 +501,26 @@ class trading(ebaybase):
             "X-EBAY-API-CALL-NAME": self.verb,
             "Content-Type": "text/xml"
         }
+        if self.api_config.get('iaf_token', None):
+            headers["X-EBAY-API-IAF-TOKEN"] = self.api_config.get('iaf_token')
+        return headers
 
     def _build_request_xml(self):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
-        xml += "<RequesterCredentials>"
-        if self.api_config.get('token', None):
-            xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.api_config.get('token')
-        else:
-            if self.api_config.get('username', None):
+        if not self.api_config.get('iaf_token', None):
+            xml += "<RequesterCredentials>"
+            if self.api_config.get('token', None):
+                xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.api_config.get('token')
+            elif self.api_config.get('username', None):
                 xml += "<Username>%s</Username>" % self.api_config.get('username', '')
-            if self.api_config.get('password', None):
-                xml += "<Password>%s</Password>" % self.api_config.get('password', '')
-                
-        xml += "</RequesterCredentials>" 
+                if self.api_config.get('password', None):
+                    xml += "<Password>%s</Password>" % self.api_config.get('password', '')
+            xml += "</RequesterCredentials>"
         xml += self.call_xml
         xml += "</" + self.verb + "Request>"
-
         return xml
-                        
+
 class finding(ebaybase):
     """
     Finding backend for ebaysdk.
