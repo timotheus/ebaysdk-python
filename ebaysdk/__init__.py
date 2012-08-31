@@ -173,6 +173,9 @@ class ebaybase(object):
         "performs the http post and returns the XML response body"
         try:
             curl = pycurl.Curl()
+
+            curl.setopt(pycurl.SSL_VERIFYPEER, 0)   
+            curl.setopt(pycurl.SSL_VERIFYHOST, 0)
             
             if self.proxy_host:
                 curl.setopt(pycurl.PROXY, str('%s:%d' % (self.proxy_host, self.proxy_port)))
