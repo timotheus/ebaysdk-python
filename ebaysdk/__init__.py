@@ -8,7 +8,7 @@ from BeautifulSoup import BeautifulStoneSoup
 from types import DictType 
 
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct
-
+import ebaysdk.utils2
 
 VERSION = (0, 1, 6)
 
@@ -35,7 +35,12 @@ def tag(name, value):
     return "<%s>%s</%s>" % ( name, value, name )
 
 class ebaybase(object):
-    
+    """
+
+    >>> d = { 'list': ['a', 'b', 'c']}
+    >>> print dict2xml(d)
+    <list>a</list><list>b</list><list>c</list>
+    """
     def __init__(self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80, **kwargs):                
         self.verb       = None
         self.debug      = debug
