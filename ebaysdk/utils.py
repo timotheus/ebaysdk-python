@@ -296,7 +296,7 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
         for (tag, child) in sorted(dictitem.iteritems()):
             if isinstance(child, list):
                 # iterate through the array and convert
-                listelem = ET.Element(None)
+                listelem = ET.Element('')
                 listelem2 = ET.Element(tag)
                 parent.append(listelem)
                 for listchild in child:
@@ -391,6 +391,7 @@ def dict2xml(datadict, roottag='TRASHME', listnames=None, pretty=False):
     root = dict2et(datadict, roottag, listnames)
     
     xml = to_string(root, pretty=pretty)
+    xml = xml.replace('<>', '').replace('</>','')
     return xml.replace('<%s>' % roottag, '').replace('</%s>' % roottag, '')
     
 def list2xml(datalist, roottag, elementname, pretty=False):
