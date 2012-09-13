@@ -143,6 +143,7 @@ class ebaybase(object):
         # remove xml namespace
         regex = re.compile('xmlns="[^"]+"')
         self._response_content = regex.sub( '', self._response_content )
+        return self
 
     def response_soup(self):
         if not self._response_soup:
@@ -374,6 +375,7 @@ class html(ebaybase):
         # remove xml namespace
         regex = re.compile( 'xmlns="[^"]+"' )
         self._response_content = regex.sub( '', self._response_content )
+        return self
 
     def _execute_http_request(self):
         "performs the http post and returns the XML response body"
