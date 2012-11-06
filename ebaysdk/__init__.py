@@ -250,7 +250,11 @@ class ebaybase(object):
             return self._resp_body_errors
 
         err = []
-        for e in self.response_dom().getElementsByTagName("Errors"):
+        if self.verb is None: return err
+        dom = self.response_dom()
+        if dom is None: return err
+
+        for e in dom.getElementsByTagName("Errors"):
 
             if e.getElementsByTagName('ErrorClassification'):
                 err.append('- Class: %s' % nodeText(e.getElementsByTagName('ErrorClassification')[0]))
