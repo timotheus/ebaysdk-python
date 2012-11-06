@@ -241,7 +241,7 @@ class ebaybase(object):
 
         return response_data
 
-    # Child classes can override this method based on what the errors in the
+    # Child classes should override this method based on what the errors in the
     # XML response body look like. They can choose to look at the 'ack',
     # 'Errors', 'errorMessage' or whatever other fields the service returns.
     # the implementation below is the original code that was part of error()
@@ -651,7 +651,7 @@ class SOAService( ebaybase ):
 
     # Note: this method will always return at least an empty object_dict!
     #   It used to return None in some cases. If you get an empty dict,
-    #   you can use the .errors() method to look for the cause.
+    #   you can use the .error() method to look for the cause.
     def response_dict( self ):
         if self._response_dict: return self._response_dict
 
