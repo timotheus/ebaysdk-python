@@ -177,6 +177,7 @@ class ebaybase(object):
 
     def _execute_http_request(self):
         "performs the http post and returns the XML response body"
+        response_data = ''
         try:
             curl = pycurl.Curl()
 
