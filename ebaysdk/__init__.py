@@ -9,14 +9,16 @@ from BeautifulSoup import BeautifulStoneSoup
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct, object_dict
 import ebaysdk.utils2
 
-VERSION = (0, 1, 6)
-
-
 def get_version():
-    version = '%s.%s.%s' % (VERSION[0], VERSION[1], VERSION[2])
+    # Get the version
+    PKG = 'ebaysdk'
+    VERSIONFILE = os.path.join(PKG, "_version.py")
+    version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+            open(VERSIONFILE, "rt").read(), re.M).group(1)
+
     return version
 
-__version__ = get_version()       
+__version__ = get_version()
 
 def nodeText(node):
     rc = []
@@ -35,7 +37,6 @@ def tag(name, value):
 
 class ebaybase(object):
     """
-
     >>> d = { 'list': ['a', 'b', 'c']}
     >>> print dict2xml(d)
     <list>a</list><list>b</list><list>c</list>
@@ -49,12 +50,12 @@ class ebaybase(object):
         self.proxy_port = proxy_port 
         self.spooled_calls = [];
         self._reset()
-     
+
     def debug_callback(self, debug_type, debug_message):
         sys.stderr.write('type: ' + str(debug_type) + ' message'+str(debug_message) + "\n")
-    
+
     def v(self, *args, **kwargs):
-        
+
         args_a = [w for w in args]
         first  = args_a[0]
         args_a.remove(first)
@@ -64,25 +65,25 @@ class ebaybase(object):
             h = h.get(first, {})
         else:
             h = self.response_dict().get(first, {})
-        
+
         if len(args) == 1:
             try:
                 return h.get('value', None)
             except:
                 return h
-                
+
         last = args_a.pop()
-        
+
         for a in args_a:
             h = h.get(a, {})
 
         h = h.get(last, {})
-        
+
         try:
             return h.get('value', None)
         except:
-            return h    
-        
+            return h
+
     def load_yaml(self, config_file):
 
         dirs = [ '.', os.environ.get('HOME'), '/etc' ]
@@ -123,7 +124,7 @@ class ebaybase(object):
         self._response_dict    = None
         self._response_error   = None
         self._resp_body_errors = []
-        
+
     def do(self, verb, call_data=dict()):
         return self.execute(verb, call_data)
 
@@ -148,9 +149,9 @@ class ebaybase(object):
     def response_soup(self):
         if not self._response_soup:
             self._response_soup = BeautifulStoneSoup(unicode(self._response_content))
-        
+
         return self._response_soup
-        
+
     def response_obj(self):
         if not self._response_obj:
             self._response_obj = make_struct(self.response_dict())
@@ -292,7 +293,7 @@ class shopping(ebaybase):
     http://developer.ebay.com/products/shopping/
 
     shopping(debug=False, domain='open.api.ebay.com', uri='/shopping', method='POST', https=False, siteid=0, response_encoding='XML', request_encoding='XML', config_file='ebay.yaml')
-    
+
     >>> s = shopping()
     >>> s.execute('FindItemsAdvanced', {'CharityID': 3897})
     >>> print s.response_obj().Ack
@@ -345,9 +346,9 @@ class shopping(ebaybase):
 class html(ebaybase):
     """
     HTML backend for ebaysdk.
-    
+
     (self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80)
-    
+
     >>> h = html()
     >>> h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> print h.response_obj().rss.channel.ttl
@@ -453,7 +454,7 @@ class trading(ebaybase):
     """
     Trading backend for the ebaysdk
     http://developer.ebay.com/products/trading/
-    
+
     >>> t = trading()
     >>> t.execute('GetCharities', { 'CharityID': 3897 }) 
     >>> charity_name = ''
@@ -548,13 +549,13 @@ class finding(ebaybase):
     """
     Finding backend for ebaysdk.
     http://developer.ebay.com/products/finding/
-    
+
     >>> f = finding()
     >>> f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
     >>> error = f.error()
     >>> print error
     <BLANKLINE>
-    
+
     >>> if len( error ) <= 0:
     ...   print f.response_obj().itemSearchURL != ''
     ...   items = f.response_obj().searchResult.item    
@@ -563,7 +564,7 @@ class finding(ebaybase):
     True
     100
     Success
-    
+
     """
 
     def __init__(self,
