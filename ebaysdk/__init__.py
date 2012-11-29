@@ -635,7 +635,8 @@ class SOAService( ebaybase ):
             ph = self.api_config.get('proxy_host', ph)
             pp = self.api_config.get('proxy_port', pp)
 
-        super(SOAService, self).__init__(
+        ebaysdk.__init__(
+            self,
             debug = debug,
             method = 'POST',
             proxy_host = ph,
@@ -693,11 +694,25 @@ class SOAService( ebaybase ):
         return xml
 
     def execute(self, verb, data):
-        soap_data = data
-        if type(soap_data) == DictType:
-            soap_data = dict2xml( self.soapify(data) )
-        res = super(SOAService, self).execute(verb, soap_data)
-        return res
+        if type(data) == DictType:
+            data = dict2xml( self.soapify(data) )
+
+        self.verb = verb
+
+        if type(data) == DictType:
+            self.call_xml = dict2xml(data, roottag='TRASHME')
+        elif type(data) == ListType:
+            self.call_xml = list2xml(data, roottag='TRASHME')
+        else:
+            self.call_xml = data
+
+        self._reset()
+        self._response_content = self._execute_http_request()
+
+        # remove xml namespace
+        regex = re.compile('xmlns="[^"]+"')
+        self._response_content = regex.sub( '', self._response_content )
+        return self
 
     def soapify( self, xml ):
         xml_type = type( xml )
