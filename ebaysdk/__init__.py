@@ -635,7 +635,7 @@ class SOAService( ebaybase ):
             ph = self.api_config.get('proxy_host', ph)
             pp = self.api_config.get('proxy_port', pp)
 
-        ebaysdk.__init__(
+        ebaybase.__init__(
             self,
             debug = debug,
             method = 'POST',
