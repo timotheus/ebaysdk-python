@@ -27,7 +27,7 @@ def nodeText(node):
             if cn.nodeType == cn.TEXT_NODE:
                 rc.append(cn.data)
             elif cn.nodeType == cn.CDATA_SECTION_NODE:
-                rc.append(cn.data)    
+                rc.append(cn.data)
 
     return ''.join(rc)
 
