@@ -490,7 +490,7 @@ class trading(ebaybase):
         self.api_config = {
             'domain' : 'api.ebay.com',
             'uri' : '/ws/api.dll',
-            'https' : False,
+            'https' : True,
             'siteid' : '0',
             'response_encoding' : 'XML',
             'request_encoding' : 'XML',
