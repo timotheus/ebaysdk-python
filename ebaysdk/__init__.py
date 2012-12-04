@@ -152,10 +152,11 @@ class ebaybase(object):
         return self._response_soup
 
     def response_obj(self):
-        if not self._response_obj:
-            self._response_obj = make_struct(self.response_dict())
+        return self.response_dict()
 
-        return self._response_obj
+        #if not self._response_obj:
+        #    self._response_obj = make_struct(self.response_dict())
+        #return self._response_obj
 
     def response_dom(self):
         if not self._response_dom:
@@ -294,7 +295,7 @@ class shopping(ebaybase):
     shopping(debug=False, domain='open.api.ebay.com', uri='/shopping', method='POST', https=False, siteid=0, response_encoding='XML', request_encoding='XML', config_file='ebay.yaml')
 
     >>> s = shopping()
-    >>> s.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> retval = s.execute('FindItemsAdvanced', {'CharityID': 3897})
     >>> print s.response_obj().Ack
     Success
     >>> print s.error()
@@ -349,7 +350,7 @@ class html(ebaybase):
     (self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80)
 
     >>> h = html()
-    >>> h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
+    >>> retval = h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> print h.response_obj().rss.channel.ttl
     60
     >>> title = h.response_dom().getElementsByTagName('title')[0]
@@ -455,7 +456,7 @@ class trading(ebaybase):
     http://developer.ebay.com/products/trading/
 
     >>> t = trading()
-    >>> t.execute('GetCharities', { 'CharityID': 3897 }) 
+    >>> retval = t.execute('GetCharities', { 'CharityID': 3897 }) 
     >>> charity_name = ''
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
     ...   charity_name = nodeText(t.response_dom().getElementsByTagName('Name')[0])
@@ -550,16 +551,16 @@ class finding(ebaybase):
     http://developer.ebay.com/products/finding/
 
     >>> f = finding()
-    >>> f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
     >>> error = f.error()
     >>> print error
     <BLANKLINE>
 
     >>> if len( error ) <= 0:
-    ...   print f.response_obj().itemSearchURL != ''
-    ...   items = f.response_obj().searchResult.item    
+    ...   print f.response_dict().itemSearchURL != ''
+    ...   items = f.response_dict().searchResult.item    
     ...   print len(items)
-    ...   print f.response_obj().ack
+    ...   print f.response_dict().ack
     True
     100
     Success
