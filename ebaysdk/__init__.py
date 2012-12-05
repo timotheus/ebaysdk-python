@@ -319,9 +319,8 @@ class shopping(ebaybase):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
-        if https:
-            print "HTTPS is not supported on the Shopping API. HTTPS has been set to False"
-            https = False
+        if https and self.debug:
+            print "HTTPS is not supported on the Shopping API."
 
         self.api_config = {
             'domain'    : domain,
@@ -501,9 +500,8 @@ class trading(ebaybase):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
-        if not https:
-            print "HTTPS is required on the Trading API. HTTPS has been set to True"
-            https = True
+        if not https and self.debug:
+            print "HTTPS is required on the Trading API."
 
         self.api_config = {
             'domain'    : domain,
