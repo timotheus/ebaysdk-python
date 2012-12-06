@@ -46,7 +46,7 @@ class ebaybase(object):
         self.method     = method
         self.timeout    = timeout
         self.proxy_host = proxy_host
-        self.proxy_port = proxy_port 
+        self.proxy_port = proxy_port
         self.spooled_calls = [];
         self._reset()
 
@@ -309,18 +309,33 @@ class shopping(ebaybase):
         siteid=0,
         response_encoding='XML',
         request_encoding='XML',
+        proxy_host=None,
+        proxy_port=None,
+        appid=None,
+        certid=None,
+        devid=None,
+        version='799',
         config_file='ebay.yaml',
-        **kwargs ):
+        **kwargs):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
+        if https and self.debug:
+            print "HTTPS is not supported on the Shopping API."
+
         self.api_config = {
-            'domain' : domain,
-            'uri' : uri,
-            'https' : https,
-            'siteid' : siteid,
-            'response_encoding' : response_encoding,
+            'domain'    : domain,
+            'uri'       : uri,
+            'https'     : https,
+            'siteid'    : siteid,
+            'response_encoding': response_encoding,
             'request_encoding' : request_encoding,
+            'proxy_host': proxy_host,
+            'proxy_port': proxy_port,
+            'appid'     : appid,
+            'certid'    : certid,
+            'devid'     : devid,
+            'version'   : version
         }
 
         self.load_yaml(config_file)
@@ -328,8 +343,8 @@ class shopping(ebaybase):
     def _build_request_headers(self):
         return {
             "X-EBAY-API-VERSION": self.api_config.get('version', ''),
-            "X-EBAY-API-APP-ID": self.api_config.get('appid', ''),
-            "X-EBAY-API-SITEID": self.api_config.get('siteid', ''),
+            "X-EBAY-API-APP-ID":  self.api_config.get('appid', ''),
+            "X-EBAY-API-SITEID":  self.api_config.get('siteid', ''),
             "X-EBAY-API-CALL-NAME": self.verb,
             "X-EBAY-API-REQUEST-ENCODING": "XML",
             "Content-Type": "text/xml"
@@ -467,52 +482,48 @@ class trading(ebaybase):
     """
 
     def __init__(self,
-        domain=None,
-        uri=None,
-        https=None,
-        siteid=None,
-        response_encoding=None,
-        request_encoding=None,
+        domain='api.ebay.com',
+        uri='/ws/api.dll',
+        https=True,
+        siteid=0,
+        response_encoding='XML',
+        request_encoding='XML',
         proxy_host=None,
         proxy_port=None,
-        username=None,
-        password=None,
         token=None,
         iaf_token=None,
         appid=None,
         certid=None,
         devid=None,
-        version=None,
+        version='648',
         config_file='ebay.yaml',
-        **kwargs ):
+        **kwargs):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
+        if not https and self.debug:
+            print "HTTPS is required on the Trading API."
+
         self.api_config = {
-            'domain' : 'api.ebay.com',
-            'uri' : '/ws/api.dll',
-            'https' : True,
-            'siteid' : '0',
-            'response_encoding' : 'XML',
-            'request_encoding' : 'XML',
-            'version' : '648',
+            'domain'    : domain,
+            'uri'       : uri,
+            'https'     : https,
+            'siteid'    : siteid,
+            'response_encoding' : response_encoding,
+            'request_encoding'  : request_encoding,
+            'proxy_host': proxy_host,
+            'proxy_port': proxy_port,
+            'token'     : token,
+            'iaf_token' : iaf_token,
+            'appid'     : appid,
+            'devid'     : devid,
+            'certid'    : certid,
+            'version'   : version,
         }
 
         self.load_yaml(config_file)
 
-        self.api_config['domain']=domain or self.api_config.get('domain')
-        self.api_config['uri']=uri or self.api_config.get('uri')
-        self.api_config['https']=https or self.api_config.get('https')
-        self.api_config['siteid']=siteid or self.api_config.get('siteid')
-        self.api_config['response_encoding']=response_encoding or self.api_config.get('response_encoding')
-        self.api_config['request_encoding']=request_encoding or self.api_config.get('request_encoding')
-        self.api_config['username']=username or self.api_config.get('username')
-        self.api_config['password']=password or self.api_config.get('password')
-        self.api_config['token']=token or self.api_config.get('token')
-        self.api_config['iaf_token']=iaf_token or self.api_config.get('iaf_token')
-        self.api_config['appid']=appid or self.api_config.get('appid')
-        self.api_config['certid']=certid or self.api_config.get('certid')
-        self.api_config['devid']=devid or self.api_config.get('devid')
+        # allow yaml to specify compatibility
         self.api_config['version']=version or self.api_config.get('compatability') or self.api_config.get('version')
 
     def _build_request_headers(self):
@@ -557,8 +568,8 @@ class finding(ebaybase):
     <BLANKLINE>
 
     >>> if len( error ) <= 0:
-    ...   print f.response_dict().itemSearchURL != ''
-    ...   items = f.response_dict().searchResult.item    
+    ...   print f.response_obj().itemSearchURL != ''
+    ...   items = f.response_obj().searchResult.item
     ...   print len(items)
     ...   print f.response_dict().ack
     True
@@ -575,19 +586,31 @@ class finding(ebaybase):
         siteid='EBAY-US',
         response_encoding='XML',
         request_encoding='XML',
+        proxy_host=None,
+        proxy_port=None,
+        appid=None,
+        certid=None,
+        devid=None,
+        version='1.0.0',
         config_file='ebay.yaml',
-        **kwargs ):
+        **kwargs):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
         self.api_config = {
-            'domain'  : domain,
-            'service' : service,
-            'uri'     : uri,
-            'https'   : https,
-            'siteid'  : siteid,
+            'domain'    : domain,
+            'service'   : service,
+            'uri'       : uri,
+            'https'     : https,
+            'siteid'    : siteid,
             'response_encoding' : response_encoding,
             'request_encoding' : request_encoding,
+            'proxy_host': proxy_host,
+            'proxy_port': proxy_port,
+            'appid'     : appid,
+            'certid'    : certid,
+            'devid'     : devid,
+            'version'   : version
         }
 
         self.load_yaml(config_file)
