@@ -1,5 +1,9 @@
 Changes for ebaysdk
 
+0.1.7
+- update tests
+- modify response_obj() to return response_dict()
+
 0.0.6
 
 - support older version of Element tree
