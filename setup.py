@@ -14,15 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#try:
 from setuptools import setup, find_packages
-#except ImportError:
-#  from distutils.core import setup
+import re, os
 
-import sys
+PKG = 'ebaysdk'
 
-execfile('./ebaysdk/__init__.py')
-VERSION = __version__
+# Get the version
+VERSIONFILE = os.path.join(PKG, "_version.py")
+version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+        open(VERSIONFILE, "rt").read(), re.M).group(1)
+
 
 long_desc = """This SDK cuts development time and simplifies tasks like 
 error handling and enables you to make Finding, Shopping, Merchandising, 
@@ -30,20 +31,20 @@ and Trading API calls. In Addition, the SDK comes with RSS and
 HTML back-end libraries."""
 
 setup(
-    name="ebaysdk",
-    version=VERSION,
+    name=PKG,
+    version=version,
     description="Simple and Extensible eBay SDK for Python",
     author="Tim Keefer",
     author_email="tim@timkeefer.com",
-    url="http://code.google.com/p/ebay-sdk-python/",
+    url="https://github.com/timotheus/ebaysdk-python",
     license="Apache Software License",
     packages=find_packages(),
-    provides=['ebaysdk'],
-    install_requires=['BeautifulSoup', 'PyYAML', 'pycurl', 'elementtree'],
+    provides=[PKG],
+    install_requires=['PyYaml', 'pycurl', 'Beautifulsoup'],
     test_suite='tests',
     long_description=long_desc,
     classifiers=[
       'Topic :: Internet :: WWW/HTTP',
       'Intended Audience :: Developers',
-    ]     
-) 
+    ]
+)
