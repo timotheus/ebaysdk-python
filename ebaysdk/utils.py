@@ -41,6 +41,12 @@ class object_dict(dict):
     def getvalue(self, item, value=None):
         return self.get(item, {}).get('value', value)
 
+    def __getstate__(self):
+        return self.items()
+
+    def __setstate__(self, items):
+        self.update(items)
+
 class xml2dict(object):
 
     def __init__(self):
