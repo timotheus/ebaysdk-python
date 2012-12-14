@@ -84,9 +84,22 @@ class ebaybase(object):
             return h
 
     def load_yaml(self, config_file):
+    
+        # check for absolute path
+    	if os.path.exists( config_file ):
+            try:
+                f = open( config_file, "r" ) 
+            except IOError, e:
+                print "unable to open file %s" % e
 
+            yData  = yaml.load( f.read() )
+            domain = self.api_config.get('domain', '')
+
+            self.api_config_append( yData.get(domain, {}) )
+            return
+
+        # check other directories
         dirs = [ '.', os.environ.get('HOME'), '/etc' ]
-
         for mydir in dirs:
             myfile = "%s/%s" % (mydir, config_file)
 
@@ -95,8 +108,6 @@ class ebaybase(object):
                     f = open( myfile, "r" ) 
                 except IOError, e:
                     print "unable to open file %s" % e
-
-                #print "using file %s" % myfile
 
                 yData  = yaml.load( f.read() )
                 domain = self.api_config.get('domain', '')
