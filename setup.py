@@ -35,7 +35,7 @@ setup(
     version=version,
     description="Simple and Extensible eBay SDK for Python",
     author="Tim Keefer",
-    author_email="tim@timkeefer.com",
+    author_email="tkeefer@gmail.com",
     url="https://github.com/timotheus/ebaysdk-python",
     license="Apache Software License",
     packages=find_packages(),
