@@ -1,9 +1,3 @@
-
-This code is in the process of migrating from google code to github. For now, please get the lastest code from google code,
-
-http://code.google.com/p/ebay-sdk-python/
-
-
 Welcome to the ebaysdk for Python
 =================================
 
