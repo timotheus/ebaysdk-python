@@ -786,9 +786,9 @@ class SOAService( ebaybase ):
             soap = xml
         return soap
 
-class ebayparallel(object):
+class parallel(object):
     """
-    >>> p = ebayparallel()
+    >>> p = parallel()
     >>> r1 = html(parallel=p,debug=1)
     >>> r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> r2 = finding(parallel=p)
