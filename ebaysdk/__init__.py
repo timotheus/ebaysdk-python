@@ -161,9 +161,13 @@ class ebaybase(object):
         return self
 
     def prepare(self):
+        "performs any final changes to the request"
+
         pass
 
     def process(self):
+        "performs any final changes to the response"
+
         # remove xml namespace
         regex = re.compile('xmlns="[^"]+"')
         self._response_content = regex.sub( '', self._response_content )
@@ -200,7 +204,7 @@ class ebaybase(object):
             self.api_config[config[0]] = config[1]
 
     def _execute_http_request(self):
-        "performs the http post and returns the XML response body"
+        "performs the http request and returns the XML response body"
 
         response_data = ''
         try:
@@ -264,6 +268,8 @@ class ebaybase(object):
             raise Exception("%s" % e)
 
     def _process_http_request(self):
+        "performs the final processing of the http request and returns the response data"
+
         response_code   = self._curl.getinfo(pycurl.HTTP_CODE)
         response_status = self._response_header.getvalue().splitlines()[0]
         response_reason = re.match( r'^HTTP.+? +\d+ +(.*) *$', response_status ).group(1)
@@ -445,7 +451,7 @@ class html(ebaybase):
         return self
 
     def _execute_http_request(self):
-        "performs the http post and returns the XML response body"
+        "performs the http request and returns the XML response body"
 
         try:
             self._curl = pycurl.Curl()
