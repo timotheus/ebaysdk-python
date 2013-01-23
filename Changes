@@ -1,5 +1,8 @@
 Changes for ebaysdk
 
+- added parallel support using the ebayparallel class
+- created new prepare, process, and _process_http_request methods
+
 0.1.7
 - update tests
 - modify response_obj() to return response_dict()
