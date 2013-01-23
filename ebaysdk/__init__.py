@@ -40,6 +40,7 @@ class ebaybase(object):
     >>> print dict2xml(d)
     <list>a</list><list>b</list><list>c</list>
     """
+
     def __init__(self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80, parallel=None, **kwargs):
         self.verb       = None
         self.debug      = debug
@@ -786,7 +787,24 @@ class SOAService( ebaybase ):
         return soap
 
 class ebayparallel(object):
-    _requests = None
+    """
+    >>> p = ebayparallel()
+    >>> r1 = html(parallel=p,debug=1)
+    >>> r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
+    >>> r2 = finding(parallel=p)
+    >>> r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
+    >>> r3 = shopping(parallel=p)
+    >>> r3.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> p.wait()
+    >>> print p.error()
+    
+    >>> print r1.response_obj().rss.channel.ttl
+    60
+    >>> print r2.response_dict().ack
+    Success
+    >>> print r3.response_obj().Ack
+    Success
+    """
 
     def __init__(self):
         self._requests = []
@@ -816,6 +834,8 @@ class ebayparallel(object):
                 for request in self._requests:
                     multi.remove_handle(request._curl)
                     request._response_content = request._process_http_request()
+                    if request._response_content:
+                        request.process()
                     if request._response_error:
                         self._errors.append(request._response_error)
                     self._errors.extend(request._get_resp_body_errors())
