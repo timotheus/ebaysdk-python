@@ -795,20 +795,24 @@ class SOAService( ebaybase ):
 class parallel(object):
     """
     >>> p = parallel()
-    >>> r1 = html(parallel=p,debug=1)
-    >>> r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
+    >>> r1 = html(parallel=p)
+    >>> retval = r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> r2 = finding(parallel=p)
-    >>> r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
+    >>> retval = r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
     >>> r3 = shopping(parallel=p)
-    >>> r3.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> retval = r3.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> r4 = trading(parallel=p)
+    >>> retval = r4.execute('GetCharities', { 'CharityID': 3897 })
     >>> p.wait()
     >>> print p.error()
-    
+    <BLANKLINE>
     >>> print r1.response_obj().rss.channel.ttl
     60
     >>> print r2.response_dict().ack
     Success
     >>> print r3.response_obj().Ack
+    Success
+    >>> print r4.response_obj().Ack
     Success
     """
 
