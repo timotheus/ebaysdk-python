@@ -148,13 +148,23 @@ class ebaybase(object):
         else:
             self.call_xml = data
 
+        self.prepare()
+
         self._reset()
         self._response_content = self._execute_http_request()
 
+        if self._response_content:
+            self.process()
+
+        return self
+
+    def prepare(self):
+        pass
+
+    def process(self):
         # remove xml namespace
         regex = re.compile('xmlns="[^"]+"')
         self._response_content = regex.sub( '', self._response_content )
-        return self
 
     def response_soup(self):
         if not self._response_soup:
@@ -409,12 +419,14 @@ class html(ebaybase):
         self.url = url
         self.call_data = call_data
 
+        self.prepare()
+
         self._reset()
         self._response_content = self._execute_http_request()
 
-        # remove xml namespace
-        regex = re.compile( 'xmlns="[^"]+"' )
-        self._response_content = regex.sub( '', self._response_content )
+        if self._response_content:
+            self.process()
+
         return self
 
     def _execute_http_request(self):
@@ -741,12 +753,14 @@ class SOAService( ebaybase ):
         else:
             self.call_xml = data
 
+        self.prepare()
+
         self._reset()
         self._response_content = self._execute_http_request()
 
-        # remove xml namespace
-        regex = re.compile('xmlns="[^"]+"')
-        self._response_content = regex.sub( '', self._response_content )
+        if self._response_content:
+            self.process()
+
         return self
 
     def soapify( self, xml ):
