@@ -1,5 +1,8 @@
 Changes for ebaysdk
 
+0.1.8
+- fix bug in html class that allows for POST 
+- refactor and style cleanup
 - added parallel support using the ebayparallel class
 - created new prepare, process, and _process_http_request methods
 

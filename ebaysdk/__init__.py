@@ -32,7 +32,7 @@ def nodeText(node):
     return ''.join(rc)
 
 def tag(name, value):
-    return "<%s>%s</%s>" % ( name, value, name )
+    return "<%s>%s</%s>" % (name, value, name)
 
 class ebaybase(object):
     """
@@ -49,7 +49,6 @@ class ebaybase(object):
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
         self.parallel   = parallel
-        self.spooled_calls = [];
         self._reset()
 
     def debug_callback(self, debug_type, debug_message):
@@ -88,26 +87,26 @@ class ebaybase(object):
     def load_yaml(self, config_file):
     
         # check for absolute path
-    	if os.path.exists( config_file ):
+    	if os.path.exists(config_file):
             try:
-                f = open( config_file, "r" ) 
+                f = open(config_file, "r") 
             except IOError, e:
                 print "unable to open file %s" % e
 
-            yData  = yaml.load( f.read() )
+            yData  = yaml.load(f.read())
             domain = self.api_config.get('domain', '')
 
-            self.api_config_append( yData.get(domain, {}) )
+            self.api_config_append(yData.get(domain, {}))
             return
 
         # check other directories
-        dirs = [ '.', os.environ.get('HOME'), '/etc' ]
+        dirs = ['.', os.environ.get('HOME'), '/etc']
         for mydir in dirs:
             myfile = "%s/%s" % (mydir, config_file)
 
-            if os.path.exists( myfile ):
+            if os.path.exists(myfile):
                 try:
-                    f = open( myfile, "r" ) 
+                    f = open(myfile, "r") 
                 except IOError, e:
                     print "unable to open file %s" % e
 
@@ -129,6 +128,9 @@ class ebaybase(object):
         return rc
 
     def _reset(self):
+        self._response_reason  = None
+        self._response_status  = None
+        self._response_code    = None
         self._response_content = None
         self._response_dom     = None
         self._response_obj     = None
@@ -140,16 +142,22 @@ class ebaybase(object):
     def do(self, verb, call_data=dict()):
         return self.execute(verb, call_data)
 
+    def _to_xml(self, data):
+        xml = ''
+
+        if type(data) == DictType:
+            xml = dict2xml(data, roottag='TRASHME')
+        elif type(data) == ListType:
+            xml = list2xml(data, roottag='TRASHME')
+        else:
+            xml = data
+
+        return xml
+
     def execute(self, verb, data):
         self.verb = verb
 
-        if type(data) == DictType:
-            self.call_xml = dict2xml(data, roottag='TRASHME')
-        elif type(data) == ListType:
-            self.call_xml = list2xml(data, roottag='TRASHME')
-        else:
-            self.call_xml = data
-
+        self.call_xml = self._to_xml(data)
         self.prepare()
 
         self._reset()
@@ -171,6 +179,15 @@ class ebaybase(object):
         # remove xml namespace
         regex = re.compile('xmlns="[^"]+"')
         self._response_content = regex.sub( '', self._response_content )
+
+    def response_status(self):
+        return self._response_status
+
+    def response_code(self):
+        return self._response_code
+
+    def response_content(self):
+        return self._response_content
 
     def response_soup(self):
         if not self._response_soup:
@@ -268,20 +285,24 @@ class ebaybase(object):
             raise Exception("%s" % e)
 
     def _process_http_request(self):
-        "performs the final processing of the http request and returns the response data"
+        """
+        performs the final processing of the http 
+        request and returns the response data
+        """
 
-        response_code   = self._curl.getinfo(pycurl.HTTP_CODE)
-        response_status = self._response_header.getvalue().splitlines()[0]
-        response_reason = re.match( r'^HTTP.+? +\d+ +(.*) *$', response_status ).group(1)
+        self._response_code   = self._curl.getinfo(pycurl.HTTP_CODE)
+        self._response_status = self._response_header.getvalue().splitlines()[0]
+        self._response_reason = re.match( r'^HTTP.+? +\d+ +(.*) *$', self._response_status ).group(1)
+        
         response_data   = self._response_body.getvalue()
 
         self._response_header = None
         self._response_body   = None
         self._curl.close()
 
-        if response_code != 200:
-            self._response_error = "Error: %s" % response_reason
-            raise Exception('%s' % response_reason)
+        if self._response_code != 200:
+            self._response_error = "Error: %s" % self._response_reason
+            raise Exception('%s' % self._response_reason)
         else:
             return response_data
 
@@ -417,10 +438,16 @@ class html(ebaybase):
     <title><![CDATA[mytouch slide]]></title>
     >>> print h.error()
     None
+    >>> h = html(method='POST', debug=False)
+    >>> retval = h.execute('http://www.ebay.com/')
+    >>> print h.response_content() != ''
+    True
+    >>> print h.response_code()
+    200
     """
 
-    def __init__(self, **kwargs):
-        ebaybase.__init__(self, method='GET', **kwargs)
+    def __init__(self, method='GET', **kwargs):
+        ebaybase.__init__(self, method=method, **kwargs)
 
     def response_dom(self):
         if not self._response_dom:
@@ -465,7 +492,7 @@ class html(ebaybase):
             if self.call_data and self.method == 'GET':
                 request_url = request_url + '?' + urllib.urlencode(self.call_data)
 
-            if self.method == 'POST':
+            elif self.method == 'POST':
                 request_xml = self._build_request_xml()
                 self._curl.setopt(pycurl.POST, True)
                 self._curl.setopt(pycurl.POSTFIELDS, str(request_xml))
@@ -502,6 +529,15 @@ class html(ebaybase):
     def error(self):
          "builds and returns the api error message"
          return self._response_error
+
+    def _build_request_xml(self):
+
+        self.call_xml = self._to_xml(self.call_data)
+
+        xml = "<?xml version='1.0' encoding='utf-8'?>"
+        xml += self.call_xml
+
+        return xml
 
 class trading(ebaybase):
     """
@@ -761,13 +797,7 @@ class SOAService( ebaybase ):
 
         self.verb = verb
 
-        if type(data) == DictType:
-            self.call_xml = dict2xml(data, roottag='TRASHME')
-        elif type(data) == ListType:
-            self.call_xml = list2xml(data, roottag='TRASHME')
-        else:
-            self.call_xml = data
-
+        self.call_xml = self._to_xml(data)
         self.prepare()
 
         self._reset()
@@ -778,7 +808,7 @@ class SOAService( ebaybase ):
 
         return self
 
-    def soapify( self, xml ):
+    def soapify(self, xml):
         xml_type = type( xml )
         if xml_type == dict:
             soap = {}
