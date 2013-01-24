@@ -24,6 +24,35 @@ Example::
     for item in items:
       print nodeText(item.getElementsByTagName('title')[0])
 
+
+Parallel Example::
+
+    from ebaysdk import finding, parallel, nodeText
+
+    p = parallel()
+
+    h = html(parallel=p)
+    h.execute('http://www.ebay.com')
+    
+    f1 = finding(parallel=p)
+    f1.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+
+    f2 = finding(parallel=p)
+    f2.execute('findItemsAdvanced', {'keywords': 'shirts'})        
+
+    f3 = finding(parallel=p)
+    f3.execute('findItemsAdvanced', {'keywords': 'pants'})        
+
+    p.wait()
+
+    print h.response_content()
+    print f1.response_content()
+    print f2.response_content()
+    print f3.response_content()
+
+    dom1 = f1.response_dom()
+    dom2 = f2.response_dom()
+
 .. _eBay Developer Site: http://developer.ebay.com/
 
 
