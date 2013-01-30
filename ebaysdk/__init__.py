@@ -575,9 +575,6 @@ class trading(ebaybase):
 
         ebaybase.__init__(self, method='POST', **kwargs)
 
-        if not https and self.debug:
-            print "HTTPS is required on the Trading API."
-
         self.api_config = {
             'domain'    : domain,
             'uri'       : uri,
@@ -596,7 +593,7 @@ class trading(ebaybase):
         }
 
         self.load_yaml(config_file)
-
+            
         # allow yaml to specify compatibility
         self.api_config['version']=version or self.api_config.get('compatability') or self.api_config.get('version')
 
