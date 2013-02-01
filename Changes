@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- bug fix for SOA class
+
 0.1.8
 - fix bug in html class that allows for POST 
 - refactor and style cleanup
