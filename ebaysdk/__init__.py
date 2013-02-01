@@ -789,14 +789,12 @@ class SOAService( ebaybase ):
         return xml
 
     def execute(self, verb, data):
-        if type(data) == DictType:
-            data = dict2xml( self.soapify(data) )
-
+        
         self.verb = verb
 
-        self.call_xml = self._to_xml(data)
+        self.call_xml = self._to_xml(self.soapify(data))
         self.prepare()
-
+        
         self._reset()
         self._response_content = self._execute_http_request()
 
