@@ -1,11 +1,15 @@
 Changes for ebaysdk
 
 - bug fix for SOA class
+- add documentation and sample scripts
+- clean up YAML file
+- YAML values are now overridden by values defined
+  when building the object
 
 0.1.8
 - fix bug in html class that allows for POST 
 - refactor and style cleanup
-- added parallel support using the ebayparallel class
+- added parallel support using the parallel class
 - created new prepare, process, and _process_http_request methods
 
 0.1.7
@@ -13,7 +17,6 @@ Changes for ebaysdk
 - modify response_obj() to return response_dict()
 
 0.0.6
-
 - support older version of Element tree
 - modify dict2xml to handle nodes with array content
 
