@@ -3,14 +3,15 @@ import string, StringIO, base64
 import yaml, pycurl, urllib
 from types import DictType, ListType
 
+import simplejson as json
 from xml.dom.minidom import parseString, Node
 from BeautifulSoup import BeautifulStoneSoup
 
-from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct, object_dict
-import ebaysdk.utils2
+from ebaysdk.utils import xml2dict, dict2xml, list2xml, object_dict
 
 def get_version():
-    # Get the version
+    "Get the version."
+
     VERSIONFILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "_version.py")
     version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
         open(VERSIONFILE, "rt").read(), re.M).group(1)
@@ -20,6 +21,8 @@ def get_version():
 __version__ = get_version()
 
 def nodeText(node):
+    "Returns the node's text string."
+
     rc = []
 
     if hasattr(node, 'childNodes'):
@@ -35,13 +38,18 @@ def tag(name, value):
     return "<%s>%s</%s>" % (name, value, name)
 
 class ebaybase(object):
-    """
+    """Base API class.
+
+    Doctests:    
     >>> d = { 'list': ['a', 'b', 'c']}
     >>> print dict2xml(d)
     <list>a</list><list>b</list><list>c</list>
     """
 
-    def __init__(self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80, parallel=None, **kwargs):
+    def __init__(self, debug=False, method='GET', 
+                 proxy_host=None, timeout=20, proxy_port=80, 
+                 parallel=None, **kwargs):
+        
         self.verb       = None
         self.debug      = debug
         self.method     = method
@@ -83,21 +91,19 @@ class ebaybase(object):
             return h.get('value', None)
         except:
             return h
-
-    def load_yaml(self, config_file):
     
+    def yaml_defaults(self, config_file, domain):
+        "Returns a dictionary of YAML defaults."
+
         # check for absolute path
-    	if os.path.exists(config_file):
+        if os.path.exists(config_file):
             try:
                 f = open(config_file, "r") 
             except IOError, e:
                 print "unable to open file %s" % e
 
             yData  = yaml.load(f.read())
-            domain = self.api_config.get('domain', '')
-
-            self.api_config_append(yData.get(domain, {}))
-            return
+            return yData.get(domain, {})
 
         # check other directories
         dirs = ['.', os.environ.get('HOME'), '/etc']
@@ -110,15 +116,24 @@ class ebaybase(object):
                 except IOError, e:
                     print "unable to open file %s" % e
 
-                yData  = yaml.load( f.read() )
+                yData  = yaml.load(f.read())
                 domain = self.api_config.get('domain', '')
 
-                self.api_config_append( yData.get(domain, {}) )
-                return
+                return yData.get(domain, {})
 
-    def api_config_append(self, config):
-        for c in config:
-            self.api_config[c] = config[c] 
+    def set_config(self, cKey, defaultValue):
+        
+        # pull for kwargs first
+        if self._kwargs.has_key(cKey) and self._kwargs[cKey] != None:
+            self.api_config.update({cKey: self._kwargs[cKey]})
+        
+        # otherwise, use yaml default and then fall back to
+        # the default set in the __init__()
+        else:
+            if not self.api_config.has_key(cKey):
+                self.api_config.update({cKey: defaultValue})
+            else:
+                pass
 
     def getNodeText(self, nodelist):
         rc = ""
@@ -143,6 +158,8 @@ class ebaybase(object):
         return self.execute(verb, call_data)
 
     def _to_xml(self, data):
+        "Converts a list of dictionary to XML and returns it."
+
         xml = ''
 
         if type(data) == DictType:
@@ -155,6 +172,8 @@ class ebaybase(object):
         return xml
 
     def execute(self, verb, data):
+        "Executes the HTTP request."
+
         self.verb = verb
 
         self.call_xml = self._to_xml(data)
@@ -169,27 +188,32 @@ class ebaybase(object):
         return self
 
     def prepare(self):
-        "performs any final changes to the request"
-
+        "Performs any final changes to the request."
         pass
 
     def process(self):
-        "performs any final changes to the response"
+        "Performs any final changes to the response."
 
         # remove xml namespace
         regex = re.compile('xmlns="[^"]+"')
-        self._response_content = regex.sub( '', self._response_content )
+        self._response_content = regex.sub('', self._response_content)
 
     def response_status(self):
+        "Retuns the HTTP response status string."
+
         return self._response_status
 
     def response_code(self):
+        "Returns the HTTP response status code."
+
         return self._response_code
 
     def response_content(self):
         return self._response_content
 
     def response_soup(self):
+        "Returns a BeautifulSoup object of the response."
+
         if not self._response_soup:
             self._response_soup = BeautifulStoneSoup(unicode(self._response_content))
 
@@ -198,11 +222,9 @@ class ebaybase(object):
     def response_obj(self):
         return self.response_dict()
 
-        #if not self._response_obj:
-        #    self._response_obj = make_struct(self.response_dict())
-        #return self._response_obj
-
     def response_dom(self):
+        "Returns the response DOM (xml.dom.minidom)."
+
         if not self._response_dom:
             dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))) )
             self._response_dom = dom.getElementsByTagName(self.verb+'Response')[0]
@@ -210,18 +232,21 @@ class ebaybase(object):
         return self._response_dom
 
     def response_dict(self):
-        if not self._response_dict:
+        "Returns the response dictionary."
+
+        if not self._response_dict and self._response_content:
             mydict = xml2dict().fromstring(self._response_content)
             self._response_dict = mydict.get(self.verb+'Response', mydict)
 
         return self._response_dict
 
-    def api_init(self,config_items):
-        for config in config_items:
-            self.api_config[config[0]] = config[1]
+    def response_json(self):
+        "Returns the response JSON."
+
+        return json.dumps(self.response_dict())
 
     def _execute_http_request(self):
-        "performs the http request and returns the XML response body"
+        "Performs the http request and returns the XML response body."
 
         response_data = ''
         try:
@@ -285,9 +310,8 @@ class ebaybase(object):
             raise Exception("%s" % e)
 
     def _process_http_request(self):
-        """
-        performs the final processing of the http 
-        request and returns the response data
+        """Final processing for the HTTP response.
+        Returns the response data.
         """
 
         self._response_code   = self._curl.getinfo(pycurl.HTTP_CODE)
@@ -301,16 +325,20 @@ class ebaybase(object):
         self._curl.close()
 
         if self._response_code != 200:
-            self._response_error = "Error: %s" % self._response_reason
-            raise Exception('%s' % self._response_reason)
+            self._response_error = "%s" % self._response_reason
+            #raise Exception('%s' % self._response_reason)
         else:
             return response_data
 
-    # Child classes should override this method based on what the errors in the
-    # XML response body look like. They can choose to look at the 'ack',
-    # 'Errors', 'errorMessage' or whatever other fields the service returns.
-    # the implementation below is the original code that was part of error()
     def _get_resp_body_errors(self):
+        """Parses the response content to pull errors.
+
+        Child classes should override this method based on what the errors in the
+        XML response body look like. They can choose to look at the 'ack',
+        'Errors', 'errorMessage' or whatever other fields the service returns.
+        the implementation below is the original code that was part of error()
+        """
+
         if self._resp_body_errors and len(self._resp_body_errors) > 0:
             return self._resp_body_errors
 
@@ -322,86 +350,102 @@ class ebaybase(object):
         for e in dom.getElementsByTagName("Errors"):
 
             if e.getElementsByTagName('ErrorClassification'):
-                err.append('- Class: %s' % nodeText(e.getElementsByTagName('ErrorClassification')[0]))
+                err.append('Class: %s' % nodeText(e.getElementsByTagName('ErrorClassification')[0]))
 
             if e.getElementsByTagName('SeverityCode'):
-                err.append('- Severity: %s' % nodeText(e.getElementsByTagName('SeverityCode')[0]))
+                err.append('Severity: %s' % nodeText(e.getElementsByTagName('SeverityCode')[0]))
 
             if e.getElementsByTagName('ErrorCode'):
-                err.append('- Code: %s' % nodeText(e.getElementsByTagName('ErrorCode')[0]))
+                err.append('Code: %s' % nodeText(e.getElementsByTagName('ErrorCode')[0]))
 
             if e.getElementsByTagName('ShortMessage'):
-                err.append('- %s ' % nodeText(e.getElementsByTagName('ShortMessage')[0]))
+                err.append('%s ' % nodeText(e.getElementsByTagName('ShortMessage')[0]))
 
             if e.getElementsByTagName('LongMessage'):
-                err.append('- %s ' % nodeText(e.getElementsByTagName('LongMessage')[0]))
+                err.append('%s ' % nodeText(e.getElementsByTagName('LongMessage')[0]))
 
         self._resp_body_errors = err
         return err
 
     def error(self):
-        "builds and returns the api error message"
+        "Builds and returns the api error message."
 
         err = []
         if self._response_error: err.append(self._response_error)
         err.extend(self._get_resp_body_errors())
 
-        if len(err) > 0: return "%s error:\n%s\n" % (self.verb, "\n".join(err))
+        if len(err) > 0: return "%s: %s" % (self.verb, ", ".join(err))
 
         return ""
 
 class shopping(ebaybase):
-    """
-    Shopping backend for ebaysdk.
+    """Shopping API class
+
+    API documentation:
     http://developer.ebay.com/products/shopping/
 
-    shopping(debug=False, domain='open.api.ebay.com', uri='/shopping', method='POST', https=False, siteid=0, response_encoding='XML', request_encoding='XML', config_file='ebay.yaml')
+    Supported calls: 
+    getSingleItem
+    getMultipleItems
+    (all others, see API docs)
 
+    Doctests:
     >>> s = shopping()
-    >>> retval = s.execute('FindItemsAdvanced', {'CharityID': 3897})
+    >>> retval = s.execute('FindPopularItems', {'QueryKeywords': 'Python'})
     >>> print s.response_obj().Ack
     Success
     >>> print s.error()
     <BLANKLINE>
     """
 
-    def __init__(self,
-        domain='open.api.ebay.com',
-        uri='/shopping',
-        https=False,
-        siteid=0,
-        response_encoding='XML',
-        request_encoding='XML',
-        proxy_host=None,
-        proxy_port=None,
-        appid=None,
-        certid=None,
-        devid=None,
-        version='799',
-        config_file='ebay.yaml',
-        **kwargs):
+    def __init__(self, **kwargs):
+        """Shopping class constructor.
 
+        Keyword arguments:
+        domain        -- API endpoint (default: open.api.ebay.com)
+        config_file   -- YAML defaults (default: ebay.yaml)
+        debug         -- debugging enabled (default: False)
+        warnings      -- warnings enabled (default: False)
+        uri           -- API endpoint uri (default: /shopping)
+        appid         -- eBay application id
+        siteid        -- eBay country site id (default: 0 (US))
+        compatibility -- version number (default: 799)
+        https         -- execute of https (default: True)
+        proxy_host    -- proxy hostname
+        proxy_port    -- proxy port number
+        timeout       -- HTTP request timeout (default: 20)
+        parallel      -- ebaysdk parallel object
+        response_encoding -- API encoding (default: XML)
+        request_encoding  -- API encoding (default: XML)
+        """
         ebaybase.__init__(self, method='POST', **kwargs)
 
-        if https and self.debug:
-            print "HTTPS is not supported on the Shopping API."
-
+        self._kwargs = kwargs
+        
         self.api_config = {
-            'domain'    : domain,
-            'uri'       : uri,
-            'https'     : https,
-            'siteid'    : siteid,
-            'response_encoding': response_encoding,
-            'request_encoding' : request_encoding,
-            'proxy_host': proxy_host,
-            'proxy_port': proxy_port,
-            'appid'     : appid,
-            'certid'    : certid,
-            'devid'     : devid,
-            'version'   : version
+            'domain': kwargs.get('domain', 'open.api.ebay.com'),
+            'config_file': kwargs.get('config_file', 'ebay.yaml'),
         }
 
-        self.load_yaml(config_file)
+        # pull stuff in value yaml defaults
+        self.api_config.update(
+            self.yaml_defaults(self.api_config['config_file'], self.api_config['domain'])
+        )
+
+        # override yaml defaults with args sent to the constructor
+        self.set_config('uri', '/shopping')
+        self.set_config('https', False)
+        self.set_config('siteid', 0)
+        self.set_config('response_encoding', 'XML')
+        self.set_config('request_encoding', 'XML')
+        self.set_config('proxy_host', None)
+        self.set_config('proxy_port', None)
+        self.set_config('appid', None)
+        self.set_config('version', '799')
+
+
+        if self.api_config['https'] and self.debug:
+            print "HTTPS is not supported on the Shopping API."
 
     def _build_request_headers(self):
         return {
@@ -422,11 +466,9 @@ class shopping(ebaybase):
         return xml
 
 class html(ebaybase):
-    """
-    HTML backend for ebaysdk.
+    """HTML class for traditional calls.
 
-    (self, debug=False, method='GET', proxy_host=None, timeout=20, proxy_port=80)
-
+    Doctests:
     >>> h = html()
     >>> retval = h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> print h.response_obj().rss.channel.ttl
@@ -447,22 +489,36 @@ class html(ebaybase):
     """
 
     def __init__(self, method='GET', **kwargs):
+        """HTML class constructor.
+
+        Keyword arguments:
+        debug         -- debugging enabled (default: False)
+        method        -- GET/POST/PUT (default: GET)
+        proxy_host    -- proxy hostname
+        proxy_port    -- proxy port number
+        timeout       -- HTTP request timeout (default: 20)
+        parallel      -- ebaysdk parallel object
+        """
         ebaybase.__init__(self, method=method, **kwargs)
 
     def response_dom(self):
+        "Returns the HTTP response dom."
+
         if not self._response_dom:
             self._response_dom = parseString(self._response_content)
 
         return self._response_dom
 
     def response_dict(self):
-        if not self._response_dict:
+        "Return the HTTP response dictionary."
+
+        if not self._response_dict and self.response_content:
             self._response_dict = xml2dict().fromstring(self._response_content)
 
         return self._response_dict
 
     def execute(self, url, call_data=dict()):
-        "execute(self, url, call_data=dict())"
+        "Excute method for the HTTP request."
 
         self.url = url
         self.call_data = call_data
@@ -478,7 +534,7 @@ class html(ebaybase):
         return self
 
     def _execute_http_request(self):
-        "performs the http request and returns the XML response body"
+        "Executes and returns the XML response body."
 
         try:
             self._curl = pycurl.Curl()
@@ -527,11 +583,11 @@ class html(ebaybase):
             raise Exception("%s" % e)
 
     def error(self):
-         "builds and returns the api error message"
+         "Builds and returns the api error message."
          return self._response_error
 
     def _build_request_xml(self):
-
+        "Builds and returns the request XML."
         self.call_xml = self._to_xml(self.call_data)
 
         xml = "<?xml version='1.0' encoding='utf-8'?>"
@@ -540,10 +596,18 @@ class html(ebaybase):
         return xml
 
 class trading(ebaybase):
-    """
-    Trading backend for the ebaysdk
-    http://developer.ebay.com/products/trading/
+    """Trading API class
 
+    API documentation:
+    https://www.x.com/developers/ebay/products/trading-api
+
+    Supported calls: 
+    AddItem
+    ReviseItem
+    GetUser
+    (all others, see API docs)
+
+    Doctests:
     >>> t = trading()
     >>> retval = t.execute('GetCharities', { 'CharityID': 3897 }) 
     >>> charity_name = ''
@@ -555,49 +619,62 @@ class trading(ebaybase):
     <BLANKLINE>
     """
 
-    def __init__(self,
-        domain='api.ebay.com',
-        uri='/ws/api.dll',
-        https=True,
-        siteid=0,
-        response_encoding='XML',
-        request_encoding='XML',
-        proxy_host=None,
-        proxy_port=None,
-        token=None,
-        iaf_token=None,
-        appid=None,
-        certid=None,
-        devid=None,
-        version='648',
-        config_file='ebay.yaml',
-        **kwargs):
+    def __init__(self, **kwargs):
+        """Trading class constructor.
 
+        Keyword arguments:
+        domain        -- API endpoint (default: api.ebay.com)
+        config_file   -- YAML defaults (default: ebay.yaml)
+        debug         -- debugging enabled (default: False)
+        warnings      -- warnings enabled (default: False)
+        uri           -- API endpoint uri (default: /ws/api.dll)
+        appid         -- eBay application id
+        devid         -- eBay developer id
+        certid        -- eBay cert id
+        token         -- eBay application/user token
+        siteid        -- eBay country site id (default: 0 (US))
+        compatibility -- version number (default: 648)
+        https         -- execute of https (default: True)
+        proxy_host    -- proxy hostname
+        proxy_port    -- proxy port number
+        timeout       -- HTTP request timeout (default: 20)
+        parallel      -- ebaysdk parallel object
+        response_encoding -- API encoding (default: XML)
+        request_encoding  -- API encoding (default: XML)
+        """
         ebaybase.__init__(self, method='POST', **kwargs)
 
+        self._kwargs = kwargs
+        
         self.api_config = {
-            'domain'    : domain,
-            'uri'       : uri,
-            'https'     : https,
-            'siteid'    : siteid,
-            'response_encoding' : response_encoding,
-            'request_encoding'  : request_encoding,
-            'proxy_host': proxy_host,
-            'proxy_port': proxy_port,
-            'token'     : token,
-            'iaf_token' : iaf_token,
-            'appid'     : appid,
-            'devid'     : devid,
-            'certid'    : certid,
-            'version'   : version,
+            'domain': kwargs.get('domain', 'api.ebay.com'),
+            'config_file': kwargs.get('config_file', 'ebay.yaml'),
         }
 
-        self.load_yaml(config_file)
-            
-        # allow yaml to specify compatibility
-        self.api_config['version']=version or self.api_config.get('compatability') or self.api_config.get('version')
+        # pull stuff in value yaml defaults
+        self.api_config.update(
+            self.yaml_defaults(self.api_config['config_file'], self.api_config['domain'])
+        )
+
+        # override yaml defaults with args sent to the constructor
+        self.set_config('uri', '/ws/api.dll')
+        self.set_config('https', True)
+        self.set_config('siteid', 0)
+        self.set_config('response_encoding', 'XML')
+        self.set_config('request_encoding', 'XML')
+        self.set_config('proxy_host', None)
+        self.set_config('proxy_port', None)
+        self.set_config('token', None)
+        self.set_config('iaf_token', None)
+        self.set_config('appid', None)
+        self.set_config('devid', None)
+        self.set_config('certid', None)
+        self.set_config('version', '648')
+        self.set_config('compatibility', '648')
 
     def _build_request_headers(self):
+        "Builds HTTP headers"
+
         headers = {
             "X-EBAY-API-COMPATIBILITY-LEVEL": self.api_config.get('version', ''),
             "X-EBAY-API-DEV-NAME": self.api_config.get('devid', ''),
@@ -609,9 +686,12 @@ class trading(ebaybase):
         }
         if self.api_config.get('iaf_token', None):
             headers["X-EBAY-API-IAF-TOKEN"] = self.api_config.get('iaf_token')
+        
         return headers
 
     def _build_request_xml(self):
+        "Builds the XML request"
+
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
         if not self.api_config.get('iaf_token', None):
@@ -628,10 +708,17 @@ class trading(ebaybase):
         return xml
 
 class finding(ebaybase):
-    """
-    Finding backend for ebaysdk.
-    http://developer.ebay.com/products/finding/
+    """Finding API class
 
+    API documentation:
+    https://www.x.com/developers/ebay/products/finding-api
+
+    Supported calls: 
+    findItemsAdvanced
+    findItemsByCategory
+    (all others, see API docs)
+
+    Doctests:
     >>> f = finding()
     >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
     >>> error = f.error()
@@ -649,42 +736,55 @@ class finding(ebaybase):
 
     """
 
-    def __init__(self,
-        domain='svcs.ebay.com',
-        service='FindingService',
-        uri='/services/search/FindingService/v1',
-        https=False,
-        siteid='EBAY-US',
-        response_encoding='XML',
-        request_encoding='XML',
-        proxy_host=None,
-        proxy_port=None,
-        appid=None,
-        certid=None,
-        devid=None,
-        version='1.0.0',
-        config_file='ebay.yaml',
-        **kwargs):
-
+    def __init__(self, **kwargs):
+        """Finding class constructor.
+        
+        Keyword arguments:
+        domain        -- API endpoint (default: svcs.ebay.com)
+        config_file   -- YAML defaults (default: ebay.yaml)
+        debug         -- debugging enabled (default: False)
+        warnings      -- warnings enabled (default: False)
+        uri           -- API endpoint uri (default: /services/search/FindingService/v1)
+        appid         -- eBay application id
+        siteid        -- eBay country site id (default: EBAY-US)
+        compatibility -- version number (default: 1.0.0)
+        https         -- execute of https (default: False)
+        proxy_host    -- proxy hostname
+        proxy_port    -- proxy port number
+        timeout       -- HTTP request timeout (default: 20)
+        parallel      -- ebaysdk parallel object
+        response_encoding -- API encoding (default: XML)
+        request_encoding  -- API encoding (default: XML)
+        """
         ebaybase.__init__(self, method='POST', **kwargs)
 
+        self._kwargs = kwargs
+        
         self.api_config = {
-            'domain'    : domain,
-            'service'   : service,
-            'uri'       : uri,
-            'https'     : https,
-            'siteid'    : siteid,
-            'response_encoding' : response_encoding,
-            'request_encoding' : request_encoding,
-            'proxy_host': proxy_host,
-            'proxy_port': proxy_port,
-            'appid'     : appid,
-            'certid'    : certid,
-            'devid'     : devid,
-            'version'   : version
+            'domain': kwargs.get('domain', 'svcs.ebay.com'),
+            'config_file': kwargs.get('config_file', 'ebay.yaml'),
         }
 
-        self.load_yaml(config_file)
+        # pull stuff in value yaml defaults
+        self.api_config.update(
+            self.yaml_defaults(self.api_config['config_file'], 
+                               self.api_config['domain'])
+        )
+
+        # override yaml defaults with args sent to the constructor
+        self.set_config('uri', '/services/search/FindingService/v1')
+        self.set_config('https', False)
+        self.set_config('siteid', 'EBAY-US')
+        self.set_config('response_encoding', 'XML')
+        self.set_config('request_encoding', 'XML')
+        self.set_config('proxy_host', None)
+        self.set_config('proxy_port', None)
+        self.set_config('token', None)
+        self.set_config('iaf_token', None)
+        self.set_config('appid', None)
+        self.set_config('version', '1.0.0')
+        self.set_config('compatibility', '1.0.0')
+
 
     def _build_request_headers(self):
         return {
@@ -706,11 +806,26 @@ class finding(ebaybase):
 
         return xml
 
+    def error(self):
+        "Builds and returns the api error message."
 
-class SOAService( ebaybase ):
-    """
-    This class provides a base for eBay's SOAP-style web services.
-    """
+        err = []
+        if self._response_error: 
+            err.append(self._response_error)
+
+        try:
+            if self.response_dict().ack == 'Failure':
+                err.append(self.response_dict().errorMessage.error.message)        
+        except AttributeError:
+            pass
+
+        if len(err) > 0: 
+            return "%s: %s" % (self.verb, ", ".join(err))
+
+        return ""
+
+class SOAService(ebaybase):
+    "SOAP class."
 
     def __init__(self, app_config=None, site_id='EBAY-US', debug=False):
         self.api_config = {
