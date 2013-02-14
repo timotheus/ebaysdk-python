@@ -12,18 +12,18 @@ Quick Example::
 
     from ebaysdk import finding
 
-    api = finding(--appid='YOUR_APPID_HERE')
+    api = finding(appid='YOUR_APPID_HERE')
     api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
     print api.response_dict()
 
-## Getting Started
+##Getting Started
 
 * `Trading API Class`_
 * `Finding API Class`_
 * `Shopping API Class`_
 * `HTML Class`_
-* `Parallel API Class`_
+* `Parallel Class`_
 * `YAML Configuration`_ 
 
 .. _eBay Developer Site: http://developer.ebay.com/
