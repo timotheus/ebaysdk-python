@@ -8,7 +8,7 @@ In order to use eBay aspects of this utility you must first register with eBay t
 Support ...TBD
 
 
-##Quick Example
+Quick Example::
 
     from ebaysdk import finding
 
@@ -17,18 +17,22 @@ Support ...TBD
 
     print api.response_dict()
 
-##Getting Started
+## Getting Started
 
-* `Trading Docs`_(asdf)
-* `Finding Docs`_
-
+* `Trading API Class`_
+* `Finding API Class`_
+* `Shopping API Class`_
+* `HTML Class`_
+* `Parallel API Class`_
+* `YAML Configuration`_ 
 
 .. _eBay Developer Site: http://developer.ebay.com/
-.. _Trading Docs: https://github.com/timotheus/ebaysdk-python/wiki/Trading-API-Class
-.. _Finding Docs: https://github.com/timotheus/ebaysdk-python/wiki/Finding-API-Class
-.. _Shopping Docs: https://github.com/timotheus/ebaysdk-python/wiki/Shopping-API-Class
-.. _HTML Docs: https://github.com/timotheus/ebaysdk-python/wiki/HTML-Class
-.. _Parallel Docs: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
+.. _YAML Configuration: https://github.com/timotheus/ebaysdk-python/wiki/YAML-Configuration
+.. _Trading API Class: https://github.com/timotheus/ebaysdk-python/wiki/Trading-API-Class
+.. _Finding API Class: https://github.com/timotheus/ebaysdk-python/wiki/Finding-API-Class
+.. _Shopping API Class: https://github.com/timotheus/ebaysdk-python/wiki/Shopping-API-Class
+.. _HTML Class: https://github.com/timotheus/ebaysdk-python/wiki/HTML-Class
+.. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
 
 
 
