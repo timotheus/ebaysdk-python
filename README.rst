@@ -17,7 +17,8 @@ Quick Example::
 
     print api.response_dict()
 
-##Getting Started
+Getting Started
+---------------
 
 * `Trading API Class`_
 * `Finding API Class`_
@@ -25,7 +26,9 @@ Quick Example::
 * `HTML Class`_
 * `Parallel Class`_
 * `YAML Configuration`_ 
+* `Understanding eBay Credentials`_
 
+.. _Understanding eBay Credentials: https://github.com/timotheus/ebaysdk-python/wiki/eBay-Credentials
 .. _eBay Developer Site: http://developer.ebay.com/
 .. _YAML Configuration: https://github.com/timotheus/ebaysdk-python/wiki/YAML-Configuration
 .. _Trading API Class: https://github.com/timotheus/ebaysdk-python/wiki/Trading-API-Class
