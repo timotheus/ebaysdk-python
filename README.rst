@@ -8,7 +8,7 @@ In order to use eBay aspects of this utility you must first register with eBay t
 Support ...TBD
 
 
-Quick Example::
+##Quick Example
 
     from ebaysdk import finding
 
@@ -17,11 +17,10 @@ Quick Example::
 
     print api.response_dict()
 
-Getting Started
----------------
+##Getting Started
 
-`Trading Docs`_
-`Finding Docs`_
+* `Trading Docs`_(asdf)
+* `Finding Docs`_
 
 
 .. _eBay Developer Site: http://developer.ebay.com/
