@@ -1,59 +1,35 @@
-Welcome to the ebaysdk for Python
-=================================
+Welcome to the python ebaysdk
+=============================
 
-Welcome to the eBay SDK for Python. This SDK cuts development time and simplifies tasks like error handling and enables you to make Finding, Shopping, Merchandising, and Trading API calls. In Addition, the SDK comes with RSS and HTML back-end libraries.
+This SDK is a dead-simple, programatic inteface into the eBay APIs. It simplifies development and cuts development time by standerizing calls, response processing, error handling, debugging across the Finding, Shopping, Merchandising, & Trading APIs. 
 
 In order to use eBay aspects of this utility you must first register with eBay to get your `eBay Developer Site`_ (see the ebay.yaml for a way to easily tie eBay credentials to the SDK) Finding Services.
 
-Example::
-
-    from ebaysdk import finding, nodeText
-
-    f = finding()
-    f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
-
-    dom    = f.response_dom()
-    mydict = f.response_dict()
-    myobj  = f.response_obj()
-
-    print myobj.itemSearchURL
-
-    # process the response via DOM
-    items = dom.getElementsByTagName('item')
-
-    for item in items:
-      print nodeText(item.getElementsByTagName('title')[0])
+Support ...TBD
 
 
-Parallel Example::
+Quick Example::
 
-    from ebaysdk import finding, parallel, nodeText
+    from ebaysdk import finding
 
-    p = parallel()
+    api = finding(--appid='YOUR_APPID_HERE')
+    api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
-    h = html(parallel=p)
-    h.execute('http://www.ebay.com')
-    
-    f1 = finding(parallel=p)
-    f1.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+    print api.response_dict()
 
-    f2 = finding(parallel=p)
-    f2.execute('findItemsAdvanced', {'keywords': 'shirts'})        
+Getting Started
+---------------
 
-    f3 = finding(parallel=p)
-    f3.execute('findItemsAdvanced', {'keywords': 'pants'})        
+`Trading Docs`_
+`Finding Docs`_
 
-    p.wait()
-
-    print h.response_content()
-    print f1.response_content()
-    print f2.response_content()
-    print f3.response_content()
-
-    dom1 = f1.response_dom()
-    dom2 = f2.response_dom()
 
 .. _eBay Developer Site: http://developer.ebay.com/
+.. _Trading Docs: https://github.com/timotheus/ebaysdk-python/wiki/Trading-API-Class
+.. _Finding Docs: https://github.com/timotheus/ebaysdk-python/wiki/Finding-API-Class
+.. _Shopping Docs: https://github.com/timotheus/ebaysdk-python/wiki/Shopping-API-Class
+.. _HTML Docs: https://github.com/timotheus/ebaysdk-python/wiki/HTML-Class
+.. _Parallel Docs: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
 
 
 
