@@ -226,9 +226,13 @@ class ebaybase(object):
         "Returns the response DOM (xml.dom.minidom)."
 
         if not self._response_dom:
-            dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))) )
-            self._response_dom = dom.getElementsByTagName(self.verb+'Response')[0]
-
+            dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))))
+    
+            try:
+                self._response_dom = dom.getElementsByTagName(self.verb+'Response')[0]
+            except IndexError:
+                self._response_dom = dom
+    
         return self._response_dom
 
     def response_dict(self):
@@ -353,7 +357,8 @@ class ebaybase(object):
                 err.append('Class: %s' % nodeText(e.getElementsByTagName('ErrorClassification')[0]))
 
             if e.getElementsByTagName('SeverityCode'):
-                err.append('Severity: %s' % nodeText(e.getElementsByTagName('SeverityCode')[0]))
+                severity = nodeText(e.getElementsByTagName('SeverityCode')[0])
+                err.append('Severity: %s' % severity)
 
             if e.getElementsByTagName('ErrorCode'):
                 err.append('Code: %s' % nodeText(e.getElementsByTagName('ErrorCode')[0]))
@@ -390,7 +395,7 @@ class shopping(ebaybase):
     (all others, see API docs)
 
     Doctests:
-    >>> s = shopping()
+    >>> s = shopping(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = s.execute('FindPopularItems', {'QueryKeywords': 'Python'})
     >>> print s.response_obj().Ack
     Success
@@ -434,6 +439,7 @@ class shopping(ebaybase):
 
         # override yaml defaults with args sent to the constructor
         self.set_config('uri', '/shopping')
+        self.set_config('warnings', True)
         self.set_config('https', False)
         self.set_config('siteid', 0)
         self.set_config('response_encoding', 'XML')
@@ -464,6 +470,27 @@ class shopping(ebaybase):
         xml += "</" + self.verb + "Request>"
 
         return xml
+
+    def error(self):
+        "Builds and returns the api error message."
+
+        err = []
+        if self._response_error: 
+            err.append(self._response_error)
+
+        try:
+            if self.response_dict().ack == 'Failure':
+                err.append(self.response_dict().errorMessage.error.message)        
+            elif self.response_dict().ack == 'Warning' and self.api_config.get('warnings'):
+                sys.stderr.write(self.response_dict().errorMessage.error.message)
+
+        except AttributeError:
+            pass
+
+        if len(err) > 0: 
+            return "%s: %s" % (self.verb, ", ".join(err))
+
+        return ""
 
 class html(ebaybase):
     """HTML class for traditional calls.
@@ -608,7 +635,7 @@ class trading(ebaybase):
     (all others, see API docs)
 
     Doctests:
-    >>> t = trading()
+    >>> t = trading(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = t.execute('GetCharities', { 'CharityID': 3897 }) 
     >>> charity_name = ''
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
@@ -658,6 +685,7 @@ class trading(ebaybase):
 
         # override yaml defaults with args sent to the constructor
         self.set_config('uri', '/ws/api.dll')
+        self.set_config('warnings', True)
         self.set_config('https', True)
         self.set_config('siteid', 0)
         self.set_config('response_encoding', 'XML')
@@ -719,7 +747,7 @@ class finding(ebaybase):
     (all others, see API docs)
 
     Doctests:
-    >>> f = finding()
+    >>> f = finding(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
     >>> error = f.error()
     >>> print error
@@ -774,6 +802,7 @@ class finding(ebaybase):
         # override yaml defaults with args sent to the constructor
         self.set_config('uri', '/services/search/FindingService/v1')
         self.set_config('https', False)
+        self.set_config('warnings', True)
         self.set_config('siteid', 'EBAY-US')
         self.set_config('response_encoding', 'XML')
         self.set_config('request_encoding', 'XML')
@@ -816,6 +845,9 @@ class finding(ebaybase):
         try:
             if self.response_dict().ack == 'Failure':
                 err.append(self.response_dict().errorMessage.error.message)        
+            elif self.response_dict().ack == 'Warning' and self.api_config.get('warnings', False):
+                sys.stderr.write(self.response_dict().errorMessage.error.message)
+
         except AttributeError:
             pass
 
@@ -937,11 +969,11 @@ class parallel(object):
     >>> p = parallel()
     >>> r1 = html(parallel=p)
     >>> retval = r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
-    >>> r2 = finding(parallel=p)
+    >>> r2 = finding(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
-    >>> r3 = shopping(parallel=p)
+    >>> r3 = shopping(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r3.execute('FindItemsAdvanced', {'CharityID': 3897})
-    >>> r4 = trading(parallel=p)
+    >>> r4 = trading(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r4.execute('GetCharities', { 'CharityID': 3897 })
     >>> p.wait()
     >>> print p.error()
