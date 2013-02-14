@@ -51,6 +51,7 @@ def run(opts):
 	print "Response dictionary: %s..." % dictstr[:150]
 
 	print api.response_dict().Charity.Name
+	print api.response_content()
 
 if __name__ == "__main__":
     (opts, args) = init_options()

@@ -17,4 +17,6 @@ Dependancy: pycurl
        cd pycurl-7.16.4 
        sudo env ARCHFLAGS="-arch i386" python setup.py install --curl-config=/sw/bin/curl-config
 
-    
+
+Testing the SDK:
+~/> export EBAY_YAML='myebay.yaml'; python setup.py test
