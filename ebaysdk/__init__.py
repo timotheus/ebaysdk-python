@@ -121,6 +121,8 @@ class ebaybase(object):
 
                 return yData.get(domain, {})
 
+        return {}
+        
     def set_config(self, cKey, defaultValue):
         
         # pull for kwargs first
