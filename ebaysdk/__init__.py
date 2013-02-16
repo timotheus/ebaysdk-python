@@ -3,7 +3,11 @@ import string, StringIO, base64
 import yaml, pycurl, urllib
 from types import DictType, ListType
 
-import simplejson as json
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 from xml.dom.minidom import parseString, Node
 from BeautifulSoup import BeautifulStoneSoup
 
