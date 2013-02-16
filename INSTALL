@@ -54,7 +54,23 @@ setuptools, then run it from the command prompt as follows:
 The last step assumes that Python was installed to its default
 location.
 
-3) Install ebaysdk:
+3) Install pycurl:
+
+This could be complicated because pycurl requires libcurl to be
+installed. Since this is a native library, this can't be installed
+using pip or easy_install. Luckily Christoph Gohlke has pre-complied
+many common libraries for Python on Windows, including 32- and 64-bit
+versions.
+
+Simply visit this site:
+ 
+http://www.lfd.uci.edu/~gohlke/pythonlibs/
+
+Then download and install the appropriate version of pycurl for Python
+2.7. Use the amd64 version if you are running 64-bit
+Python. Otherwise, use the win32 version.
+
+4) Install ebaysdk:
 
 Download and extract the zipball, or clone the ebaysdk-python
 repository. Then open the Command Prompt and change to the root
