@@ -28,7 +28,7 @@ Getting Started
 Support
 -------
 
-For developer support regarding the SDK code base please use this project's github issue tracking.
+For developer support regarding the SDK code base please use this project's `Github issue tracking`_.
 
 For developer support regarding the eBay APIs please use the `eBay Developer Forums`_ 
 
@@ -41,3 +41,4 @@ For developer support regarding the eBay APIs please use the `eBay Developer For
 .. _HTML Class: https://github.com/timotheus/ebaysdk-python/wiki/HTML-Class
 .. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
 .. _eBay Developer Forums: https://www.x.com/developers/ebay/forums
+.. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
