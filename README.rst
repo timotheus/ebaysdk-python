@@ -15,14 +15,18 @@ Quick Example::
 Getting Started
 ---------------
 
-* `Trading API Class`_
-* `Finding API Class`_
-* `Shopping API Class`_
-* `HTML Class`_
-* `Parallel Class`_
+SDK Classes
+
+* `Trading API Class`_ - secure, authenticated access to private eBay data.
+* `Finding API Class`_ - access eBay's next generation search capabilities.
+* `Shopping API Class`_ - performance-optimized, lightweight APIs for accessing public eBay data.
+* `HTML Class`_ - generic back-end class the enbles and standardized way to make API calls.
+* `Parallel Class`_ - SDK support for concurrent API calls.
+
+SDK Configuration
+
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
-
 
 
 Support
@@ -30,7 +34,7 @@ Support
 
 For developer support regarding the SDK code base please use this project's `Github issue tracking`_.
 
-For developer support regarding the eBay APIs please use the `eBay Developer Forums`_ 
+For developer support regarding the eBay APIs please use the `eBay Developer Forums`_.
 
 .. _Understanding eBay Credentials: https://github.com/timotheus/ebaysdk-python/wiki/eBay-Credentials
 .. _eBay Developer Site: http://developer.ebay.com/
