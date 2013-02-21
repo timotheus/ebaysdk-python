@@ -1,4 +1,21 @@
-@media all and (max-width: 650px) {
-	
-	.banner_img { width: 100%; }
+.box {
+	border: 1px solid #eee;
+	float: left;
+	width: 150px;
+	height: 200px;
+}
+
+
+@media all and (max-width: 640px) {	
+	.banner_img { 
+		width: 100%; 
+	}
+
+}
+
+@media all and (max-width: 320px) {
+	body {width: 320px;}
+	.banner_img {
+		width: 320px;
+	}
 }
