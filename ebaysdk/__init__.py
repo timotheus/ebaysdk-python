@@ -314,7 +314,6 @@ class ebaybase(object):
             else:
                 e = None
                 for i in range(3):
-                    print "try %d" % i
                     try:
                         self._curl.perform()
                         return self._process_http_request()
