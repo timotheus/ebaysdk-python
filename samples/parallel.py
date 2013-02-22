@@ -32,6 +32,10 @@ def run(opts):
     api1.execute('findItemsAdvanced', {'keywords': 'python'})
     apis.append(api1)
 
+    api4 = html(parallel=p)
+    api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
+    apis.append(api4)
+
     api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
     api2.execute('findItemsAdvanced', {'keywords': 'perl'})
     apis.append(api2)
@@ -39,10 +43,6 @@ def run(opts):
     api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
     api3.execute('findItemsAdvanced', {'keywords': 'php'})
     apis.append(api3)
-
-    api4 = html(parallel=p)
-    api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
-    apis.append(api4)
 
     p.wait()
 
@@ -53,8 +53,7 @@ def run(opts):
 
     for api in apis:
 
-        if api.response_content():
-            print "Call Success: %s in length" % len(api.response_content())
+        print "Call Success: %s in length" % len(api.response_content())
 
         print "Response code: %s" % api.response_code()
         print "Response DOM: %s" % api.response_dom()

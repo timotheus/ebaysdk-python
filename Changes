@@ -1,5 +1,6 @@
 Changes for ebaysdk
 
+- add retry to standard & parallel calls
 - bug fix for SOA class
 - add documentation and sample scripts
 - clean up YAML file

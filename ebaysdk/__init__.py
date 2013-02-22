@@ -1,4 +1,4 @@
-import os, sys, re
+import os, sys, re, traceback
 import string, StringIO, base64
 import yaml, pycurl, urllib
 from types import DictType, ListType
@@ -312,9 +312,18 @@ class ebaybase(object):
                 self.parallel._add_request(self)
                 return None
             else:
-                self._curl.perform()
-                return self._process_http_request()
+                e = None
+                for i in range(3):
+                    print "try %d" % i
+                    try:
+                        self._curl.perform()
+                        return self._process_http_request()
+                    except Exception, e:
+                        continue
+                    break
 
+                raise Exception(e)
+     
         except Exception, e:
             self._response_error = "Exception: %s" % e
             raise Exception("%s" % e)
@@ -325,6 +334,10 @@ class ebaybase(object):
         """
 
         self._response_code   = self._curl.getinfo(pycurl.HTTP_CODE)
+
+        if self._response_code == 0:
+            return None
+
         self._response_status = self._response_header.getvalue().splitlines()[0]
         self._response_reason = re.match( r'^HTTP.+? +\d+ +(.*) *$', self._response_status ).group(1)
         
@@ -1007,31 +1020,76 @@ class parallel(object):
         self._errors = []
         try:
             if timeout > 0:
-                multi = pycurl.CurlMulti()
-                for request in self._requests:
-                    multi.add_handle(request._curl)
-                while True:
-                    while True:
-                        ret, num = multi.perform()
-                        if ret != pycurl.E_CALL_MULTI_PERFORM:
-                            break
-                    if num == 0:
-                        break
-                    if multi.select(timeout) < 0:
-                        raise pycurl.error(pycurl.E_OPERATION_TIMEOUTED)
-                for request in self._requests:
-                    multi.remove_handle(request._curl)
-                    request._response_content = request._process_http_request()
-                    if request._response_content:
-                        request.process()
-                    if request._response_error:
-                        self._errors.append(request._response_error)
-                    self._errors.extend(request._get_resp_body_errors())
-                multi.close()
+                creqs = self._requests
+                for i in range(3): 
+                    failed_calls = self.execute_multi(creqs, timeout)
+
+                    if failed_calls:
+                        creqs = failed_calls
+                        continue            
+                    else:
+                        creqs = []
+
+                    break
+
+                for request in creqs:
+                    self._errors.append("%s" % self._get_curl_http_error(request._curl))
+
             self._requests = []
         except Exception, e:
             self._errors.append("Exception: %s" % e)
+            traceback.print_exc()
             raise Exception("%s" % e)
+
+    def _get_curl_http_error(self, curl, info=None):
+        code = curl.getinfo(pycurl.HTTP_CODE)
+        url = curl.getinfo(pycurl.EFFECTIVE_URL)
+        if code == 403:
+            return 'Server refuses to fullfil the request for: %s' % url
+        else:
+            if info is None:
+                msg = ''
+            else:
+                msg = ': ' + info
+            
+            return '%s : Unable to handle http code %d%s' % (url, code, msg)
+ 
+    def execute_multi(self, calls, timeout):
+
+        multi = pycurl.CurlMulti()
+        for request in calls:
+            multi.add_handle(request._curl)
+        
+        while True:
+            while True:
+                ret, num = multi.perform()
+                if ret != pycurl.E_CALL_MULTI_PERFORM:
+                    break
+            if num == 0:
+                break
+            if multi.select(timeout) < 0:
+                raise pycurl.error(pycurl.E_OPERATION_TIMEOUTED)
+
+        failed_calls = []       
+
+        for request in calls:
+            multi.remove_handle(request._curl)
+
+            request._response_content = request._process_http_request()
+    
+            if request.response_code() == 0:
+                failed_calls.append(request)
+            else:
+                if request._response_content:
+                    request.process()
+                if request._response_error:
+                    self._errors.append(request._response_error)
+                
+                self._errors.extend(request._get_resp_body_errors())
+
+        multi.close()
+
+        return failed_calls
 
     def error(self):
         "builds and returns the api error message"
