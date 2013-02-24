@@ -1,5 +1,6 @@
 Changes for ebaysdk
 
+- handle utf-8 when parsing with BeautifulStoneSoup
 - add retry to standard & parallel calls
 - bug fix for SOA class
 - add documentation and sample scripts
