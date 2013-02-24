@@ -221,7 +221,7 @@ class ebaybase(object):
         "Returns a BeautifulSoup object of the response."
 
         if not self._response_soup:
-            self._response_soup = BeautifulStoneSoup(unicode(self._response_content))
+            self._response_soup = BeautifulStoneSoup(unicode(self._response_content, encoding='utf-8'))
 
         return self._response_soup
 
