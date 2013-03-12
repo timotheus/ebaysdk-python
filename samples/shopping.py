@@ -1,3 +1,10 @@
+
+'''
+© 2012-2013 eBay Software Foundation
+Authored by: Tim Keefer
+Licensed under CDDL 1.0
+'''
+
 import os, sys
 from optparse import OptionParser
 

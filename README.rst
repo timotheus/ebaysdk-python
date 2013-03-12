@@ -36,6 +36,13 @@ For developer support regarding the SDK code base please use this project's `Git
 
 For developer support regarding the eBay APIs please use the `eBay Developer Forums`_.
 
+License
+-------
+
+`COMMON DEVELOPMENT AND DISTRIBUTION LICENSE`_ Version 1.0 (CDDL-1.0)`_
+
+
+.. _COMMON DEVELOPMENT AND DISTRIBUTION LICENSE: http://opensource.org/licenses/CDDL-1.0
 .. _Understanding eBay Credentials: https://github.com/timotheus/ebaysdk-python/wiki/eBay-Credentials
 .. _eBay Developer Site: http://developer.ebay.com/
 .. _YAML Configuration: https://github.com/timotheus/ebaysdk-python/wiki/YAML-Configuration
@@ -46,3 +53,5 @@ For developer support regarding the eBay APIs please use the `eBay Developer For
 .. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
 .. _eBay Developer Forums: https://www.x.com/developers/ebay/forums
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
+
+
