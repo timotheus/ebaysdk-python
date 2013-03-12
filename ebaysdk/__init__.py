@@ -1,3 +1,9 @@
+
+'''
+© 2012-2013 eBay Software Foundation
+Authored by: Tim Keefer
+Licensed under CDDL 1.0
+'''
 import os, sys, re, traceback
 import string, StringIO, base64
 import yaml, pycurl, urllib

@@ -1,4 +1,11 @@
 # encoding: utf-8
+
+'''
+© 2012-2013 eBay Software Foundation
+Authored by: Tim Keefer
+Licensed under CDDL 1.0
+'''
+
 import xml.etree.ElementTree as ET
 import re
 from StringIO import StringIO
