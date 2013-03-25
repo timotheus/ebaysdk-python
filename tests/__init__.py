@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 '''
 © 2012-2013 eBay Software Foundation
