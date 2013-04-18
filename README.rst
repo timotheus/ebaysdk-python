@@ -1,7 +1,7 @@
 Welcome to the python ebaysdk
 =============================
 
-This SDK is a dead-simple, programatic inteface into the eBay APIs. It simplifies development and cuts development time by standardizing calls, response processing, error handling, debugging across the Finding, Shopping, & Trading APIs. 
+This SDK is a programmatic inteface into the eBay APIs. It simplifies development and cuts development time by standardizing calls, response processing, error handling, and debugging across the Finding, Shopping, & Trading APIs. 
 
 Quick Example::
 
