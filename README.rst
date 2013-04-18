@@ -36,12 +36,18 @@ For developer support regarding the SDK code base please use this project's `Git
 
 For developer support regarding the eBay APIs please use the `eBay Developer Forums`_.
 
+Install
+-------
+
+Installation instructions for *nix and windows can be found in the `INSTALL file`_.
+
 License
 -------
 
 `COMMON DEVELOPMENT AND DISTRIBUTION LICENSE`_ Version 1.0 (CDDL-1.0)
 
 
+.. _INSTALL file: https://github.com/timotheus/ebaysdk-python/blob/master/INSTALL
 .. _COMMON DEVELOPMENT AND DISTRIBUTION LICENSE: http://opensource.org/licenses/CDDL-1.0
 .. _Understanding eBay Credentials: https://github.com/timotheus/ebaysdk-python/wiki/eBay-Credentials
 .. _eBay Developer Site: http://developer.ebay.com/
