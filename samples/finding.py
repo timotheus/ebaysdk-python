@@ -5,13 +5,15 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-import os, sys
+import os
+import sys
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 import ebaysdk
 from ebaysdk import finding
+
 
 def init_options():
     usage = "usage: %prog [options]"
@@ -30,8 +32,9 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
+
 def run(opts):
-    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
+    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api.execute('findItemsAdvanced', {'keywords': 'python'})
 
     if api.error():
@@ -46,8 +49,9 @@ def run(opts):
     dictstr = "%s" % api.response_dict()
     print "Response dictionary: %s..." % dictstr[:50]
 
+
 def run2(opts):
-    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
+    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')
 
     if api.error():
@@ -67,4 +71,3 @@ if __name__ == "__main__":
     (opts, args) = init_options()
     run(opts)
     run2(opts)
-
