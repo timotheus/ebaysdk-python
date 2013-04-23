@@ -15,19 +15,20 @@
 # limitations under the License.
 
 from setuptools import setup, find_packages
-import re, os
+import re
+import os
 
 PKG = 'ebaysdk'
 
 # Get the version
 VERSIONFILE = os.path.join(PKG, "_version.py")
 version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-        open(VERSIONFILE, "rt").read(), re.M).group(1)
+                    open(VERSIONFILE, "rt").read(), re.M).group(1)
 
 
-long_desc = """his SDK is a dead-simple, programatic inteface into the eBay 
-APIs. It simplifies development and cuts development time by standerizing 
-calls, response processing, error handling, debugging across the Finding, 
+long_desc = """This SDK is a programatic inteface into the eBay
+APIs. It simplifies development and cuts development time by standerizing
+calls, response processing, error handling, debugging across the Finding,
 Shopping, Merchandising, & Trading APIs. """
 
 setup(
@@ -37,14 +38,14 @@ setup(
     author="Tim Keefer",
     author_email="tkeefer@gmail.com",
     url="https://github.com/timotheus/ebaysdk-python",
-    license="Apache Software License",
+    license="COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
     packages=find_packages(),
     provides=[PKG],
     install_requires=['PyYaml', 'pycurl', 'Beautifulsoup'],
     test_suite='tests',
     long_description=long_desc,
     classifiers=[
-      'Topic :: Internet :: WWW/HTTP',
-      'Intended Audience :: Developers',
+        'Topic :: Internet :: WWW/HTTP',
+        'Intended Audience :: Developers',
     ]
 )

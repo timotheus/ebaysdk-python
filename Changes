@@ -1,5 +1,10 @@
 Changes for ebaysdk
 
+
+- update license in setup.py
+
+0.1.8 Tue Apr 23 15:33:02 PDT 2013
+- push dist to pypi
 - fix deprecation warning in utils.py
 - pep8 cleanup
 - handle utf-8 when parsing with BeautifulStoneSoup
@@ -10,8 +15,6 @@ Changes for ebaysdk
 - YAML values are now overridden by values defined
   when building the object
 - remove silent depedency on simplejson, at least for Python >= 2.6
-
-0.1.8
 - fix bug in html class that allows for POST 
 - refactor and style cleanup
 - added parallel support using the parallel class
