@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- fix deprecation warning in utils.py
+- pep8 cleanup
 - handle utf-8 when parsing with BeautifulStoneSoup
 - add retry to standard & parallel calls
 - bug fix for SOA class
