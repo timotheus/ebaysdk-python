@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 '''
 © 2012-2013 eBay Software Foundation
 Authored by: Tim Keefer
@@ -34,8 +34,14 @@ def init_options():
 
 
 def run(opts):
-    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-    api.execute('findItemsAdvanced', {'keywords': 'python'})
+    api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                  warnings=True)
+
+    api.execute('findItemsAdvanced', {
+        'keywords': 'python',
+        'affiliate': {'trackingId': 1},
+        'sortOrder': 'CountryDescending',
+    })
 
     if api.error():
         raise Exception(api.error())
@@ -47,8 +53,7 @@ def run(opts):
     print "Response DOM: %s" % api.response_dom()
 
     dictstr = "%s" % api.response_dict()
-    print "Response dictionary: %s..." % dictstr[:50]
-
+    print "Response dictionary: %s..." % dictstr[:250]
 
 def run2(opts):
     api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)

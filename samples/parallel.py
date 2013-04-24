@@ -1,17 +1,18 @@
-
+# -*- coding: utf-8 -*-
 '''
 © 2012-2013 eBay Software Foundation
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-import os, sys
+import os
+import sys
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
-import ebaysdk
 from ebaysdk import finding, html, parallel
+
 
 def init_options():
     usage = "usage: %prog [options]"
@@ -30,12 +31,13 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
+
 def run(opts):
 
     p = parallel()
     apis = []
 
-    api1 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
+    api1 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api1.execute('findItemsAdvanced', {'keywords': 'python'})
     apis.append(api1)
 
@@ -43,17 +45,15 @@ def run(opts):
     api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
     apis.append(api4)
 
-    api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
+    api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api2.execute('findItemsAdvanced', {'keywords': 'perl'})
     apis.append(api2)
 
-    api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml) 
+    api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api3.execute('findItemsAdvanced', {'keywords': 'php'})
     apis.append(api3)
 
     p.wait()
-
-    print "Parallel example for SDK version %s" % ebaysdk.get_version()
 
     if p.error():
         raise Exception(p.error())
@@ -71,4 +71,3 @@ def run(opts):
 if __name__ == "__main__":
     (opts, args) = init_options()
     run(opts)
-

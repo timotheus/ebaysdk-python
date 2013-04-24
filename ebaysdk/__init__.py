@@ -205,6 +205,7 @@ class ebaybase(object):
 
         if self._response_content:
             self.process()
+            self.error()
 
         return self
 
@@ -377,44 +378,33 @@ class ebaybase(object):
         if self._resp_body_errors and len(self._resp_body_errors) > 0:
             return self._resp_body_errors
 
-        err = []
+        errors = []
+
         if self.verb is None:
-            return err
+            return errors
+
         dom = self.response_dom()
         if dom is None:
-            return err
+            return errors
 
-        for e in dom.getElementsByTagName("Errors"):
-
-            if e.getElementsByTagName('ErrorClassification'):
-                err.append('Class: %s' % nodeText(e.getElementsByTagName('ErrorClassification')[0]))
-
-            if e.getElementsByTagName('SeverityCode'):
-                severity = nodeText(e.getElementsByTagName('SeverityCode')[0])
-                err.append('Severity: %s' % severity)
-
-            if e.getElementsByTagName('ErrorCode'):
-                err.append('Code: %s' % nodeText(e.getElementsByTagName('ErrorCode')[0]))
-
-            if e.getElementsByTagName('ShortMessage'):
-                err.append('%s ' % nodeText(e.getElementsByTagName('ShortMessage')[0]))
-
-            if e.getElementsByTagName('LongMessage'):
-                err.append('%s ' % nodeText(e.getElementsByTagName('LongMessage')[0]))
-
-        self._resp_body_errors = err
-        return err
+        return []
 
     def error(self):
         "Builds and returns the api error message."
 
-        err = []
+        error_array = []
         if self._response_error:
-            err.append(self._response_error)
-        err.extend(self._get_resp_body_errors())
+            error_array.append(self._response_error)
 
-        if len(err) > 0:
-            return "%s: %s" % (self.verb, ", ".join(err))
+        error_array.extend(self._get_resp_body_errors())
+
+        if len(error_array) > 0:
+            error_string = "%s: %s" % (self.verb, ", ".join(error_array))
+
+            if self.api_config.get('warnings', False):
+                sys.stderr.write(error_string)
+
+            return error_string
 
         return ""
 
@@ -506,26 +496,69 @@ class shopping(ebaybase):
 
         return xml
 
-    def error(self):
-        "Builds and returns the api error message."
+    def _get_resp_body_errors(self):
+        """Parses the response content to pull errors.
 
-        err = []
-        if self._response_error:
-            err.append(self._response_error)
+        Child classes should override this method based on what the errors in the
+        XML response body look like. They can choose to look at the 'ack',
+        'Errors', 'errorMessage' or whatever other fields the service returns.
+        the implementation below is the original code that was part of error()
+        """
 
-        try:
-            if self.response_dict().ack == 'Failure':
-                err.append(self.response_dict().errorMessage.error.message)
-            elif self.response_dict().ack == 'Warning' and self.api_config.get('warnings'):
-                sys.stderr.write(self.response_dict().errorMessage.error.message)
+        if self._resp_body_errors and len(self._resp_body_errors) > 0:
+            return self._resp_body_errors
 
-        except AttributeError:
-            pass
+        errors = []
+        warnings = []
 
-        if len(err) > 0:
-            return "%s: %s" % (self.verb, ", ".join(err))
+        if self.verb is None:
+            return errors
 
-        return ""
+        dom = self.response_dom()
+        if dom is None:
+            return errors
+
+        for e in dom.getElementsByTagName("Errors"):
+            eSeverity = None
+            eClass = None
+            eShortMsg = None
+            eLongMsg = None
+            eCode = None
+
+            if e.getElementsByTagName('SeverityCode'):
+                eSeverity = nodeText(e.getElementsByTagName('SeverityCode')[0])
+
+            if e.getElementsByTagName('ErrorClassification'):
+                eClass = nodeText(e.getElementsByTagName('ErrorClassification')[0])
+
+            if e.getElementsByTagName('ErrorCode'):
+                eCode = nodeText(e.getElementsByTagName('ErrorCode')[0])
+
+            if e.getElementsByTagName('ShortMessage'):
+                eShortMsg = nodeText(e.getElementsByTagName('ShortMessage')[0])
+
+            if e.getElementsByTagName('LongMessage'):
+                eLongMsg = nodeText(e.getElementsByTagName('LongMessage')[0])
+
+            msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
+                % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
+
+            if eSeverity == 'Warning':
+                warnings.append(msg)
+            else:
+                errors.append(msg)
+
+        self._resp_body_warnings = warnings
+        self._resp_body_errors = errors
+
+        if self.api_config['warnings'] and len(warnings) > 0:
+            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+
+        if self.response_dict().Ack == 'Failure':
+            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+            return errors
+
+        return []
 
 
 class html(ebaybase):
@@ -773,6 +806,94 @@ class trading(ebaybase):
         xml += "</" + self.verb + "Request>"
         return xml
 
+    def _get_resp_body_errors(self):
+        """Parses the response content to pull errors.
+
+        Child classes should override this method based on what the errors in the
+        XML response body look like. They can choose to look at the 'ack',
+        'Errors', 'errorMessage' or whatever other fields the service returns.
+        the implementation below is the original code that was part of error()
+        """
+
+        if self._resp_body_errors and len(self._resp_body_errors) > 0:
+            return self._resp_body_errors
+
+        errors = []
+        warnings = []
+
+        if self.verb is None:
+            return errors
+
+        dom = self.response_dom()
+        if dom is None:
+            return errors
+
+        for e in dom.getElementsByTagName("Errors"):
+            eSeverity = None
+            eClass = None
+            eShortMsg = None
+            eLongMsg = None
+            eCode = None
+
+            if e.getElementsByTagName('SeverityCode'):
+                eSeverity = nodeText(e.getElementsByTagName('SeverityCode')[0])
+
+            if e.getElementsByTagName('ErrorClassification'):
+                eClass = nodeText(e.getElementsByTagName('ErrorClassification')[0])
+
+            if e.getElementsByTagName('ErrorCode'):
+                eCode = nodeText(e.getElementsByTagName('ErrorCode')[0])
+
+            if e.getElementsByTagName('ShortMessage'):
+                eShortMsg = nodeText(e.getElementsByTagName('ShortMessage')[0])
+
+            if e.getElementsByTagName('LongMessage'):
+                eLongMsg = nodeText(e.getElementsByTagName('LongMessage')[0])
+
+            msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
+                % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
+
+            if eSeverity == 'Warning':
+                warnings.append(msg)
+            else:
+                errors.append(msg)
+
+        self._resp_body_warnings = warnings
+        self._resp_body_errors = errors
+
+        if self.api_config['warnings'] and len(warnings) > 0:
+            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+
+        if self.response_dict().Ack == 'Failure':
+            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+            return errors
+
+        return []
+
+    def warnings(self):
+        warning_string = ""
+
+        if len(self._resp_body_warnings) > 0:
+            warning_string = "%s: %s" \
+                % (self.verb, ", ".join(self._resp_body_warnings))
+
+        return warning_string
+
+    def error(self):
+        "Builds and returns the api error message."
+
+        error_array = []
+        if self._response_error:
+            error_array.append(self._response_error)
+
+        error_array.extend(self._get_resp_body_errors())
+
+        if len(error_array) > 0:
+            error_string = "%s: %s" % (self.verb, ", ".join(error_array))
+
+            return error_string
+
+        return ""
 
 class finding(ebaybase):
     """Finding API class
@@ -873,24 +994,109 @@ class finding(ebaybase):
 
         return xml
 
-    def error(self):
-        "Builds and returns the api error message."
+    def _process_http_request(self):
+        """Final processing for the HTTP response.
+        Returns the response data.
+        """
 
-        err = []
-        if self._response_error:
-            err.append(self._response_error)
+        self._response_code = self._curl.getinfo(pycurl.HTTP_CODE)
+
+        if self._response_code == 0:
+            return None
+
+        self._response_status = self._response_header.getvalue().splitlines()[0]
+        self._response_reason = re.match(r'^HTTP.+? +\d+ +(.*) *$', self._response_status).group(1)
+        response_data = self._response_body.getvalue()
+
+        self._response_header = None
+        self._response_body = None
+        self._curl.close()
+
+        if self._response_code != 200:
+            self._response_error = "%s" % self._response_reason
+            return response_data
+            #raise Exception('%s' % self._response_reason)
+        else:
+            return response_data
+
+    def _get_resp_body_errors(self):
+        """Parses the response content to pull errors.
+
+        Child classes should override this method based on what the errors in the
+        XML response body look like. They can choose to look at the 'ack',
+        'Errors', 'errorMessage' or whatever other fields the service returns.
+        the implementation below is the original code that was part of error()
+        """
+
+        if self._resp_body_errors and len(self._resp_body_errors) > 0:
+            return self._resp_body_errors
+
+        errors = []
+        warnings = []
+
+        if self.verb is None:
+            return errors
+
+        dom = self.response_dom()
+        if dom is None:
+            return errors
+
+        for e in dom.getElementsByTagName("error"):
+            eSeverity = None
+            eDomain = None
+            eMsg = None
+            eId = None
+
+            if e.getElementsByTagName('severity'):
+                eSeverity = nodeText(e.getElementsByTagName('severity')[0])
+
+            if e.getElementsByTagName('domain'):
+                eDomain = nodeText(e.getElementsByTagName('domain')[0])
+
+            if e.getElementsByTagName('errorId'):
+                eId = nodeText(e.getElementsByTagName('errorId')[0])
+
+            if e.getElementsByTagName('message'):
+                eMsg = nodeText(e.getElementsByTagName('message')[0])
+
+            msg = "Domain: %s, Severity: %s, errorId: %s, %s" \
+                % (eDomain, eSeverity, eId, eMsg)
+
+            if eSeverity == 'Warning':
+                warnings.append(msg)
+            else:
+                errors.append(msg)
+
+        self._resp_body_warnings = warnings
+        self._resp_body_errors = errors
+
+        if self.api_config['warnings'] and len(warnings) > 0:
+            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
-            if self.response_dict().ack == 'Failure':
-                err.append(self.response_dict().errorMessage.error.message)
-            elif self.response_dict().ack == 'Warning' and self.api_config.get('warnings', False):
-                sys.stderr.write(self.response_dict().errorMessage.error.message)
-
+            if self.response_dict().ack == 'Success' and len(errors) > 0:
+                sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+            elif len(errors) > 0:
+                sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+                return errors
         except AttributeError:
             pass
 
-        if len(err) > 0:
-            return "%s: %s" % (self.verb, ", ".join(err))
+        return []
+
+    def error(self):
+        "Builds and returns the api error message."
+
+        error_array = []
+        if self._response_error:
+            error_array.append(self._response_error)
+
+        error_array.extend(self._get_resp_body_errors())
+
+        if len(error_array) > 0:
+            error_string = "%s: %s" % (self.verb, ", ".join(error_array))
+
+            return error_string
 
         return ""
 
@@ -1104,10 +1310,10 @@ class parallel(object):
             else:
                 if request._response_content:
                     request.process()
-                if request._response_error:
-                    self._errors.append(request._response_error)
 
-                self._errors.extend(request._get_resp_body_errors())
+                error_string = request.error()
+                if error_string:
+                    self._errors.append(error_string)
 
         multi.close()
 
