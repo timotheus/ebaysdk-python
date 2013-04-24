@@ -1,6 +1,6 @@
 Changes for ebaysdk
 
-0.1.9
+0.1.9 Wed Apr 24 14:38:40 PDT 2013
 - update error handling
 - add VerifyAddItem sample call
 - update license in setup.py
