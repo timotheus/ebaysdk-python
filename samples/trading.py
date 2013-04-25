@@ -7,6 +7,8 @@ Licensed under CDDL 1.0
 
 import os
 import sys
+import datetime
+import json
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
@@ -39,17 +41,12 @@ def init_options():
     return opts, args
 
 
-def run(opts):
-    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
-                  certid=opts.certid, devid=opts.devid)
+def dump(api, full=False):
 
-    api.execute('GetCharities', {'CharityID': 3897})
+    print "\n"
 
-    # checkfor errors
-    if api.error():
-        raise Exception(api.error())
-
-    print "Trading samples for SDK version %s" % ebaysdk.get_version()
+    if api.warnings():
+        print "Warnings" + api.warnings()
 
     if api.response_content():
         print "Call Success: %s in length" % len(api.response_content())
@@ -57,11 +54,26 @@ def run(opts):
     print "Response code: %s" % api.response_code()
     print "Response DOM: %s" % api.response_dom()
 
-    dictstr = "%s" % api.response_dict()
-    print "Response dictionary: %s..." % dictstr[:150]
+    if full:
+        print api.response_content()
+        print(json.dumps(api.response_dict(), indent=2))
+    else:
+        dictstr = "%s" % api.response_dict()
+        print "Response dictionary: %s..." % dictstr[:150]
+
+
+def run(opts):
+    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                  certid=opts.certid, devid=opts.devid)
+
+    api.execute('GetCharities', {'CharityID': 3897})
+
+    if api.error():
+        raise Exception(api.error())
+
+    dump(api)
 
     print api.response_dict().Charity.Name
-    #print api.response_content()
 
 
 def feedback(opts):
@@ -73,21 +85,17 @@ def feedback(opts):
     if api.error():
         raise Exception(api.error())
 
-    if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
-
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+    dump(api)
 
     if int(api.response_dict().FeedbackScore) > 50:
         print "Doing good!"
     else:
         print "Sell more, buy more.."
 
-    #import pprint
-    #pprint.pprint(api.response_dict())
+def verifyAddItem(opts):
+    """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
+    """
 
-def addItem(opts):
     api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
                   certid=opts.certid, devid=opts.devid, warnings=False)
 
@@ -128,26 +136,67 @@ def addItem(opts):
         }
     }
 
-    print "Trading samples for SDK version %s" % ebaysdk.get_version()
-
     api.execute('VerifyAddItem', myitem)
 
     if api.error():
         raise Exception(api.error())
 
-    print api.warnings()
+    dump(api)
 
-    if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
 
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+def uploadPicture(opts):
 
-    dictstr = "%s" % api.response_dict()
-    print "Response dictionary: %s..." % dictstr[:150]
+    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                  certid=opts.certid, devid=opts.devid, warnings=True)
+
+    pictureData = {
+        "WarningLevel": "High",
+        "ExternalPictureURL": "http://developer.ebay.com/DevZone/XML/docs/images/hp_book_image.jpg",
+        "PictureName": "WorldLeaders"
+    }
+
+    api.execute('UploadSiteHostedPictures', pictureData)
+
+    if api.error():
+        raise Exception(api.error())
+
+    dump(api)
+
+
+def memberMessages(opts):
+
+    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                  certid=opts.certid, devid=opts.devid, warnings=True)
+
+    now = datetime.datetime.now()
+
+    memberData = {
+        "WarningLevel": "High",
+        "MailMessageType": "All",
+        # "MessageStatus": "Unanswered",
+        "StartCreationTime": now - datetime.timedelta(days=60),
+        "EndCreationTime": now,
+        "Pagination": {
+            "EntriesPerPage": "5",
+            "PageNumber": "1"
+        }
+    }
+
+    api.execute('GetMemberMessages', memberData)
+
+    dump(api)
+
+    for m in api.response_dict().MemberMessage.MemberMessageExchange:
+        print "%s: %s" % (m.CreationDate, m.Question.Subject[:50])
+
 
 if __name__ == "__main__":
     (opts, args) = init_options()
+
+    print "Trading API Samples for version %s" % ebaysdk.get_version()
+
     run(opts)
     feedback(opts)
-    addItem(opts)
+    verifyAddItem(opts)
+    uploadPicture(opts)
+    memberMessages(opts)

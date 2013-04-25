@@ -1112,7 +1112,7 @@ class SOAService(ebaybase):
             'request_encoding': 'XML',
             'response_encoding': 'XML',
             'message_protocol': 'SOAP12',
-            'soap_env_str': 'http://www.ebay.com/marketplace/fundraising/v1/services',
+            'soap_env_str': '', # http://www.ebay.com/marketplace/fundraising/v1/services',
         }
 
         ph = None
