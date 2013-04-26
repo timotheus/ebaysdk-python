@@ -496,6 +496,15 @@ class shopping(ebaybase):
 
         return xml
 
+    def warnings(self):
+        warning_string = ""
+
+        if len(self._resp_body_warnings) > 0:
+            warning_string = "%s: %s" \
+                % (self.verb, ", ".join(self._resp_body_warnings))
+
+        return warning_string
+
     def _get_resp_body_errors(self):
         """Parses the response content to pull errors.
 
@@ -1084,6 +1093,15 @@ class finding(ebaybase):
 
         return []
 
+    def warnings(self):
+        warning_string = ""
+
+        if len(self._resp_body_warnings) > 0:
+            warning_string = "%s: %s" \
+                % (self.verb, ", ".join(self._resp_body_warnings))
+
+        return warning_string
+
     def error(self):
         "Builds and returns the api error message."
 
@@ -1101,6 +1119,52 @@ class finding(ebaybase):
         return ""
 
 
+class merchandising(finding):
+    """Shopping API class
+
+    API documentation:
+    http://developer.ebay.com/products/merchandising/
+
+    Supported calls:
+    getMostWatchedItems
+    getSimilarItems
+    getTopSellingProducts
+    (all others, see API docs)
+
+    Doctests:
+    >>> s = merchandising(config_file=os.environ.get('EBAY_YAML'))
+    >>> retval = s.execute('getMostWatchedItems', {'maxResults': 3})
+    >>> print s.response_obj().ack
+    Success
+    >>> print s.error()
+    <BLANKLINE>
+    """
+
+    def __init__(self, **kwargs):
+        """Merchandising class constructor.
+
+        Keyword arguments:
+        domain        -- API endpoint (default: open.api.ebay.com)
+        config_file   -- YAML defaults (default: ebay.yaml)
+        debug         -- debugging enabled (default: False)
+        warnings      -- warnings enabled (default: False)
+        uri           -- API endpoint uri (default: /MerchandisingService)
+        appid         -- eBay application id
+        siteid        -- eBay country site id (default: 0 (US))
+        compatibility -- version number (default: 799)
+        https         -- execute of https (default: True)
+        proxy_host    -- proxy hostname
+        proxy_port    -- proxy port number
+        timeout       -- HTTP request timeout (default: 20)
+        parallel      -- ebaysdk parallel object
+        response_encoding -- API encoding (default: XML)
+        request_encoding  -- API encoding (default: XML)
+        """
+        finding.__init__(self, **kwargs)
+
+        self.api_config['uri'] = '/MerchandisingService'
+
+
 class SOAService(ebaybase):
     "SOAP class."
 
@@ -1112,7 +1176,7 @@ class SOAService(ebaybase):
             'request_encoding': 'XML',
             'response_encoding': 'XML',
             'message_protocol': 'SOAP12',
-            'soap_env_str': '', # http://www.ebay.com/marketplace/fundraising/v1/services',
+            'soap_env_str': '',  # http://www.ebay.com/marketplace/fundraising/v1/services',
         }
 
         ph = None

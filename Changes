@@ -1,6 +1,7 @@
 Changes for ebaysdk
 
 0.1.10
+- added Merchandising API class
 - update SOA class default value
 - add more trading api samples
 
