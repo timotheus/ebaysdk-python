@@ -7,6 +7,7 @@ Licensed under CDDL 1.0
 
 import os
 import sys
+import json
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
@@ -33,6 +34,26 @@ def init_options():
     return opts, args
 
 
+def dump(api, full=False):
+
+    print "\n"
+
+    if api.warnings():
+        print "Warnings" + api.warnings()
+
+    if api.response_content():
+        print "Call Success: %s in length" % len(api.response_content())
+
+    print "Response code: %s" % api.response_code()
+    print "Response DOM: %s" % api.response_dom()
+
+    if full:
+        print api.response_content()
+        print(json.dumps(api.response_dict(), indent=2))
+    else:
+        dictstr = "%s" % api.response_dict()
+        print "Response dictionary: %s..." % dictstr[:150]
+
 def run(opts):
     api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
@@ -56,6 +77,49 @@ def run(opts):
     for item in api.response_dict().ItemArray.Item:
         print item.Title
 
+
+def popularSearches(opts):
+
+    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                   warnings=True)
+
+    choice = True
+
+    while choice:
+        choice = raw_input('Search: ')
+
+        if choice == 'quit':
+            break
+
+        mySearch = {
+            # "CategoryID": " string ",
+            # "IncludeChildCategories": " boolean ",
+            "MaxKeywords": 10,
+            "QueryKeywords": choice,
+        }
+
+        api.execute('FindPopularSearches', mySearch)
+
+        #dump(api, full=True)
+
+        print "Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches
+
+        for term in api.response_dict().PopularSearchResult.AlternativeSearches.split(';')[:3]:
+            api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
+
+            print "Term: %s" % term
+
+            try:
+                for item in api.response_dict().ItemArray.Item:
+                    print item.Title
+            except AttributeError:
+                pass
+
+            # dump(api)
+
+        print "\n"
+
 if __name__ == "__main__":
     (opts, args) = init_options()
     run(opts)
+    popularSearches(opts)
