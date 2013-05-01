@@ -1,6 +1,8 @@
 Changes for ebaysdk
 
 0.1.10
+- added error checking for html() class
+- all class return response_data regardless of the http status code
 - added Merchandising API class
 - update SOA class default value
 - add more trading api samples

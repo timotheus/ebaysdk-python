@@ -362,6 +362,7 @@ class ebaybase(object):
 
         if self._response_code != 200:
             self._response_error = "%s" % self._response_reason
+            return response_data
             #raise Exception('%s' % self._response_reason)
         else:
             return response_data
@@ -584,7 +585,7 @@ class html(ebaybase):
     >>> print title.toxml()
     <title><![CDATA[mytouch slide]]></title>
     >>> print h.error()
-    None
+    <BLANKLINE>
     >>> h = html(method='POST', debug=False)
     >>> retval = h.execute('http://www.ebay.com/')
     >>> print h.response_content() != ''
@@ -635,6 +636,7 @@ class html(ebaybase):
 
         if self._response_content:
             self.process()
+            self.error()
 
         return self
 
@@ -687,10 +689,38 @@ class html(ebaybase):
             self._response_error = "Exception: %s" % e
             raise Exception("%s" % e)
 
+    def _get_resp_body_errors(self):
+        """Parses the response content to pull errors.
+
+        Child classes should override this method based on what the errors in the
+        XML response body look like. They can choose to look at the 'ack',
+        'Errors', 'errorMessage' or whatever other fields the service returns.
+        the implementation below is the original code that was part of error()
+        """
+
+        if self._resp_body_errors and len(self._resp_body_errors) > 0:
+            return self._resp_body_errors
+
+        errors = []
+        if self._response_error:
+            sys.stderr.write("%s: %s" % (self.url, self._response_error))
+            errors.append(self._response_error)
+
+        self._resp_body_errors = errors
+
+        return errors
+
     def error(self):
         "Builds and returns the api error message."
 
-        return self._response_error
+        error_array = []
+        error_array.extend(self._get_resp_body_errors())
+
+        if len(error_array) > 0:
+            error_string = "%s: %s" % (self.url, ", ".join(error_array))
+            return error_string
+
+        return ""
 
     def _build_request_xml(self):
         "Builds and returns the request XML."
