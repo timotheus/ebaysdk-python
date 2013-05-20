@@ -39,6 +39,12 @@ def run(opts):
 
     api.execute('findItemsAdvanced', {
         'keywords': 'python',
+        'itemFilter': [
+            {'name': 'Condition',
+             'value': 'Used'},
+            {'name': 'LocatedIn',
+             'value': 'GB'},
+        ],
         'affiliate': {'trackingId': 1},
         'sortOrder': 'CountryDescending',
     })
