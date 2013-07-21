@@ -61,6 +61,7 @@ def run(opts):
     dictstr = "%s" % api.response_dict()
     print "Response dictionary: %s..." % dictstr[:250]
 
+
 def run2(opts):
     api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
     api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')

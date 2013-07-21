@@ -174,6 +174,7 @@ class ebaybase(object):
         self._response_dict = None
         self._response_error = None
         self._resp_body_errors = []
+        self._resp_codes = []
 
     def do(self, verb, call_data=dict()):
         return self.execute(verb, call_data)
@@ -497,6 +498,9 @@ class shopping(ebaybase):
 
         return xml
 
+    def response_codes(self):
+        return self._resp_codes
+
     def warnings(self):
         warning_string = ""
 
@@ -520,6 +524,7 @@ class shopping(ebaybase):
 
         errors = []
         warnings = []
+        resp_codes = []
 
         if self.verb is None:
             return errors
@@ -543,6 +548,8 @@ class shopping(ebaybase):
 
             if e.getElementsByTagName('ErrorCode'):
                 eCode = nodeText(e.getElementsByTagName('ErrorCode')[0])
+                if int(eCode) not in resp_codes:
+                    resp_codes.append(int(eCode))
 
             if e.getElementsByTagName('ShortMessage'):
                 eShortMsg = nodeText(e.getElementsByTagName('ShortMessage')[0])
@@ -560,6 +567,7 @@ class shopping(ebaybase):
 
         self._resp_body_warnings = warnings
         self._resp_body_errors = errors
+        self._resp_codes = resp_codes
 
         if self.api_config['warnings'] and len(warnings) > 0:
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
@@ -724,12 +732,13 @@ class html(ebaybase):
 
     def _build_request_xml(self):
         "Builds and returns the request XML."
-        self.call_xml = self._to_xml(self.call_data)
 
-        xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += self.call_xml
+        if type(self.call_data) is str:
+            self.call_xml = self.call_data
+        else:
+            self.call_xml = urllib.urlencode(self.call_data)
 
-        return xml
+        return self.call_xml
 
 
 class trading(ebaybase):
@@ -746,7 +755,7 @@ class trading(ebaybase):
 
     Doctests:
     >>> t = trading(config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = t.execute('GetCharities', { 'CharityID': 3897 })
+    >>> retval = t.execute('GetCharities', {'CharityID': 3897})
     >>> charity_name = ''
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
     ...   charity_name = nodeText(t.response_dom().getElementsByTagName('Name')[0])
@@ -754,6 +763,9 @@ class trading(ebaybase):
     Sunshine Kids Foundation
     >>> print t.error()
     <BLANKLINE>
+    >>> retval2 = t.execute('VerifyAddItem', {})
+    >>> print t.response_codes()
+    [10009]
     """
 
     def __init__(self, **kwargs):
@@ -859,6 +871,7 @@ class trading(ebaybase):
 
         errors = []
         warnings = []
+        resp_codes = []
 
         if self.verb is None:
             return errors
@@ -882,6 +895,8 @@ class trading(ebaybase):
 
             if e.getElementsByTagName('ErrorCode'):
                 eCode = nodeText(e.getElementsByTagName('ErrorCode')[0])
+                if int(eCode) not in resp_codes:
+                    resp_codes.append(int(eCode))
 
             if e.getElementsByTagName('ShortMessage'):
                 eShortMsg = nodeText(e.getElementsByTagName('ShortMessage')[0])
@@ -899,6 +914,7 @@ class trading(ebaybase):
 
         self._resp_body_warnings = warnings
         self._resp_body_errors = errors
+        self._resp_codes = resp_codes
 
         if self.api_config['warnings'] and len(warnings) > 0:
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
@@ -917,6 +933,9 @@ class trading(ebaybase):
                 % (self.verb, ", ".join(self._resp_body_warnings))
 
         return warning_string
+
+    def response_codes(self):
+        return self._resp_codes
 
     def error(self):
         "Builds and returns the api error message."
@@ -1072,6 +1091,7 @@ class finding(ebaybase):
 
         errors = []
         warnings = []
+        resp_codes = []
 
         if self.verb is None:
             return errors
@@ -1094,6 +1114,8 @@ class finding(ebaybase):
 
             if e.getElementsByTagName('errorId'):
                 eId = nodeText(e.getElementsByTagName('errorId')[0])
+                if int(eId) not in resp_codes:
+                    resp_codes.append(int(eId))
 
             if e.getElementsByTagName('message'):
                 eMsg = nodeText(e.getElementsByTagName('message')[0])
@@ -1108,6 +1130,7 @@ class finding(ebaybase):
 
         self._resp_body_warnings = warnings
         self._resp_body_errors = errors
+        self._resp_codes = resp_codes
 
         if self.api_config['warnings'] and len(warnings) > 0:
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
@@ -1122,6 +1145,9 @@ class finding(ebaybase):
             pass
 
         return []
+
+    def response_codes(self):
+        return self._resp_codes
 
     def warnings(self):
         warning_string = ""
