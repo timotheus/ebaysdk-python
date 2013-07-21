@@ -1,5 +1,13 @@
 Changes for ebaysdk
 
+- store response error codes in an array when processing response.
+  The reponse error codes can be accessed by the api.response_codes()
+  accessor.
+
+  if api.error():
+      if 37 in api.response_codes():
+          print "Invalid data"
+
 0.1.10
 - added error checking for html() class
 - all class return response_data regardless of the http status code
