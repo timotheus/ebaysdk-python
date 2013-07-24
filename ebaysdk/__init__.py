@@ -403,7 +403,7 @@ class ebaybase(object):
         if len(error_array) > 0:
             error_string = "%s: %s" % (self.verb, ", ".join(error_array))
 
-            if self.api_config.get('warnings', False):
+            if self.api_config['errors']:
                 sys.stderr.write(error_string)
 
             return error_string
@@ -438,7 +438,8 @@ class shopping(ebaybase):
         domain        -- API endpoint (default: open.api.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
-        warnings      -- warnings enabled (default: False)
+        warnings      -- warnings enabled (default: True)
+        errors      -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /shopping)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: 0 (US))
@@ -468,6 +469,7 @@ class shopping(ebaybase):
         # override yaml defaults with args sent to the constructor
         self.set_config('uri', '/shopping')
         self.set_config('warnings', True)
+        self.set_config('errors', True)
         self.set_config('https', False)
         self.set_config('siteid', 0)
         self.set_config('response_encoding', 'XML')
@@ -573,7 +575,8 @@ class shopping(ebaybase):
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         if self.response_dict().Ack == 'Failure':
-            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+            if self.api_config['errors']:
+                sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             return errors
 
         return []
@@ -711,7 +714,8 @@ class html(ebaybase):
 
         errors = []
         if self._response_error:
-            sys.stderr.write("%s: %s" % (self.url, self._response_error))
+            if self.api_config['errors']:
+                sys.stderr.write("%s: %s" % (self.url, self._response_error))
             errors.append(self._response_error)
 
         self._resp_body_errors = errors
@@ -808,6 +812,7 @@ class trading(ebaybase):
         # override yaml defaults with args sent to the constructor
         self.set_config('uri', '/ws/api.dll')
         self.set_config('warnings', True)
+        self.set_config('errors', True)
         self.set_config('https', True)
         self.set_config('siteid', 0)
         self.set_config('response_encoding', 'XML')
@@ -920,7 +925,8 @@ class trading(ebaybase):
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         if self.response_dict().Ack == 'Failure':
-            sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+            if self.api_config['errors']:
+                sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             return errors
 
         return []
@@ -1021,6 +1027,7 @@ class finding(ebaybase):
         self.set_config('uri', '/services/search/FindingService/v1')
         self.set_config('https', False)
         self.set_config('warnings', True)
+        self.set_config('errors', True)
         self.set_config('siteid', 'EBAY-US')
         self.set_config('response_encoding', 'XML')
         self.set_config('request_encoding', 'XML')
@@ -1136,10 +1143,11 @@ class finding(ebaybase):
             sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
-            if self.response_dict().ack == 'Success' and len(errors) > 0:
+            if self.response_dict().ack == 'Success' and len(errors) > 0 and self.api_config['errors']:
                 sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             elif len(errors) > 0:
-                sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+                if self.api_config['errors']:
+                    sys.stderr.write("%s: %s\n\n" % (self.verb, "\n".join(errors)))
                 return errors
         except AttributeError:
             pass
