@@ -767,8 +767,9 @@ class trading(ebaybase):
     Sunshine Kids Foundation
     >>> print t.error()
     <BLANKLINE>
-    >>> retval2 = t.execute('VerifyAddItem', {})
-    >>> print t.response_codes()
+    >>> t2 = trading(errors=False, config_file=os.environ.get('EBAY_YAML'))
+    >>> retval2 = t2.execute('VerifyAddItem', {})
+    >>> print t2.response_codes()
     [10009]
     """
 
