@@ -193,12 +193,12 @@ class ebaybase(object):
 
         return xml
 
-    def execute(self, verb, data):
+    def execute(self, verb, data=None):
         "Executes the HTTP request."
 
         self.verb = verb
 
-        self.call_xml = self._to_xml(data)
+        self.call_xml = self._to_xml(data) if data else ''
         self.prepare()
 
         self._reset()
