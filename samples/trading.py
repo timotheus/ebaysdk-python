@@ -116,7 +116,7 @@ def verifyAddItem(opts):
         "Item": {
             "Title": "Harry Potter and the Philosopher's Stone",
             "Description": "This is the first book in the Harry Potter series. In excellent condition!",
-            "PrimaryCategory": {"CategoryID": "377aaaaaa"},
+            "PrimaryCategory": {"CategoryID": "377"},
             "StartPrice": "1.0",
             "CategoryMappingAllowed": "true",
             "Country": "US",
@@ -255,10 +255,11 @@ def memberMessages(opts):
 
     dump(api)
 
-    for m in api.response_dict().MemberMessage.MemberMessageExchange:
-        print "%s: %s" % (m.CreationDate, m.Question.Subject[:50])
+    if api.response_dict().MemberMessage:
+        for m in api.response_dict().MemberMessage.MemberMessageExchange:
+            print "%s: %s" % (m.CreationDate, m.Question.Subject[:50])
 
-def getuser(opts):
+def getUser(opts):
 
     api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
                   certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid=101)
@@ -305,5 +306,6 @@ if __name__ == "__main__":
     uploadPicture(opts)
     memberMessages(opts)
     categories(opts)
-    getuser(opts)
+    getUser(opts)
+    getTokenStatus(opts)
 
