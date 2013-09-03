@@ -92,6 +92,19 @@ def feedback(opts):
     else:
         print "Sell more, buy more.."
 
+
+def getTokenStatus(opts):
+    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                  certid=opts.certid, devid=opts.devid, warnings=False)
+
+    api.execute('GetTokenStatus')
+
+    if api.error():
+        raise Exception(api.error())
+
+    dump(api)
+
+
 def verifyAddItem(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
     """
