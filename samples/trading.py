@@ -267,6 +267,16 @@ def getUser(opts):
     api.execute('GetUser', {'UserID': 'biddergoat'})
 
     dump(api, full=True)
+    
+
+def getOrders(opts):
+
+    api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                  certid=opts.certid, devid=opts.devid, warnings=True, timeout=20)
+
+    api.execute('GetOrders', {'NumberOfDays': 30})
+
+    dump(api, full=True)
 
 def categories(opts):
 
@@ -307,5 +317,6 @@ if __name__ == "__main__":
     memberMessages(opts)
     categories(opts)
     getUser(opts)
+    getOrders(opts)
     getTokenStatus(opts)
 
