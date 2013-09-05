@@ -825,8 +825,8 @@ class trading(ebaybase):
         self.set_config('appid', None)
         self.set_config('devid', None)
         self.set_config('certid', None)
-        self.set_config('version', '648')
-        self.set_config('compatibility', '648')
+        self.set_config('version', '837')
+        self.set_config('compatibility', '837')
 
     def _build_request_headers(self):
         "Builds HTTP headers"
