@@ -12,7 +12,7 @@ api.sandbox.ebay.com:
 
 # Trading API - https://www.x.com/developers/ebay/products/trading-api
 api.ebay.com:
-    compatability: 719
+    version: 719
     appid: ENTER_YOUR_APPID_HERE
     certid: ENTER_YOUR_CERTID_HERE
     devid: ENTER_YOUR_DEVID_HERE

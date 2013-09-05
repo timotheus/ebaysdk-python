@@ -64,9 +64,6 @@ class ebaybase(object):
     >>> d = { 'list': ['a', 'b', 'c']}
     >>> print dict2xml(d)
     <list>a</list><list>b</list><list>c</list>
-    >>> l = ['a', 'b', 'c']
-    >>> print list2xml(l)
-    []
     """
 
     def __init__(self, debug=False, method='GET',
