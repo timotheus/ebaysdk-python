@@ -5,3 +5,6 @@ ebaysdk.egg-info/
 *.swp
 *.pyc
 .svn
+
+.project
+.pydevproject
