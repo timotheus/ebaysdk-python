@@ -795,6 +795,7 @@ class trading(ebaybase):
         parallel      -- ebaysdk parallel object
         response_encoding -- API encoding (default: XML)
         request_encoding  -- API encoding (default: XML)
+        error_language    -- Language of the error string returned (default: None)
         """
         ebaybase.__init__(self, method='POST', **kwargs)
 
@@ -827,6 +828,7 @@ class trading(ebaybase):
         self.set_config('certid', None)
         self.set_config('version', '837')
         self.set_config('compatibility', '837')
+        self.set_config('error_language', None)
 
     def _build_request_headers(self):
         "Builds HTTP headers"
@@ -859,6 +861,8 @@ class trading(ebaybase):
                 if self.api_config.get('password', None):
                     xml += "<Password>%s</Password>" % self.api_config.get('password', '')
             xml += "</RequesterCredentials>"
+        if self.api_config.get('error_language', None) is not None:
+            xml += "<ErrorLanguage>%s</ErrorLanguage>" % self.api_config.get('error_language', None)
         xml += self.call_xml
         xml += "</" + self.verb + "Request>"
         return xml
