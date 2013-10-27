@@ -28,16 +28,16 @@ def init_options():
 
 def dump(api, full=False):
 
-    print "\n"
+    print("\n")
 
     if api.response_content():
-        print "Response Content: %s in length" % len(api.response_content())
+        print("Response Content: %s in length" % len(api.response_content()))
 
-    print "Response code: %s" % api.response_code()
+    print("Response code: %s" % api.response_code())
     #print "Response soup: %s" % api.response_soup()
 
     if full:
-        print api.response_content()
+        print(api.response_content())
         #print(json.dumps(api.response_dict(), indent=2))
     else:
         pass
