@@ -50,7 +50,7 @@ class object_dict(dict):
         return self.get(item, object_dict()).get('value', value)
 
     def __getstate__(self):
-        return self.items()
+        return list(self.items())
 
     def __setstate__(self, items):
         self.update(items)
@@ -65,7 +65,7 @@ class xml2dict(object):
         # Save attrs and text, hope there will not be a child with same name
         if node.text:
             node_tree.value = node.text
-        for (k,v) in node.attrib.items():
+        for (k,v) in list(node.attrib.items()):
             k,v = self._namespace_split(k, object_dict({'value':v}))
             node_tree[k] = v
         #Save childrens
@@ -130,7 +130,7 @@ class dict2xml:
 
     def dict2xml(self,map):
         if type(map) == object_dict or type(map) == dict:
-            for key, value in map.items():
+            for key, value in list(map.items()):
                 keyo = key
                 if self.attributes:
                     # FIXME: This assumes the attributes do not require encoding
@@ -161,7 +161,7 @@ class dict2xml:
         return self.xml
 
     def encode(self,str1):
-        if type(str1) != str and type(str1) != unicode:
+        if type(str1) != str and type(str1) != str:
             str1 = str(str1)
         if self.encoding:
             str1 = str1.encode(self.encoding)
@@ -186,13 +186,13 @@ def dict_to_xml(d, root_node_name, stream):
    stream.write('\n<' + root_node_name)
    attributes = StringIO() 
    nodes = StringIO()
-   for item in d.items():
+   for item in list(d.items()):
       key, value = item
       if isinstance(value, dict):
          dict_to_xml(value, key, nodes)
       elif isinstance(value, list):
          list_to_xml(key, value, nodes)
-      elif isinstance(value, str) or isinstance(value, unicode):
+      elif isinstance(value, str) or isinstance(value, str):
          attributes.write('\n  %s="%s" ' % (key, value))
       else:
          raise TypeError('sorry, we support only dicts, lists and strings')
@@ -223,15 +223,15 @@ def dict_from_xml(xml):
       # like <list><item/><item/><item/><item/><item/></list>
       for x in l[2]:
          d = list_to_dict(x, False)
-         for k, v in d.iteritems():
-            if not inside_dict.has_key(k):
+         for k, v in d.items():
+            if k not in inside_dict:
                inside_dict[k] = []
 
             inside_dict[k].append(v)
 
       ret = root_dict
       if ignore_root:
-          ret = root_dict.values()[0]
+          ret = list(root_dict.values())[0]
 
       return ret
 

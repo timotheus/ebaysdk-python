@@ -43,23 +43,23 @@ def init_options():
 
 def dump(api, full=False):
 
-    print "\n"
+    print("\n")
 
     if api.warnings():
-        print "Warnings" + api.warnings()
+        print("Warnings" + api.warnings())
 
     if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
+        print("Call Success: %s in length" % len(api.response_content()))
 
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+    print("Response code: %s" % api.response_code())
+    print("Response DOM: %s" % api.response_dom())
 
     if full:
-        print api.response_content()
-        print(json.dumps(api.response_dict(), indent=2))
+        print(api.response_content())
+        print((json.dumps(api.response_dict(), indent=2)))
     else:
         dictstr = "%s" % api.response_dict()
-        print "Response dictionary: %s..." % dictstr[:150]
+        print("Response dictionary: %s..." % dictstr[:150])
 
 
 def run(opts):
@@ -73,7 +73,7 @@ def run(opts):
 
     dump(api)
 
-    print api.response_dict().Charity.Name
+    print(api.response_dict().Charity.Name)
 
 
 def feedback(opts):
@@ -88,9 +88,9 @@ def feedback(opts):
     dump(api)
 
     if int(api.response_dict().FeedbackScore) > 50:
-        print "Doing good!"
+        print("Doing good!")
     else:
-        print "Sell more, buy more.."
+        print("Sell more, buy more..")
 
 
 def getTokenStatus(opts):
@@ -207,11 +207,11 @@ def verifyAddItemErrorCodes(opts):
 
         # traverse the DOM to look for error codes
         for node in api.response_dom().getElementsByTagName('ErrorCode'):
-            print "error code: %s" % ebaysdk.nodeText(node)
+            print("error code: %s" % ebaysdk.nodeText(node))
 
         # check for invalid data - error code 37
         if 37 in api.response_codes():
-            print "Invalid data in request"
+            print("Invalid data in request")
 
 def uploadPicture(opts):
 
@@ -257,7 +257,7 @@ def memberMessages(opts):
 
     if api.response_dict().MemberMessage:
         for m in api.response_dict().MemberMessage.MemberMessageExchange:
-            print "%s: %s" % (m.CreationDate, m.Question.Subject[:50])
+            print("%s: %s" % (m.CreationDate, m.Question.Subject[:50]))
 
 def getUser(opts):
 
@@ -307,7 +307,7 @@ api.execute('GetCategories', {
 if __name__ == "__main__":
     (opts, args) = init_options()
 
-    print "Trading API Samples for version %s" % ebaysdk.get_version()
+    print("Trading API Samples for version %s" % ebaysdk.get_version())
 
     run(opts)
     feedback(opts)
