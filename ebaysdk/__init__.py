@@ -403,7 +403,7 @@ class ebaybase(object):
         if len(error_array) > 0:
             error_string = "%s: %s" % (self.verb, ", ".join(error_array))
 
-            if self.api_config['errors']:
+            if self.api_config.get('errors', True):
                 sys.stderr.write(error_string)
 
             return error_string
