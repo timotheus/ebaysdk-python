@@ -29,7 +29,7 @@ try:
     from bs4 import BeautifulStoneSoup
 except ImportError:
     from BeautifulSoup import BeautifulStoneSoup
-    sys.stderr.write('You are using an old version of BeautifulSoup, upgrade to bs4')
+    sys.stderr.write('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
 
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, object_dict
 
