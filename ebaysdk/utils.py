@@ -8,7 +8,7 @@ Licensed under CDDL 1.0
 
 import xml.etree.ElementTree as ET
 import re
-from io import StringIO
+from io import BytesIO as StringIO
        
 class object_dict(dict):
     """object view of dict, you can 
@@ -423,10 +423,13 @@ def to_string(root, pretty=False):
 
     tree = ET.ElementTree(root)
     fileobj = StringIO()
-    # fileobj.write('<?xml version="1.0" encoding="%s"?>' % encoding)
+    
+    # asdf fileobj.write('<?xml version="1.0" encoding="%s"?>' % encoding)
+    
     if pretty:
         fileobj.write('\n')
-    tree.write(fileobj, 'unicode')
+    
+    tree.write(fileobj, 'utf-8')
     return fileobj.getvalue()
 
 

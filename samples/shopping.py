@@ -10,6 +10,11 @@ import sys
 import json
 from optparse import OptionParser
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 import ebaysdk
@@ -86,6 +91,7 @@ def popularSearches(opts):
     choice = True
 
     while choice:
+
         choice = input('Search: ')
 
         if choice == 'quit':
