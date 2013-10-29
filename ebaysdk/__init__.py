@@ -9,10 +9,14 @@ import os
 import sys
 import re
 import traceback
-import io
 import yaml
 import pycurl
-import urllib.request, urllib.parse, urllib.error
+from io import BytesIO as StringIO
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode 
 
 try:
     import simplejson as json
@@ -309,8 +313,8 @@ class ebaybase(object):
             self._curl.setopt(pycurl.URL, str(request_url))
             self._curl.setopt(pycurl.SSL_VERIFYPEER, 0)
 
-            self._response_header = io.StringIO()
-            self._response_body = io.StringIO()
+            self._response_header = StringIO()
+            self._response_body = StringIO()
 
             self._curl.setopt(pycurl.CONNECTTIMEOUT, self.timeout)
             self._curl.setopt(pycurl.TIMEOUT, self.timeout)
@@ -672,7 +676,7 @@ class html(ebaybase):
 
             request_url = self.url
             if self.call_data and self.method == 'GET':
-                request_url = request_url + '?' + urllib.parse.urlencode(self.call_data)
+                request_url = request_url + '?' + urlencode(self.call_data)
 
             elif self.method == 'POST':
                 request_xml = self._build_request_xml()
@@ -683,8 +687,8 @@ class html(ebaybase):
             self._curl.setopt(pycurl.URL, str(request_url))
             self._curl.setopt(pycurl.SSL_VERIFYPEER, 0)
 
-            self._response_header = io.StringIO()
-            self._response_body = io.StringIO()
+            self._response_header = StringIO()
+            self._response_body = StringIO()
 
             self._curl.setopt(pycurl.CONNECTTIMEOUT, self.timeout)
             self._curl.setopt(pycurl.TIMEOUT, self.timeout)
@@ -748,7 +752,7 @@ class html(ebaybase):
         if type(self.call_data) is str:
             self.call_xml = self.call_data
         else:
-            self.call_xml = urllib.parse.urlencode(self.call_data)
+            self.call_xml = urlencode(self.call_data)
 
         return self.call_xml
 
