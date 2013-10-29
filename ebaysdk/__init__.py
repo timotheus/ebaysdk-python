@@ -24,7 +24,12 @@ except ImportError:
     import json
 
 from xml.dom.minidom import parseString
-from bs4 import BeautifulStoneSoup
+
+try:
+    from bs4 import BeautifulStoneSoup
+except ImportError:
+    from BeautifulSoup import BeautifulStoneSoup
+    sys.stderr.write('You are using an old version of BeautifulSoup, upgrade to bs4')
 
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, object_dict
 
