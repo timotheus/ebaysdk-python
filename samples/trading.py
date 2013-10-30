@@ -9,7 +9,6 @@ import os
 import sys
 import datetime
 import json
-import types
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
@@ -259,7 +258,7 @@ def memberMessages(opts):
     if api.response_dict().MemberMessage:
         messages = api.response_dict().MemberMessage.MemberMessageExchange
 
-        if type(messages) != types.ListType:
+        if type(messages) != list:
                 messages = [ messages ]
 
         for m in messages:
