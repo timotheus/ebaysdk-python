@@ -12,7 +12,9 @@ except:
     import cElementTree as ET # for 2.4
 
 import re
-        
+
+from io import BytesIO
+     
 class object_dict(dict):
     """object view of dict, you can 
     >>> a = object_dict()
@@ -184,8 +186,8 @@ def list_to_xml(name, l, stream):
 def dict_to_xml(d, root_node_name, stream):
    """ Transform a dict into a XML, writing to a stream """
    stream.write('\n<' + root_node_name)
-   attributes = StringIO() 
-   nodes = StringIO()
+   attributes = BytesIO() 
+   nodes = BytesIO()
    for item in list(d.items()):
       key, value = item
       if isinstance(value, dict):

@@ -11,7 +11,8 @@ import re
 import traceback
 import yaml
 import pycurl
-from io import BytesIO as StringIO
+
+from io import BytesIO
 
 try:
     from urllib.parse import urlencode
@@ -318,8 +319,8 @@ class ebaybase(object):
             self._curl.setopt(pycurl.URL, str(request_url))
             self._curl.setopt(pycurl.SSL_VERIFYPEER, 0)
 
-            self._response_header = StringIO()
-            self._response_body = StringIO()
+            self._response_header = BytesIO()
+            self._response_body = BytesIO()
 
             self._curl.setopt(pycurl.CONNECTTIMEOUT, self.timeout)
             self._curl.setopt(pycurl.TIMEOUT, self.timeout)
@@ -692,8 +693,8 @@ class html(ebaybase):
             self._curl.setopt(pycurl.URL, str(request_url))
             self._curl.setopt(pycurl.SSL_VERIFYPEER, 0)
 
-            self._response_header = StringIO()
-            self._response_body = StringIO()
+            self._response_header = BytesIO()
+            self._response_body = BytesIO()
 
             self._curl.setopt(pycurl.CONNECTTIMEOUT, self.timeout)
             self._curl.setopt(pycurl.TIMEOUT, self.timeout)
@@ -994,7 +995,6 @@ class finding(ebaybase):
     >>> error = f.error()
     >>> print(error)
     <BLANKLINE>
-
     >>> if len( error ) <= 0:
     ...   print(f.response_obj().itemSearchURL != '')
     ...   items = f.response_obj().searchResult.item
@@ -1388,7 +1388,7 @@ class parallel(object):
     >>> r3 = shopping(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r3.execute('FindItemsAdvanced', {'CharityID': 3897})
     >>> r4 = trading(parallel=p, config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = r4.execute('GetCharities', { 'CharityID': 3897 })
+    >>> retval = r4.execute('GetUser', {})
     >>> p.wait()
     >>> print(p.error())
     <BLANKLINE>
