@@ -5,4 +5,4 @@
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
-__version__ = "0.1.10"
+__version__ = "0.1.11"
