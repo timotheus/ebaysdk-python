@@ -1,6 +1,7 @@
 Changes for ebaysdk
 
-- add py3 support
+0.1.11
+- added py3 support thanks to Nikolay Derkach
 - store response error codes in an array when processing response.
   The reponse error codes can be accessed by the api.response_codes()
   accessor.
