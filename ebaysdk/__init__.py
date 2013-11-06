@@ -634,8 +634,11 @@ class html(ebaybase):
         timeout       -- HTTP request timeout (default: 20)
         parallel      -- ebaysdk parallel object
         """
-        ebaybase.__init__(self, method=method, **kwargs)
 
+
+        ebaybase.__init__(self, method=method, **kwargs)
+        self.api_config = dict()
+        
     def response_dom(self):
         "Returns the HTTP response dom."
 
