@@ -10,6 +10,11 @@ import sys
 import json
 from optparse import OptionParser
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 import ebaysdk
@@ -36,46 +41,46 @@ def init_options():
 
 def dump(api, full=False):
 
-    print "\n"
+    print("\n")
 
     if api.warnings():
-        print "Warnings" + api.warnings()
+        print("Warnings" + api.warnings())
 
     if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
+        print("Call Success: %s in length" % len(api.response_content()))
 
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+    print("Response code: %s" % api.response_code())
+    print("Response DOM: %s" % api.response_dom())
 
     if full:
-        print api.response_content()
-        print(json.dumps(api.response_dict(), indent=2))
+        print(api.response_content())
+        print((json.dumps(api.response_dict(), indent=2)))
     else:
         dictstr = "%s" % api.response_dict()
-        print "Response dictionary: %s..." % dictstr[:150]
+        print("Response dictionary: %s..." % dictstr[:150])
 
 def run(opts):
     api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
     api.execute('FindPopularItems', {'QueryKeywords': 'Python'})
 
-    print "Shopping samples for SDK version %s" % ebaysdk.get_version()
+    print("Shopping samples for SDK version %s" % ebaysdk.get_version())
 
     if api.error():
         raise Exception(api.error())
 
     if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
+        print("Call Success: %s in length" % len(api.response_content()))
 
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+    print("Response code: %s" % api.response_code())
+    print("Response DOM: %s" % api.response_dom())
 
     dictstr = "%s" % api.response_dict()
-    print "Response dictionary: %s..." % dictstr[:50]
+    print("Response dictionary: %s..." % dictstr[:50])
 
-    print "Matching Titles:"
+    print("Matching Titles:")
     for item in api.response_dict().ItemArray.Item:
-        print item.Title
+        print(item.Title)
 
 
 def popularSearches(opts):
@@ -86,7 +91,8 @@ def popularSearches(opts):
     choice = True
 
     while choice:
-        choice = raw_input('Search: ')
+
+        choice = input('Search: ')
 
         if choice == 'quit':
             break
@@ -102,22 +108,22 @@ def popularSearches(opts):
 
         #dump(api, full=True)
 
-        print "Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches
+        print("Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches)
 
         for term in api.response_dict().PopularSearchResult.AlternativeSearches.split(';')[:3]:
             api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
 
-            print "Term: %s" % term
+            print("Term: %s" % term)
 
             try:
                 for item in api.response_dict().ItemArray.Item:
-                    print item.Title
+                    print(item.Title)
             except AttributeError:
                 pass
 
             # dump(api)
 
-        print "\n"
+        print("\n")
 
 if __name__ == "__main__":
     (opts, args) = init_options()

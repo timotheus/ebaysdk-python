@@ -60,13 +60,13 @@ def run(opts):
 
     for api in apis:
 
-        print "Call Success: %s in length" % len(api.response_content())
+        print("Call Success: %s in length" % len(api.response_content()))
 
-        print "Response code: %s" % api.response_code()
-        print "Response DOM: %s" % api.response_dom()
+        print("Response code: %s" % api.response_code())
+        print("Response DOM: %s" % api.response_dom())
 
         dictstr = "%s" % api.response_dict()
-        print "Response dictionary: %s...\n" % dictstr[:50]
+        print("Response dictionary: %s...\n" % dictstr[:50])
 
 if __name__ == "__main__":
     (opts, args) = init_options()
