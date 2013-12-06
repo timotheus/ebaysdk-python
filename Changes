@@ -1,6 +1,9 @@
 Changes for ebaysdk
 
 0.1.11
+- https://github.com/timotheus/ebaysdk-python/issues/40
+  fix error code datatype issue
+  
 - added py3 support thanks to Nikolay Derkach
 - store response error codes in an array when processing response.
   The reponse error codes can be accessed by the api.response_codes()

@@ -271,7 +271,7 @@ def getUser(opts):
 
     api.execute('GetUser', {'UserID': 'biddergoat'})
 
-    dump(api, full=True)
+    dump(api, full=False)
     
 
 def getOrders(opts):
@@ -281,14 +281,12 @@ def getOrders(opts):
 
     api.execute('GetOrders', {'NumberOfDays': 30})
 
-    dump(api, full=True)
+    dump(api, full=False)
 
 def categories(opts):
 
     api = trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
                   certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid=101)
-
-    now = datetime.datetime.now()
 
     callData = {
         'DetailLevel': 'ReturnAll',
@@ -298,7 +296,7 @@ def categories(opts):
 
     api.execute('GetCategories', callData)
 
-    dump(api, full=True)
+    dump(api, full=False)
 
 '''
 api = trading(domain='api.sandbox.ebay.com')
