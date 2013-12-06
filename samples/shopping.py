@@ -125,7 +125,17 @@ def popularSearches(opts):
 
         print("\n")
 
+def categoryInfo(opts):
+
+    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                   warnings=True)
+
+    api.execute('getCategoryInfo', {"CategoryID": 3410})
+
+    dump(api, full=False)
+
 if __name__ == "__main__":
     (opts, args) = init_options()
     run(opts)
     popularSearches(opts)
+    categoryInfo(opts)
