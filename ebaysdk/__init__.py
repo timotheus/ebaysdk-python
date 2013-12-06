@@ -25,6 +25,7 @@ except ImportError:
     import json
 
 from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
 
 try:
     from bs4 import BeautifulStoneSoup
@@ -258,10 +259,13 @@ class ebaybase(object):
         "Returns the response DOM (xml.dom.minidom)."
 
         if not self._response_dom:
-            dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))))
-
+            dom = None
             try:
+                dom = parseString((self._response_content or ("<%sResponse></%sResponse>" % (self.verb, self.verb))))
                 self._response_dom = dom.getElementsByTagName(self.verb+'Response')[0]
+
+            except ExpatError as e:
+                raise Exception("Invalid Verb: %s (%s)" % (self.verb, e))
             except IndexError:
                 self._response_dom = dom
 
@@ -567,9 +571,12 @@ class shopping(ebaybase):
                 eClass = nodeText(e.getElementsByTagName('ErrorClassification')[0])
 
             if e.getElementsByTagName('ErrorCode'):
-                eCode = nodeText(e.getElementsByTagName('ErrorCode')[0])
-                if int(eCode) not in resp_codes:
-                    resp_codes.append(int(eCode))
+                eCode = float(nodeText(e.getElementsByTagName('ErrorCode')[0]))
+                if eCode.is_integer():
+                    eCode = int(eCode)
+
+                if eCode not in resp_codes:
+                    resp_codes.append(eCode)
 
             if e.getElementsByTagName('ShortMessage'):
                 eShortMsg = nodeText(e.getElementsByTagName('ShortMessage')[0])
