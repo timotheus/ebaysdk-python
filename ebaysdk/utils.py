@@ -13,7 +13,7 @@ import sys
 from io import BytesIO
 
 class object_dict(dict):
-    """object view of dict, you can 
+    """object view of dict, you can
     >>> a = object_dict()
     >>> a.fish = 'fish'
     >>> a['fish']
@@ -32,7 +32,7 @@ class object_dict(dict):
         dict.__init__(self, initd)
 
     def __getattr__(self, item):
-        try:        
+        try:
             d = self.__getitem__(item)
         except KeyError:
             return None
@@ -41,9 +41,9 @@ class object_dict(dict):
             return d['value']
         else:
             return d
-    
+
         # if value is the only key in object, you can omit it
-            
+
     def __setattr__(self, item, value):
         self.__setitem__(item, value)
 
@@ -78,8 +78,8 @@ class xml2dict(object):
             old = node_tree[tag]
             if not isinstance(old, list):
                 node_tree.pop(tag)
-                node_tree[tag] = [old] # multi times, so change old dict to a list       
-            node_tree[tag].append(tree) # add the new one      
+                node_tree[tag] = [old] # multi times, so change old dict to a list
+            node_tree[tag].append(tree) # add the new one
 
         return node_tree
 
@@ -91,14 +91,14 @@ class xml2dict(object):
         """
         result = re.compile("\{(.*)\}(.*)").search(tag)
         if result:
-            value.namespace, tag = result.groups()    
+            value.namespace, tag = result.groups()
 
         return (tag,value)
 
     def parse(self, file):
         """parse a xml file to a dict"""
         f = open(file, 'r')
-        return self.fromstring(f.read()) 
+        return self.fromstring(f.read())
 
     def fromstring(self, s):
         """parse a string"""
@@ -308,6 +308,14 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
     assert not isinstance(dictitem, list)
 
     if isinstance(dictitem, dict):
+        # special case of attrs and text
+        if '@attrs' in dictitem.keys():
+            attrs = dictitem.pop('@attrs')
+            for key, value in attrs.iteritems():
+                parent.set(key, value) # TODO: will fail if attrs is not a dict
+        if '#text' in dictitem.keys():
+            text = dictitem.pop('#text')
+            parent.text = str(text)
         for (tag, child) in sorted(dictitem.items()):
             if isinstance(child, list):
                 # iterate through the array and convert
@@ -425,12 +433,12 @@ def to_string(root, pretty=False):
 
     tree = ET.ElementTree(root)
     fileobj = BytesIO()
-    
+
     # asdf fileobj.write('<?xml version="1.0" encoding="%s"?>' % encoding)
-    
+
     if pretty:
         fileobj.write('\n')
-    
+
     tree.write(fileobj, 'utf-8')
     return fileobj.getvalue()
 
