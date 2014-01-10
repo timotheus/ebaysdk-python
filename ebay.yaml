@@ -27,3 +27,8 @@ svcs.ebay.com:
 open.api.ebay.com:
     appid: ENTER_YOUR_APPID_HERE
     version: 671
+
+    # Optional affiliate tracking
+    # http://developer.ebay.com/DevZone/shopping/docs/Concepts/ShoppingAPI_FormatOverview.html#StandardURLParameters
+    trackingid: ENTER_YOUR_TRACKINGID_HERE
+    trackingpartnercode: ENTER_YOUR_PARTNERCODE_HERE 

@@ -130,7 +130,20 @@ def categoryInfo(opts):
     api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
 
-    api.execute('getCategoryInfo', {"CategoryID": 3410})
+    api.execute('GetCategoryInfo', {"CategoryID": 3410})
+
+    dump(api, full=False)
+
+def with_affiliate_info(opts):
+    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                   warnings=True, trackingid=1234, trackingpartnercode=9)
+
+    mySearch = {    
+        "MaxKeywords": 10,
+        "QueryKeywords": 'shirt',
+    }
+
+    api.execute('FindPopularSearches', mySearch)
 
     dump(api, full=False)
 
@@ -139,3 +152,4 @@ if __name__ == "__main__":
     run(opts)
     popularSearches(opts)
     categoryInfo(opts)
+    with_affiliate_info(opts)

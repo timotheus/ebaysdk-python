@@ -1,6 +1,7 @@
 Changes for ebaysdk
 
 0.1.11
+- Add affiliate headers to the Shopping API back-end
 - https://github.com/timotheus/ebaysdk-python/issues/40
   fix datatype issue with error codes from the shopping API
   

@@ -461,7 +461,7 @@ class shopping(ebaybase):
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
         warnings      -- warnings enabled (default: True)
-        errors      -- errors enabled (default: True)
+        errors        -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /shopping)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: 0 (US))
@@ -471,8 +471,14 @@ class shopping(ebaybase):
         proxy_port    -- proxy port number
         timeout       -- HTTP request timeout (default: 20)
         parallel      -- ebaysdk parallel object
-        response_encoding -- API encoding (default: XML)
-        request_encoding  -- API encoding (default: XML)
+        trackingid    -- ID to identify you to your tracking partner
+        trackingpartnercode -- third party who is your tracking partner
+        response_encoding   -- API encoding (default: XML)
+        request_encoding    -- API encoding (default: XML)
+
+        More affiliate tracking info:
+        http://developer.ebay.com/DevZone/shopping/docs/Concepts/ShoppingAPI_FormatOverview.html#StandardURLParameters
+
         """
         ebaybase.__init__(self, method='POST', **kwargs)
 
@@ -500,12 +506,14 @@ class shopping(ebaybase):
         self.set_config('proxy_port', None)
         self.set_config('appid', None)
         self.set_config('version', '799')
+        self.set_config('trackingid', None)
+        self.set_config('trackingpartnercode', None)
 
         if self.api_config['https'] and self.debug:
             print("HTTPS is not supported on the Shopping API.")
 
     def _build_request_headers(self):
-        return {
+        headers = {
             "X-EBAY-API-VERSION": self.api_config.get('version', ''),
             "X-EBAY-API-APP-ID":  self.api_config.get('appid', ''),
             "X-EBAY-API-SITEID":  self.api_config.get('siteid', ''),
@@ -513,6 +521,18 @@ class shopping(ebaybase):
             "X-EBAY-API-REQUEST-ENCODING": "XML",
             "Content-Type": "text/xml"
         }
+
+        if self.api_config.get('trackingid', None):
+            headers.update({
+                "X-EBAY-API-TRACKING-ID": self.api_config.get('trackingid', '')
+            })
+
+        if self.api_config.get('trackingpartnercode', None):
+            headers.update({
+                "X-EBAY-API-TRACKING-PARTNER-CODE": self.api_config.get('trackingpartnercode', '')
+            })
+
+        return headers
 
     def _build_request_xml(self):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
