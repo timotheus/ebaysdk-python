@@ -151,14 +151,16 @@ def using_attributes(opts):
     api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
 
-    api.execute('FindProducts', {"ProductID": {'@attrs': {'type': 'ISBN'}, '#text': '0596154488'}})
+    api.execute('FindProducts', {
+        "ProductID": {'@attrs': {'type': 'ISBN'}, 
+                      '#text': '0596154488'}})
 
     dump(api, full=False)
 
 if __name__ == "__main__":
     (opts, args) = init_options()
-    #run(opts)
-    #popularSearches(opts)
-    #categoryInfo(opts)
-    #with_affiliate_info(opts)
+    run(opts)
+    popularSearches(opts)
+    categoryInfo(opts)
+    with_affiliate_info(opts)
     using_attributes(opts)
