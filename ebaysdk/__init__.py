@@ -1417,8 +1417,6 @@ class parallel(object):
     >>> retval = r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
     >>> r3 = shopping(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r3.execute('FindItemsAdvanced', {'CharityID': 3897})
-    >>> r4 = trading(parallel=p, config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = r4.execute('GetUser', {})
     >>> p.wait()
     >>> print(p.error())
     <BLANKLINE>
@@ -1427,8 +1425,6 @@ class parallel(object):
     >>> print(r2.response_dict().ack)
     Success
     >>> print(r3.response_obj().Ack)
-    Success
-    >>> print(r4.response_obj().Ack)
     Success
     """
 
