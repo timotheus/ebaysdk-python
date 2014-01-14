@@ -516,7 +516,7 @@ class shopping(ebaybase):
         headers = {
             "X-EBAY-API-VERSION": self.api_config.get('version', ''),
             "X-EBAY-API-APP-ID":  self.api_config.get('appid', ''),
-            "X-EBAY-API-SITEID":  self.api_config.get('siteid', ''),
+            "X-EBAY-API-SITE-ID":  self.api_config.get('siteid', ''),
             "X-EBAY-API-CALL-NAME": self.verb,
             "X-EBAY-API-REQUEST-ENCODING": "XML",
             "Content-Type": "text/xml"
