@@ -23,7 +23,7 @@ class Connection(BaseConnection):
     SOAP support. FindItemServiceNextGen works fine with standard XML
     and lets avoid all of the ugliness associated with SOAP.
 
-    >>> from ebaysdk2.shopping import Connection as Shopping 
+    >>> from ebaysdk.shopping import Connection as Shopping 
     >>> s = Shopping(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = s.execute('FindPopularItems', {'QueryKeywords': 'Python'})
     >>> nodes = s.response_dom().getElementsByTagName('ItemID')
