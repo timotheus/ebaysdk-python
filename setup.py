@@ -21,7 +21,7 @@ import os
 PKG = 'ebaysdk'
 
 # Get the version
-VERSIONFILE = os.path.join(PKG, "_version.py")
+VERSIONFILE = os.path.join(PKG, "__init__.py")
 version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                     open(VERSIONFILE, "rt").read(), re.M).group(1)
 

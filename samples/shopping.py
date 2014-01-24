@@ -7,7 +7,6 @@ Licensed under CDDL 1.0
 
 import os
 import sys
-import json
 from optparse import OptionParser
 
 try:
@@ -17,8 +16,11 @@ except NameError:
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
+from common import dump
+
 import ebaysdk
-from ebaysdk import shopping
+from ebaysdk.exception import ConnectionError
+from ebaysdk.shopping import Connection as Shopping
 
 
 def init_options():
@@ -38,55 +40,37 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
-
-def dump(api, full=False):
-
-    print("\n")
-
-    if api.warnings():
-        print("Warnings" + api.warnings())
-
-    if api.response_content():
-        print("Call Success: %s in length" % len(api.response_content()))
-
-    print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
-
-    if full:
-        print(api.response_content())
-        print((json.dumps(api.response_dict(), indent=2)))
-    else:
-        dictstr = "%s" % api.response_dict()
-        print("Response dictionary: %s..." % dictstr[:150])
-
 def run(opts):
-    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
-    api.execute('FindPopularItems', {'QueryKeywords': 'Python'})
 
     print("Shopping samples for SDK version %s" % ebaysdk.get_version())
 
-    if api.error():
-        raise Exception(api.error())
+    try:
+        api.execute('FindPopularItems', {'QueryKeywords': 'Python'})
 
-    if api.response_content():
-        print("Call Success: %s in length" % len(api.response_content()))
+        if api.response_content():
+            print("Call Success: %s in length" % len(api.response_content()))
 
-    print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
+        print("Response code: %s" % api.response_code())
+        print("Response DOM: %s" % api.response_dom())
 
-    dictstr = "%s" % api.response_dict()
-    print("Response dictionary: %s..." % dictstr[:50])
+        dictstr = "%s" % api.response_dict()
+        print("Response dictionary: %s..." % dictstr[:50])
 
-    print("Matching Titles:")
-    for item in api.response_dict().ItemArray.Item:
-        print(item.Title)
+        print("Matching Titles:")
+        for item in api.response_dict().ItemArray.Item:
+            print(item.Title)
+
+    except ConnectionError as e:
+        print e 
 
 
 def popularSearches(opts):
 
-    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
+
 
     choice = True
 
@@ -104,58 +88,73 @@ def popularSearches(opts):
             "QueryKeywords": choice,
         }
 
-        api.execute('FindPopularSearches', mySearch)
+        try:
+            api.execute('FindPopularSearches', mySearch)
 
-        #dump(api, full=True)
+            #dump(api, full=True)
 
-        print("Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches)
+            print("Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches)
 
-        for term in api.response_dict().PopularSearchResult.AlternativeSearches.split(';')[:3]:
-            api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
+            for term in api.response_dict().PopularSearchResult.AlternativeSearches.split(';')[:3]:
+                api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
 
-            print("Term: %s" % term)
+                print("Term: %s" % term)
 
-            try:
-                for item in api.response_dict().ItemArray.Item:
-                    print(item.Title)
-            except AttributeError:
-                pass
+                try:
+                    for item in api.response_dict().ItemArray.Item:
+                        print(item.Title)
+                except AttributeError:
+                    pass
 
-            # dump(api)
+                # dump(api)
 
-        print("\n")
+            print("\n")
+        except ConnectionError as e:
+            print e
 
 def categoryInfo(opts):
 
-    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                   warnings=True)
+    try:
+        api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                       warnings=True)
 
-    api.execute('GetCategoryInfo', {"CategoryID": 3410})
-
-    dump(api, full=False)
+        api.execute('GetCategoryInfo', {"CategoryID": 3410})
+        dump(api, full=False)
+    
+    except ConnectionError as e:
+        print e
 
 def with_affiliate_info(opts):
-    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                   warnings=True, trackingid=1234, trackingpartnercode=9)
+    try:
+        api = Shopping(debug=opts.debug, appid=opts.appid,
+                       config_file=opts.yaml, warnings=True,
+                       trackingid=1234, trackingpartnercode=9)
 
-    mySearch = {    
-        "MaxKeywords": 10,
-        "QueryKeywords": 'shirt',
-    }
+        mySearch = {    
+            "MaxKeywords": 10,
+            "QueryKeywords": 'shirt',
+        }
 
-    api.execute('FindPopularSearches', mySearch)
+        api.execute('FindPopularSearches', mySearch)
+        dump(api, full=True)
 
-    dump(api, full=False)
+    except ConnectionError as e:
+        print e
 
 def using_attributes(opts):
-    api = shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                   warnings=True)
 
-    api.execute('FindProducts', {
-        "ProductID": {'@attrs': {'type': 'ISBN'}, 
-                      '#text': '0596154488'}})
+    try:
+        api = Shopping(debug=opts.debug, appid=opts.appid,
+                       config_file=opts.yaml, warnings=True)
 
-    dump(api, full=False)
+        api.execute('FindProducts', {
+            "ProductID": {'@attrs': {'type': 'ISBN'}, 
+                          '#text': '0596154488'}})
+
+        dump(api, full=False)
+
+    except ConnectionError as e:
+        print e
 
 if __name__ == "__main__":
     (opts, args) = init_options()

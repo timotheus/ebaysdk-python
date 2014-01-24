@@ -11,9 +11,11 @@ from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
-import ebaysdk
-from ebaysdk import finding
+from common import dump
 
+import ebaysdk
+from ebaysdk.finding import Connection as finding
+from ebaysdk.exception import ConnectionError
 
 def init_options():
     usage = "usage: %prog [options]"
@@ -34,49 +36,40 @@ def init_options():
 
 
 def run(opts):
-    api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                  warnings=True)
 
-    api.execute('findItemsAdvanced', {
-        'keywords': 'python',
-        'itemFilter': [
-            {'name': 'Condition',
-             'value': 'Used'},
-            {'name': 'LocatedIn',
-             'value': 'GB'},
-        ],
-        'affiliate': {'trackingId': 1},
-        'sortOrder': 'CountryDescending',
-    })
+    try:
+        api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid,
+                      config_file=opts.yaml, warnings=True)
 
-    if api.error():
-        raise Exception(api.error())
+        api.execute('findItemsAdvanced', {
+            'keywords': 'python',
+            'itemFilter': [
+                {'name': 'Condition',
+                 'value': 'Used'},
+                {'name': 'LocatedIn',
+                 'value': 'GB'},
+            ],
+            'affiliate': {'trackingId': 1},
+            'sortOrder': 'CountryDescending',
+        })
 
-    if api.response_content():
-        print("Call Success: %s in length" % len(api.response_content()))
+        dump(api)
 
-    print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
+    except ConnectionError as e:
+        print e
 
-    dictstr = "%s" % api.response_dict()
-    print("Response dictionary: %s..." % dictstr[:250])
 
 
 def run2(opts):
-    api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-    api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')
+    try:
+        api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')
+    
+        dump(api)
 
-    if api.error():
-        raise Exception(api.error())
+    except ConnectionError as e:
+        print e
 
-    if api.response_content():
-        print("Call Success: %s in length" % len(api.response_content()))
-
-    print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
-
-    dictstr = "%s" % api.response_dict()
-    print("Response dictionary: %s..." % dictstr[:50])
 
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())
