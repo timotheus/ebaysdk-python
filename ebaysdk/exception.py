@@ -5,4 +5,9 @@
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
-__version__ = "0.1.11"
+
+class ConnectionError(Exception):
+    pass
+
+class ConnectionResponseError(Exception):
+    pass

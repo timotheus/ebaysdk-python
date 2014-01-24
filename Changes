@@ -1,5 +1,8 @@
 Changes for ebaysdk
 
+1.0.0
+- Major refactor
+
 0.1.11
 - Add affiliate headers to the Shopping API back-end
 - https://github.com/timotheus/ebaysdk-python/issues/40
