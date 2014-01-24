@@ -10,6 +10,7 @@ import unittest
 import doctest
 import ebaysdk.utils
 import ebaysdk.config
+import ebaysdk.http
 import ebaysdk.connection
 import ebaysdk.finding
 import ebaysdk.shopping
@@ -24,6 +25,7 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.http))
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))

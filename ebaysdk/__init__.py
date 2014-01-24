@@ -78,4 +78,9 @@ def finding(*args, **kwargs):
 
 def merchandising(*args, **kwargs):
     from ebaysdk.merchandising import Connection as Merchandising
-    return Merchandising(*args, **kwargs)   
+    return Merchandising(*args, **kwargs)
+
+def html(*args, **kwargs):
+    from ebaysdk.http import Connection as HTTP
+    return HTTP(*args, **kwargs)
+
