@@ -17,10 +17,12 @@ import ebaysdk.shopping
 import ebaysdk.trading
 import ebaysdk.merchandising
 import ebaysdk.soa.finditem
+import ebaysdk.parallel
 
 def getTestSuite():
     suite = unittest.TestSuite()
 
+    suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
     suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
