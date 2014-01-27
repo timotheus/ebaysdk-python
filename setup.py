@@ -41,11 +41,11 @@ setup(
     license="COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
     packages=find_packages(),
     provides=[PKG],
-    install_requires=['PyYaml', 'pycurl', 'beautifulsoup4'],
+    install_requires=['PyYaml', 'requests', 'beautifulsoup4'],
     test_suite='tests',
     long_description=long_desc,
     classifiers=[
         'Topic :: Internet :: WWW/HTTP',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Developere',
     ]
 )
