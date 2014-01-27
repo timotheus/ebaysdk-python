@@ -84,3 +84,6 @@ def html(*args, **kwargs):
     from ebaysdk.http import Connection as HTTP
     return HTTP(*args, **kwargs)
 
+def parallel(*args, **kwargs):
+    from ebaysdk.parallel import Parallel
+    return Parallel(*args, **kwargs)

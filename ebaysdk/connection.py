@@ -75,6 +75,8 @@ class BaseConnection(object):
         self.session.mount('http://', HTTPAdapter(max_retries=3))
         self.session.mount('https://', HTTPAdapter(max_retries=3))
 
+        self.parallel = parallel
+
         self._reset()
 
     def debug_callback(self, debug_type, debug_message):
@@ -112,8 +114,10 @@ class BaseConnection(object):
         self._reset()
         self.build_request(verb, data)
         self.execute_request()        
-        self.process_response()
-        self.error_check()
+
+        if self.response:
+            self.process_response()
+            self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))
         
@@ -142,13 +146,16 @@ class BaseConnection(object):
 
         self.request = request.prepare()
 
-
     def execute_request(self):
 
         log.debug("REQUEST (%s): %s %s" \
             % (self._request_id, self.request.method, self.request.url))
         log.debug('headers=%s' % self.request.headers)
         log.debug('body=%s' % self.request.body)
+
+        if self.parallel:
+            self.parallel._add_request(self)
+            return None
 
         self.response = self.session.send(self.request,
             verify=False,

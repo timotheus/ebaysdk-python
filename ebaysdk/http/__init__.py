@@ -6,7 +6,6 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-import os
 import uuid
 import time
 
@@ -23,7 +22,7 @@ from ebaysdk import log, UserAgent
 from ebaysdk.connection import BaseConnection
 from ebaysdk.exception import ConnectionResponseError
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml, xml2dict
+from ebaysdk.utils import getNodeText, xml2dict
 
 class Connection(BaseConnection):
     """HTML class for traditional calls.
@@ -98,7 +97,12 @@ class Connection(BaseConnection):
 
         self._reset()
         self.build_request(url, data, headers)
-        self.execute_request()        
+        self.execute_request()
+
+        if self.parallel:
+            self.parallel._add_request(self)
+            return None        
+        
         self.process_response()
         self.error_check()
 
