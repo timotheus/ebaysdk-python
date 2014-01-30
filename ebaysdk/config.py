@@ -71,24 +71,24 @@ class Config(object):
         return self.config_file_used
 
     def get(self, cKey, defaultValue=None):
-        log.debug('get: %s=%s' % (cKey, self.values.get(cKey, defaultValue)))
+        #log.debug('get: %s=%s' % (cKey, self.values.get(cKey, defaultValue)))
         return self.values.get(cKey, defaultValue)
 
     def set(self, cKey, defaultValue, force=False):
         
         if force:
-            log.debug('set (force): %s=%s' % (cKey, defaultValue))
+            #log.debug('set (force): %s=%s' % (cKey, defaultValue))
             self.values.update({cKey: defaultValue})
                     
         elif cKey in self.connection_kwargs and self.connection_kwargs[cKey] is not None:
-            log.debug('set: %s=%s' % (cKey, self.connection_kwargs[cKey]))
+            #log.debug('set: %s=%s' % (cKey, self.connection_kwargs[cKey]))
             self.values.update({cKey: self.connection_kwargs[cKey]})
 
         # otherwise, use yaml default and then fall back to
         # the default set in the __init__()
         else:
             if not cKey in self.values:
-                log.debug('set: %s=%s' % (cKey, defaultValue))
+                #log.debug('set: %s=%s' % (cKey, defaultValue))
                 self.values.update({cKey: defaultValue})
             else:
                 pass
