@@ -59,7 +59,7 @@ class Config(object):
             if os.path.exists(myfile):
                 self.config_file_used=myfile
 
-                fhandle = open(self.config_file, "r")
+                fhandle = open(myfile, "r")
                 dataobj = yaml.load(fhandle.read())
 
                 for k, val in dataobj.get(self.domain, {}).iteritems():
