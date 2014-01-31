@@ -6,11 +6,70 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-import xml.etree.ElementTree as ET
-import re
-import sys
+try:
+    import xml.etree.ElementTree as ET
+except:
+    import cElementTree as ET # for 2.4
 
+import re
 from io import BytesIO
+
+def to_xml(data):
+    "Converts a list or dictionary to XML and returns it."
+
+    xml = ''
+
+    if type(data) == dict:
+        xml = dict2xml(data)
+    elif type(data) == list:
+        xml = list2xml(data)
+    else:
+        xml = data
+
+    return xml
+
+def getValue(response_dict, *args, **kwargs):
+    args_a = [w for w in args]
+    first = args_a[0]
+    args_a.remove(first)
+
+    h = kwargs.get('mydict', {})
+    if h:
+        h = h.get(first, {})
+    else:
+        h = response_dict.get(first, {})
+
+    if len(args) == 1:
+        try:
+            return h.get('value', None)
+        except:
+            return h
+
+    last = args_a.pop()
+
+    for a in args_a:
+        h = h.get(a, {})
+
+    h = h.get(last, {})
+
+    try:
+        return h.get('value', None)
+    except:
+        return h
+
+def getNodeText(node):
+    "Returns the node's text string."
+
+    rc = []
+
+    if hasattr(node, 'childNodes'):
+        for cn in node.childNodes:
+            if cn.nodeType == cn.TEXT_NODE:
+                rc.append(cn.data)
+            elif cn.nodeType == cn.CDATA_SECTION_NODE:
+                rc.append(cn.data)
+
+    return ''.join(rc)
 
 class object_dict(dict):
     """object view of dict, you can
@@ -339,7 +398,7 @@ def dict2et(xmldict, roottag='data', listnames=None):
 
     >>> data = {"nr": "xq12", "positionen": [{"m": 12}, {"m": 2}]}
     >>> root = dict2et(data)
-    >>> ET.tostring(root, encoding="unicode").replace('<>', '').replace('</>','')
+    >>> ET.tostring(root, encoding="utf-8").replace('<>', '').replace('</>','')
     '<data><nr>xq12</nr><positionen><m>12</m></positionen><positionen><m>2</m></positionen></data>'
 
     Per default ecerything ins put in an enclosing '<data>' element. Also per default lists are converted
@@ -348,11 +407,11 @@ def dict2et(xmldict, roottag='data', listnames=None):
 
     >>> data = {"positionen": [{"m": 12}, {"m": 2}]}
     >>> root = dict2et(data, roottag='xml')
-    >>> ET.tostring(root, encoding="unicode").replace('<>', '').replace('</>','')
+    >>> ET.tostring(root, encoding="utf-8").replace('<>', '').replace('</>','')
     '<xml><positionen><m>12</m></positionen><positionen><m>2</m></positionen></xml>'
 
     >>> root = dict2et(data, roottag='xml', listnames={'positionen': 'position'})
-    >>> ET.tostring(root, encoding="unicode").replace('<>', '').replace('</>','')
+    >>> ET.tostring(root, encoding="utf-8").replace('<>', '').replace('</>','')
     '<xml><positionen><position><m>12</m></position><position><m>2</m></position></positionen></xml>'
 
     >>> data = {"kommiauftragsnr":2103839, "anliefertermin":"2009-11-25", "prioritaet": 7,
@@ -364,7 +423,7 @@ def dict2et(xmldict, roottag='data', listnames=None):
 
     >>> print ET.tostring(dict2et(data, 'kommiauftrag',
     ... listnames={'positionen': 'position', 'versandeinweisungen': 'versandeinweisung'}),
-    ... encoding="unicode").replace('<>', '').replace('</>','')
+    ... encoding="utf-8").replace('<>', '').replace('</>','')
     ...  # doctest: +SKIP
     '''<kommiauftrag>
     <anliefertermin>2009-11-25</anliefertermin>

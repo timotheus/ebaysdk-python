@@ -1,5 +1,14 @@
 Changes for ebaysdk
 
+1.0.0
+- Major refactor
+  + changes are backward compatible unless your subclassing any of the 
+    SDK classes
+  + moved from PyCurl to Python Requests
+  + code organization
+  + standard python logging
+  + add exceptions
+
 0.1.11
 - Add affiliate headers to the Shopping API back-end
 - https://github.com/timotheus/ebaysdk-python/issues/40
