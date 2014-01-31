@@ -11,8 +11,10 @@ from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
-from ebaysdk import finding, html, parallel
-
+from common import dump
+from ebaysdk import finding, html
+from ebaysdk.parallel import Parallel
+from ebaysdk.exception import ConnectionError
 
 def init_options():
     usage = "usage: %prog [options]"
@@ -34,39 +36,36 @@ def init_options():
 
 def run(opts):
 
-    p = parallel()
-    apis = []
+    try:
+        p = Parallel()
+        apis = []
 
-    api1 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-    api1.execute('findItemsAdvanced', {'keywords': 'python'})
-    apis.append(api1)
+        api1 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api1.execute('findItemsAdvanced', {'keywords': 'python'})
+        apis.append(api1)
 
-    api4 = html(parallel=p)
-    api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
-    apis.append(api4)
+        api4 = html(parallel=p)
+        api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
+        apis.append(api4)
 
-    api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-    api2.execute('findItemsAdvanced', {'keywords': 'perl'})
-    apis.append(api2)
+        api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api2.execute('findItemsAdvanced', {'keywords': 'perl'})
+        apis.append(api2)
 
-    api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-    api3.execute('findItemsAdvanced', {'keywords': 'php'})
-    apis.append(api3)
+        api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api3.execute('findItemsAdvanced', {'keywords': 'php'})
+        apis.append(api3)
 
-    p.wait()
+        p.wait()
 
-    if p.error():
-        raise Exception(p.error())
+        if p.error():
+            print p.error()
 
-    for api in apis:
+        for api in apis:
+            dump(api)
 
-        print("Call Success: %s in length" % len(api.response_content()))
-
-        print("Response code: %s" % api.response_code())
-        print("Response DOM: %s" % api.response_dom())
-
-        dictstr = "%s" % api.response_dict()
-        print("Response dictionary: %s...\n" % dictstr[:50])
+    except ConnectionError as e:
+        print e
 
 if __name__ == "__main__":
     (opts, args) = init_options()

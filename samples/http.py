@@ -7,6 +7,7 @@ Licensed under CDDL 1.0
 
 import os
 import sys
+
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
@@ -14,7 +15,7 @@ sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 from common import dump
 
 import ebaysdk
-from ebaysdk import merchandising
+from ebaysdk.http import Connection as HTTP
 from ebaysdk.exception import ConnectionError
 
 def init_options():
@@ -24,28 +25,23 @@ def init_options():
     parser.add_option("-d", "--debug",
                       action="store_true", dest="debug", default=False,
                       help="Enabled debugging [default: %default]")
-    parser.add_option("-y", "--yaml",
-                      dest="yaml", default='ebay.yaml',
-                      help="Specifies the name of the YAML defaults file. [default: %default]")
-    parser.add_option("-a", "--appid",
-                      dest="appid", default=None,
-                      help="Specifies the eBay application id to use.")
 
     (opts, args) = parser.parse_args()
     return opts, args
 
 def run(opts):
-    try:
-        api = merchandising(debug=opts.debug, appid=opts.appid,
-                            config_file=opts.yaml, warnings=True)
 
-        api.execute('getMostWatchedItems', {'maxResults': 3})
+    try:
+        api = HTTP(debug=opts.debug, method='GET')
+
+        api.execute('http://feeds.wired.com/wired/index')
 
         dump(api)
+
     except ConnectionError as e:
         print e
 
-
 if __name__ == "__main__":
+    print("HTTP samples for SDK version %s" % ebaysdk.get_version())
     (opts, args) = init_options()
     run(opts)

@@ -3,9 +3,7 @@ Running the tests:
 
 Installing ebaysdk on Mac:
 
-1) Install Xcode from the app center
-2) Download and install the Xcode Command Line Tools from https://developer.apple.com/downloads/
-3) Install the SDK
+1) Install the SDK with easy_install
    
    sudo easy_install ebaysdk
    
@@ -15,7 +13,7 @@ Installing ebaysdk on Mac:
    
 Installing ebaysdk on Windows:
 
-1) Download and install the latest release of Python 2.7: 
+1) Download and install the latest release of Python 2.7+
 
 http://python.org/download/
 
@@ -23,7 +21,7 @@ Choose either "Python 3.3.0 Windows x86 MSI Installer" or "Python
 3.3.0 Windows X86-64 MSI Installer". To use the latter, you must be
 running a 64-bit version of Windows. 
 
-2) Install setuptools:
+2) Install setuptools
 
 First, visit http://pypi.python.org/pypi/setuptools
 
@@ -43,23 +41,7 @@ setuptools, then run it from the command prompt as follows:
 The last step assumes that Python was installed to its default
 location.
 
-3) Install pycurl:
-
-This could be complicated because pycurl requires libcurl to be
-installed. Since this is a native library, this can't be installed
-using pip or easy_install. Luckily Christoph Gohlke has pre-complied
-many common libraries for Python on Windows, including 32- and 64-bit
-versions.
-
-Simply visit this site:
- 
-http://www.lfd.uci.edu/~gohlke/pythonlibs/
-
-Then download and install the appropriate version of pycurl for Python
-2.7. Use the amd64 version if you are running 64-bit
-Python. Otherwise, use the win32 version.
-
-4) Install ebaysdk:
+3) Install ebaysdk
 
 Download and extract the zipball, or clone the ebaysdk-python
 repository. Then open the Command Prompt and change to the root
@@ -69,24 +51,3 @@ directory of the distribution and execute:
 
 If there were no errors, ebaysdk should be ready to use!
 
-
-
-Legacy Install on Mac:
-
-Dependency: pycurl
-
-    How to install pycurl on Mac
-
-    1) Install Fink
-       http://www.finkproject.org/download/
-       
-    2) Install libssh2, libcurl4-shlibs
-       sudo /sw/bin/apt-get install libssh2
-       sudo /sw/bin/apt-get -q0 -f install libcurl4-shlibs
-
-    3) Download pycurl from http://pycurl.sourceforge.net/download/
-
-    4) Extract and install pycurl 
-       tar -zxvf pycurl-7.16.4.tar.gz 
-       cd pycurl-7.16.4 
-       sudo env ARCHFLAGS="-arch i386" python setup.py install --curl-config=/sw/bin/curl-config

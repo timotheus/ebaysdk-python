@@ -1,5 +1,6 @@
 recursive-include ebaysdk *.py
 recursive-include tests *.py
+recursive-include samples *.py
 include ebay.yaml
 include Changes
 include INSTALL

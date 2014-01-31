@@ -21,7 +21,7 @@ import os
 PKG = 'ebaysdk'
 
 # Get the version
-VERSIONFILE = os.path.join(PKG, "_version.py")
+VERSIONFILE = os.path.join(PKG, "__init__.py")
 version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                     open(VERSIONFILE, "rt").read(), re.M).group(1)
 
@@ -34,18 +34,18 @@ Shopping, Merchandising, & Trading APIs. """
 setup(
     name=PKG,
     version=version,
-    description="Simple and Extensible eBay SDK for Python",
+    description="eBay SDK for Python",
     author="Tim Keefer",
     author_email="tkeefer@gmail.com",
     url="https://github.com/timotheus/ebaysdk-python",
     license="COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
     packages=find_packages(),
     provides=[PKG],
-    install_requires=['PyYaml', 'pycurl', 'beautifulsoup4'],
+    install_requires=['PyYaml', 'requests', 'grequests', 'beautifulsoup4'],
     test_suite='tests',
     long_description=long_desc,
     classifiers=[
         'Topic :: Internet :: WWW/HTTP',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Developer',
     ]
 )
