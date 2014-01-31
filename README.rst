@@ -6,11 +6,13 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 Quick Example::
 
     from ebaysdk.finding import Connection
+    try:
+        api = Connection(appid='YOUR_APPID_HERE')
+        api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
-    api = Connection(appid='YOUR_APPID_HERE')
-    api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
-
-    print api.response_dict()
+        print api.response_dict()
+    except ConnectionError as e:
+        raise e
 
 Getting Started
 ---------------
