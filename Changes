@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- fix http back-end
+
 1.0.0
 - Major refactor
   + changes are backward compatible unless your subclassing any of the 
