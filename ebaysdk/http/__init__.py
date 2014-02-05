@@ -117,10 +117,16 @@ class Connection(BaseConnection):
         headers.update({'User-Agent': UserAgent, 
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
 
+        kw = dict()
+        if self.method == 'POST':
+            kw['data'] = data
+        else:
+            kw['params'] = data
+
         request = Request(self.method, 
             url,
-            data=self.build_request_data(data),
             headers=headers,
+            **kw
         )
 
         self.request = request.prepare()
@@ -128,13 +134,4 @@ class Connection(BaseConnection):
     def warnings(self):
         return ''
 
-    def build_request_data(self, data):
-        "Builds and returns the request XML."
-
-        if not data:
-            return None
-        if type(data) is str:
-            return data
-        else:
-            return urlencode(data)
 
