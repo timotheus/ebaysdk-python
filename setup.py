@@ -46,6 +46,6 @@ setup(
     long_description=long_desc,
     classifiers=[
         'Topic :: Internet :: WWW/HTTP',
-        'Intended Audience :: Developer',
+        'Intended Audience :: Developers',
     ]
 )
