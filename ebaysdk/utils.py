@@ -374,7 +374,7 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
                 parent.set(key, value) # TODO: will fail if attrs is not a dict
         if '#text' in dictitem.keys():
             text = dictitem.pop('#text')
-            parent.text = str(text)
+            parent.text = str(text).decode('utf-8')
         for (tag, child) in sorted(dictitem.items()):
             if isinstance(child, list):
                 # iterate through the array and convert
@@ -388,7 +388,7 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
                 parent.append(elem)
                 _convert_dict_to_xml_recurse(elem, child, listnames)
     elif not dictitem is None:
-        parent.text = str(dictitem)
+        parent.text = str(dictitem).decode('utf-8')
 
 
 def dict2et(xmldict, roottag='data', listnames=None):
