@@ -42,7 +42,7 @@ def run(opts):
                       config_file=opts.yaml, warnings=True)
 
         api.execute('findItemsAdvanced', {
-            'keywords': 'python',
+            'keywords': 'niño',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},

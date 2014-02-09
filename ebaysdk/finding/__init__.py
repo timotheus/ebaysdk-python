@@ -26,7 +26,7 @@ class Connection(BaseConnection):
 
     Doctests:
     >>> f = Connection(config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})
+    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'niño'})
     >>> error = f.error()
     >>> print(error)
     None

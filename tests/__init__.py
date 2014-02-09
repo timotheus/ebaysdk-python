@@ -31,7 +31,9 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
-    suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
+    
+    # Internal Only Service
+    #uite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
     return suite
 
 runner = unittest.TextTestRunner()
