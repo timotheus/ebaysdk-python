@@ -46,7 +46,7 @@ class Config(object):
             fhandle = open(self.config_file, "r")
             dataobj = yaml.load(fhandle.read())
 
-            for k, val in dataobj.get(self.domain, {}).iteritems():
+            for k, val in dataobj.get(self.domain, {}).items():
                 self.set(k, val)
 
             return self
@@ -62,7 +62,7 @@ class Config(object):
                 fhandle = open(myfile, "r")
                 dataobj = yaml.load(fhandle.read())
 
-                for k, val in dataobj.get(self.domain, {}).iteritems():
+                for k, val in dataobj.get(self.domain, {}).items():
                     self.set(k, val)
 
                 return self
