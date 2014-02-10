@@ -26,17 +26,17 @@ class Connection(BaseConnection):
 
     Doctests:
     >>> f = Connection(config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'niño'})
+    >>> retval = f.execute('findItemsAdvanced', {'keywords': u'niño'})
     >>> error = f.error()
     >>> print(error)
     None
     >>> if not f.error():
     ...   print(f.response_obj().itemSearchURL != '')
     ...   items = f.response_obj().searchResult.item
-    ...   print(len(items))
+    ...   print(len(items) > 2)
     ...   print(f.response_dict().ack)
     True
-    100
+    True
     Success
 
     """
