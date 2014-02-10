@@ -12,6 +12,7 @@ except:
     import cElementTree as ET # for 2.4
 
 import re
+import sys
 from io import BytesIO
 
 def to_xml(data):
@@ -374,7 +375,10 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
                 parent.set(key, value) # TODO: will fail if attrs is not a dict
         if '#text' in dictitem.keys():
             text = dictitem.pop('#text')
-            parent.text = str(text).decode('utf-8')
+            if sys.version_info[0] < 3:
+                parent.text = unicode(text)
+            else:
+                parent.text = str(text)
         for (tag, child) in sorted(dictitem.items()):
             if isinstance(child, list):
                 # iterate through the array and convert
@@ -388,7 +392,10 @@ def _convert_dict_to_xml_recurse(parent, dictitem, listnames):
                 parent.append(elem)
                 _convert_dict_to_xml_recurse(elem, child, listnames)
     elif not dictitem is None:
-        parent.text = str(dictitem).decode('utf-8')
+        if sys.version_info[0] < 3:
+            parent.text = unicode(dictitem)
+        else:
+            parent.text = str(dictitem)
 
 
 def dict2et(xmldict, roottag='data', listnames=None):
@@ -471,7 +478,7 @@ def dict2xml(datadict, roottag='', listnames=None, pretty=False):
     """
     root = dict2et(datadict, roottag, listnames)
     xml = to_string(root, pretty=pretty)
-    xml = xml.replace('<>', '').replace('</>','')
+    xml = xml.replace('<>', '').replace('</>', '')
     return xml
 
 
