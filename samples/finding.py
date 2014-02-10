@@ -10,9 +10,6 @@ import sys
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
-#sys.path.append('%s/../' % os.path.dirname(__file__))
-
-print(sys.path)
 
 from common import dump
 
