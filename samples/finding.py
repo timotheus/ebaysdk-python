@@ -10,6 +10,9 @@ import sys
 from optparse import OptionParser
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
+#sys.path.append('%s/../' % os.path.dirname(__file__))
+
+print(sys.path)
 
 from common import dump
 
@@ -42,7 +45,7 @@ def run(opts):
                       config_file=opts.yaml, warnings=True)
 
         api.execute('findItemsAdvanced', {
-            'keywords': 'niño',
+            'keywords': u'niño',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},
@@ -56,7 +59,7 @@ def run(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 
 
@@ -68,7 +71,7 @@ def run2(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 
 if __name__ == "__main__":
