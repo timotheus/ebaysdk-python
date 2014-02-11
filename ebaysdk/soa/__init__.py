@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml, xml2dict
+from ebaysdk.utils import getNodeText, to_xml
 
 class Connection(BaseConnection):
     """Connection class for a base SOA service"""
