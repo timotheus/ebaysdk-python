@@ -42,7 +42,7 @@ def run(opts):
                       config_file=opts.yaml, warnings=True)
 
         api.execute('findItemsAdvanced', {
-            'keywords': u'niño',
+            'keywords': 'python',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},
@@ -56,19 +56,28 @@ def run(opts):
         dump(api)
 
     except ConnectionError as e:
-        print(e)
+        print e
 
 
 
 def run2(opts):
     try:
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-        api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')
-    
+        api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>2</entriesPerPage></paginationInput>')
         dump(api)
+        from IPython import embed; embed()
+
+        '''
+        import suds.sudsobject
+        r = suds.sudsobject.Factory.object('reply', dict={'a': 'b', 'price': {'value': '8.99', '_currency': 'USD'}})
+
+from ebaysuds import ShoppingAPI
+c = ShoppingAPI(site_id='US', app_id='TimKeefe-b919-4dc3-b4a9-b7c7280e2493')
+r = c.GetSingleItem(ItemID='261389277941')
+        '''
 
     except ConnectionError as e:
-        print(e)
+        print e
 
 
 if __name__ == "__main__":

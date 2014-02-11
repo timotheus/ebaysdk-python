@@ -22,7 +22,7 @@ from ebaysdk import log, UserAgent
 from ebaysdk.connection import BaseConnection
 from ebaysdk.exception import ConnectionResponseError
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, xml2dict
+from ebaysdk.utils import getNodeText
 
 class Connection(BaseConnection):
     """HTML class for traditional calls.
@@ -81,10 +81,11 @@ class Connection(BaseConnection):
         "Return the HTTP response dictionary."
 
         try:
-            if not self._response_dict and self.response_content:
-                self._response_dict = xml2dict().fromstring(self._response_content)
+            #if not self._response_dict and self.response_content:
+            #    self._response_dict = xml2dict().fromstring(self._response_content)
 
-            return self._response_dict
+            return self._response_obj.asdict()
+
         except ExpatError:
             raise ConnectionResponseError('response is not well-formed')
 

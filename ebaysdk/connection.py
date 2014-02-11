@@ -19,9 +19,16 @@ from requests.adapters import HTTPAdapter
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
+try:
+    from bs4 import BeautifulStoneSoup
+except ImportError:
+    from BeautifulSoup import BeautifulStoneSoup
+    log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
+
 from ebaysdk import set_stream_logger, UserAgent
 from ebaysdk.utils import getNodeText as getNodeTextUtils
-from ebaysdk.utils import dict2xml, xml2dict, getValue
+from ebaysdk.utils import getValue
+from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
 
 HTTP_SSL = {
@@ -30,16 +37,7 @@ HTTP_SSL = {
 }
 
 class BaseConnection(object):
-    """Base Connection Class.
-
-    Doctests:
-    >>> d = { 'list': ['a', 'b', 'c']}
-    >>> print(dict2xml(d, listnames={'': 'list'}))
-    <list>a</list><list>b</list><list>c</list>
-    >>> d2 = {'node': {'@attrs': {'a': 'b'}, '#text': 'foo'}}
-    >>> print(dict2xml(d2))
-    <node a="b">foo</node>
-    """
+    """Base Connection Class."""
 
     def __init__(self, debug=False, method='GET',
                  proxy_host=None, timeout=20, proxy_port=80,
@@ -151,12 +149,14 @@ class BaseConnection(object):
             self.parallel._add_request(self)
             return None
 
-        self.response = self.session.send(self.request,
+        response = self.session.send(self.request,
             verify=False,
             proxies=self.proxies,
             timeout=self.timeout,
             allow_redirects=True
         )
+
+        self.response = Response(response)
 
         log.debug('RESPONSE (%s):' % self._request_id)
         log.debug('elapsed time=%s' % self.response.elapsed)
@@ -166,13 +166,16 @@ class BaseConnection(object):
     
     def process_response(self):
         """Post processing of the response"""
-        
+
         if self.response.status_code != 200:
             self._response_error = self.response.reason
 
+        #self.response_obj=Response(self.response.content)
+
+        # leave??
         # remove xml namespace
-        regex = re.compile('xmlns="[^"]+"')
-        self._response_content = regex.sub('', self.response.content)
+        #regex = re.compile('xmlns="[^"]+"')
+        #self._response_content = regex.sub('', self.response.content)
 
     def error_check(self):
         estr = self.error()
@@ -195,19 +198,14 @@ class BaseConnection(object):
         return self.response.status_code
 
     def response_content(self):
-        return self._response_content
+        return self.response.content
 
     def response_soup(self):
         "Returns a BeautifulSoup object of the response."
-        try:
-            from bs4 import BeautifulStoneSoup
-        except ImportError:
-            from BeautifulSoup import BeautifulStoneSoup
-            log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
 
         if not self._response_soup:
             self._response_soup = BeautifulStoneSoup(
-                self._response_content.decode('utf-8')
+                self.response_content.decode('utf-8')
             )
 
         return self._response_soup
@@ -223,8 +221,10 @@ class BaseConnection(object):
             content = None
 
             try:
-                if self._response_content:
-                    content = self._response_content
+                if self.response.content:
+                    regex = re.compile('xmlns="[^"]+"')
+                    content = regex.sub('', self.response.content)
+
                 else:
                     content = "<%sResponse></%sResponse>" % (self.verb, self.verb)
 
@@ -242,9 +242,12 @@ class BaseConnection(object):
     def response_dict(self):
         "Returns the response dictionary."
 
-        if not self._response_dict and self._response_content:
-            mydict = xml2dict().fromstring(self._response_content)
-            self._response_dict = mydict.get(self.verb + 'Response', mydict)
+        return self.response.asdict()
+
+        #if not self._response_dict and self._response_content:
+        #    mydict = xml2dict().fromstring(self._response_content)
+        #    self._response_dict = mydict.get(self.verb + 'Response', mydict)
+
 
         return self._response_dict
 
