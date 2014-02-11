@@ -35,10 +35,10 @@ class Connection(BaseConnection):
     Sunshine Kids Foundation
     >>> print(t.error())
     None
-    >>> t2 = Connection(errors=False, config_file=os.environ.get('EBAY_YAML'))
+    >>> t2 = Connection(errors=False, debug=False, config_file=os.environ.get('EBAY_YAML'))
     >>> retval2 = t2.execute('VerifyAddItem', {})
     >>> print(t2.response_codes())
-    [5]
+    [10009]
     """
 
     def __init__(self, **kwargs):
