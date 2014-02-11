@@ -476,10 +476,13 @@ def dict2xml(datadict, roottag='', listnames=None, pretty=False):
     Converts a dictionary to an UTF-8 encoded XML string.
     See also dict2et()
     """
-    root = dict2et(datadict, roottag, listnames)
-    xml = to_string(root, pretty=pretty)
-    xml = xml.replace('<>', '').replace('</>', '')
-    return xml
+    if len(datadict):
+        root = dict2et(datadict, roottag, listnames)
+        xml = to_string(root, pretty=pretty)
+        xml = xml.replace('<>', '').replace('</>', '')
+        return xml
+    else:
+        return ''
 
 
 def list2xml(datalist, roottag, elementname, pretty=False):
