@@ -75,7 +75,7 @@ class BaseConnection(object):
         log.debug('type: ' + str(debug_type) + ' message' + str(debug_message))
 
     def v(self, *args, **kwargs):
-        return getValue(self.response_dict(), *args, **kwargs)
+        return getValue(self.response.dict(), *args, **kwargs)
         
     def getNodeText(self, nodelist):
         return getNodeTextUtils(nodelist)
@@ -149,14 +149,12 @@ class BaseConnection(object):
             self.parallel._add_request(self)
             return None
 
-        response = self.session.send(self.request,
+        self.response = self.session.send(self.request,
             verify=False,
             proxies=self.proxies,
             timeout=self.timeout,
             allow_redirects=True
         )
-
-        self.response = Response(response)
 
         log.debug('RESPONSE (%s):' % self._request_id)
         log.debug('elapsed time=%s' % self.response.elapsed)
@@ -167,15 +165,10 @@ class BaseConnection(object):
     def process_response(self):
         """Post processing of the response"""
 
+        self.response = Response(self.response, verb=self.verb)
+
         if self.response.status_code != 200:
             self._response_error = self.response.reason
-
-        #self.response_obj=Response(self.response.content)
-
-        # leave??
-        # remove xml namespace
-        #regex = re.compile('xmlns="[^"]+"')
-        #self._response_content = regex.sub('', self.response.content)
 
     def error_check(self):
         estr = self.error()
@@ -211,10 +204,12 @@ class BaseConnection(object):
         return self._response_soup
 
     def response_obj(self):
-        return self.response_dict()
+        return self.response.dict()
 
     def response_dom(self):
-        "Returns the response DOM (xml.dom.minidom)."
+        """ Deprecated: use self.response.dom() instead
+        Returns the response DOM (xml.dom.minidom).
+        """
 
         if not self._response_dom:
             dom = None
@@ -242,19 +237,12 @@ class BaseConnection(object):
     def response_dict(self):
         "Returns the response dictionary."
 
-        return self.response.asdict()
-
-        #if not self._response_dict and self._response_content:
-        #    mydict = xml2dict().fromstring(self._response_content)
-        #    self._response_dict = mydict.get(self.verb + 'Response', mydict)
-
-
-        return self._response_dict
+        return self.response.dict()
 
     def response_json(self):
         "Returns the response JSON."
 
-        return json.dumps(self.response_dict())
+        return json.dumps(self.response.dict())
 
     def _get_resp_body_errors(self):
         """Parses the response content to pull errors.

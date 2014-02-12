@@ -65,7 +65,6 @@ def run2(opts):
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
         api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>2</entriesPerPage></paginationInput>')
         dump(api)
-        from IPython import embed; embed()
 
         '''
         import suds.sudsobject
