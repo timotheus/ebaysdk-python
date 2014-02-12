@@ -5,6 +5,9 @@
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
+from collections import defaultdict
+import json
+
 from ebaysdk.utils import get_dom_tree
 
 class ResponseDataObject(object):
@@ -32,12 +35,14 @@ class ResponseDataObject(object):
             elif isinstance(a[1], list):
                 objs = []
                 for i in a[1]:
-                    objs.append(ResponseDataObject(i))
+                    if isinstance(i, str):
+                        objs.append(i)
+                    else:
+                        objs.append(ResponseDataObject(i))
                 
                 setattr(self, a[0], objs)
             else:
                 setattr(self, a[0], a[1])
-
 
 class Response(object):
     '''
@@ -71,48 +76,45 @@ class Response(object):
     >>> r.reply
 
     '''
-    rdict = dict()
-    rdom = None
+    _dict = dict()
+    _dom = None
 
-    def __init__(self, obj):
-        # requests response object
-        self.obj = obj
-        self.tree = self._parse_xml(obj.content)
-        
-        res = []
-        self.xmltodict(self.tree, res)
-        
-        mydict = dict()
-        self._build_dict(res, mydict)
-        self.rdict=mydict
+    def __init__(self, obj, verb=None):
 
-        self.reply = ResponseDataObject(self.asdict())
+        self._obj = obj
+        self._dom = self._parse_xml(obj.content)
+        self._dict = self._etree_to_dict(self._dom)
 
-    def _build_dict(self, ndict, mydict):
+        if verb:
+            self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
-        if isinstance(ndict, list):
-            for i in ndict:
-                self._build_dict(i, mydict)
-        elif isinstance(ndict, dict):
-            if isinstance(ndict[ndict.keys()[0]], list):
-                if isinstance(mydict.get(ndict.keys()[0], {}), dict) \
-                    and mydict.has_key(ndict.keys()[0]):
-                    mydict[ndict.keys()[0]] = [ mydict[ndict.keys()[0]] ]    
-                elif mydict.has_key(ndict.keys()[0]) and isinstance(mydict[ndict.keys()[0]], list):
-                    pass
-                else:
-                    mydict[ndict.keys()[0]] = {}
+        self.reply = ResponseDataObject(self._dict)
 
-                for i in ndict[ndict.keys()[0]]:
-                    self._build_dict(i, mydict[ndict.keys()[0]])
+    def _etree_to_dict(self, t):
+        # remove xmlns from nodes, I find them meaningless
+        t.tag = self._get_node_tag(t)
+
+        d = {t.tag: {} if t.attrib else None}
+        children = list(t)
+        if children:
+            dd = defaultdict(list)
+            for dc in map(self._etree_to_dict, children):
+                for k, v in dc.iteritems():
+                    dd[k].append(v)
+            d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.iteritems()}}
+        if t.attrib:
+            d[t.tag].update(('_' + k, v) for k, v in t.attrib.iteritems())
+        if t.text:
+            text = t.text.strip()
+            if children or t.attrib:
+                if text:
+                  d[t.tag]['value'] = text
             else:
-                if isinstance(mydict, list):
-                    mydict.append(ndict)
-                else:
-                    mydict.update(ndict)
+                d[t.tag] = text
+        return d
 
     def __getattr__(self, name):
-        return getattr(self.obj, name)
+        return getattr(self._obj, name)
 
     def _parse_xml(self, xml):
         return get_dom_tree(xml)
@@ -120,80 +122,11 @@ class Response(object):
     def _get_node_tag(self, node):
         return node.tag.replace('{' + node.nsmap.get(node.prefix, '') + '}', '')
 
-    def xmltodict(self, node, res):
-        rep = {}
+    def dom(self):
+        return self._dom
 
-        if len(node):
-            for n in list(node):
-                #print self._get_node_tag(node)
-                #rep[self._get_node_tag(node)] = []
-                rep[self._get_node_tag(node)] = []
-                
-                self.xmltodict(n, rep[self._get_node_tag(node)])
-                    
-                if len(n):
-                    #print "len=%s" % len(n)
-                    value = None
-                    if len(n.attrib) > 0:        
-                        value = rep[self._get_node_tag(node)]
-                        #value = {'value':rep[self._get_node_tag(node)],
-                        #         '_attrs': n.attrib}
-                    else:
-                        value = rep[self._get_node_tag(node)]
+    def dict(self):
+        return self._dict
 
-                    res.append({self._get_node_tag(n):value})
-                else:
-                    res.append(rep[ self._get_node_tag(node)][0])
-                    #print "else >> %s (%s)"  % (self._get_node_tag(node), rep[ self._get_node_tag(node)][0])
-                    #print "res >> %s" % ' '.join(res)                
-        else:
-            value = None
-            if len(node.attrib) > 0:
-                value = {'value': node.text, '_attrs': node.attrib}
-            else:
-                value = node.text
-
-            #print "tag=%s" % self._get_node_tag(node)
-            #print "value=%s" % value or ''
-            #print "before=" + ' '.join(res)
-            res.append({self._get_node_tag(node):value or ''})
-            #print "after=" + ' '.join(res)
-            
-        return
-
-    def orig_xmltodict(self, node, res):
-        rep = {}
-
-        if len(node):
-            for n in list(node):
-                print self._get_node_tag(node)
-                rep[self._get_node_tag(node)] = []
-                self.xmltodict(n, rep[self._get_node_tag(node)])
-                
-                if len(n):
-                    print "len=%s" % len(n)
-                    value = None
-                    if len(n.attrib) > 0:        
-                        value = {'value':rep[self._get_node_tag(node)],
-                                 '_attrs': n.attrib}
-                    else:
-                        value = rep[self._get_node_tag(node)]
-
-                    res.append({self._get_node_tag(n):value})
-                else:
-                    res.append(rep[self._get_node_tag(node)][0])
-                    print "else >> %s (%s)"  % (self._get_node_tag(node), res)
-                    #print "res >> %s" % ' '.join(res)                
-        else:
-            value = None
-            if len(node.attrib) > 0:
-                value = {'value': node.text, '_attrs': node.attrib}
-            else:
-                value = node.text
-
-            res.append({self._get_node_tag(node):value or ''})
-        
-        return
-
-    def asdict(self):
-        return self.rdict
+    def json(self):
+        json.dumps(self.dict())
