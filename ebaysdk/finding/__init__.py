@@ -11,7 +11,7 @@ import os
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import getNodeText, dict2xml
 
 class Connection(BaseConnection):
     """Connection class for the Finding service
@@ -101,7 +101,7 @@ class Connection(BaseConnection):
     def build_request_data(self, verb, data):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml

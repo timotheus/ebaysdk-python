@@ -11,7 +11,7 @@ import os
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import getNodeText, dict2xml
 
 class Connection(BaseConnection):
     """Trading API class
@@ -117,7 +117,7 @@ class Connection(BaseConnection):
                 if self.config.get('password', None):
                     xml += "<Password>%s</Password>" % self.config.get('password', '')
             xml += "</RequesterCredentials>"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + self.verb + "Request>"
         return xml
 

@@ -51,10 +51,10 @@ def run(opts):
 
         api.execute('GetCharities', {'CharityID': 3897})
         dump(api)
-        print(api.response_dict().Charity.Name)
+        print(api.response.reply.Charity.Name)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def feedback(opts):
     try:
@@ -64,13 +64,13 @@ def feedback(opts):
         api.execute('GetFeedback', {'UserID': 'tim0th3us'})
         dump(api)
 
-        if int(api.response_dict().FeedbackScore) > 50:
+        if int(api.response.reply.FeedbackScore) > 50:
             print("Doing good!")
         else:
             print("Sell more, buy more..")
     
     except ConnectionError as e:
-        print e
+        print(e)
 
 
 def getTokenStatus(opts):
@@ -83,7 +83,7 @@ def getTokenStatus(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def verifyAddItem(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
@@ -134,7 +134,7 @@ def verifyAddItem(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def verifyAddItemErrorCodes(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
@@ -192,7 +192,7 @@ def verifyAddItemErrorCodes(opts):
         if 37 in api.response_codes():
             print("Invalid data in request")
 
-        print e
+        print(e)
 
 def uploadPicture(opts):
 
@@ -210,7 +210,7 @@ def uploadPicture(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def memberMessages(opts):
 
@@ -236,8 +236,8 @@ def memberMessages(opts):
 
         dump(api)
 
-        if api.response_dict().MemberMessage:
-            messages = api.response_dict().MemberMessage.MemberMessageExchange
+        if api.response.reply.has_key('MemberMessage'):
+            messages = api.response.reply.MemberMessage.MemberMessageExchange
 
             if type(messages) != list:
                     messages = [ messages ]
@@ -246,7 +246,7 @@ def memberMessages(opts):
                 print("%s: %s" % (m.CreationDate, m.Question.Subject[:50]))
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def getUser(opts):
     try:
@@ -258,7 +258,7 @@ def getUser(opts):
         dump(api, full=False)
     
     except ConnectionError as e:
-        print e
+        print(e)
 
 def getOrders(opts):
 
@@ -270,7 +270,7 @@ def getOrders(opts):
         dump(api, full=False)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def categories(opts):
 
@@ -288,7 +288,7 @@ def categories(opts):
         dump(api, full=False)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 '''
 api = trading(domain='api.sandbox.ebay.com')

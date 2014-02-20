@@ -11,7 +11,7 @@ import os
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import getNodeText, dict2xml
 
 class Connection(BaseConnection):
     """Shopping API class
@@ -111,7 +111,7 @@ class Connection(BaseConnection):
 
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml

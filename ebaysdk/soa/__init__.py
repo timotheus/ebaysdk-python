@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import getNodeText, dict2xml
 
 class Connection(BaseConnection):
     """Connection class for a base SOA service"""
@@ -85,7 +85,7 @@ class Connection(BaseConnection):
         xml += ' xmlns:ser="%s" >' % self.config.get('soap_env_str')
         xml += '<soap:Body>'
         xml += '<ser:%sRequest>' % verb
-        xml += to_xml(self.soapify(data)) or ''
+        xml += dict2xml(self.soapify(data))
         xml += '</ser:%sRequest>' % verb
         xml += '</soap:Body>'
         xml += '</soap:Envelope>'

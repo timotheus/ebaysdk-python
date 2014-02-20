@@ -5,11 +5,14 @@
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
+import sys
+import lxml
 from collections import defaultdict
 import json
 
-from ebaysdk.utils import get_dom_tree
+from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible
 
+@python_2_unicode_compatible
 class ResponseDataObject(object):
 
     def __init__(self, mydict={}):
@@ -19,10 +22,20 @@ class ResponseDataObject(object):
         return str(self)
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return "%s" % self.__dict__
 
-    def __unicode__(self):
-        return str(self.__dict__)
+    def has_key(self, name):
+        try:
+            getattr(self, name)
+            return True
+        except AttributeError:
+            return False
+
+    def get(self, name, default=None):
+        try:
+            return getattr(self, name)
+        except AttributeError:
+            return default
 
     def _load_dict(self, mydict):
         
@@ -103,13 +116,17 @@ class Response(object):
         self._add_prefix(self._listnodes, verb)
 
         self._obj = obj
-        self._dom = self._parse_xml(obj.content)
-        self._dict = self._etree_to_dict(self._dom)
-        
-        if verb:
-            self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
-        self.reply = ResponseDataObject(self._dict)
+        try:
+            self._dom = self._parse_xml(obj.content)
+            self._dict = self._etree_to_dict(self._dom)
+        
+            if verb:
+                self._dict = self._dict.get('%sResponse' % verb, self._dict)
+
+            self.reply = ResponseDataObject(self._dict)
+        except lxml.etree.XMLSyntaxError:
+            self.reply = ResponseDataObject({})
 
     def _add_prefix(self, nodes, verb):
         if verb:
@@ -132,6 +149,9 @@ class Response(object):
 
     def _etree_to_dict(self, t):
         # remove xmlns from nodes, I find them meaningless
+        if type(t) == lxml.etree._Comment:
+            return {}
+
         t.tag = self._get_node_tag(t)
 
         d = {t.tag: {} if t.attrib else None}
@@ -139,10 +159,10 @@ class Response(object):
         if children:
             dd = defaultdict(list)
             for dc in map(self._etree_to_dict, children):
-                for k, v in dc.iteritems():
+                for k, v in dc.items():
                     dd[k].append(v)
 
-            d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.iteritems()}}    
+            d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}    
 
             # TODO: Optimizations? Forces a node to type list
             parent_path = self._get_node_path(t)
@@ -153,7 +173,7 @@ class Response(object):
                         d[t.tag][k] = [ d[t.tag][k] ]
 
         if t.attrib:
-            d[t.tag].update(('_' + k, v) for k, v in t.attrib.iteritems())
+            d[t.tag].update(('_' + k, v) for k, v in t.attrib.items())
         if t.text:
             text = t.text.strip()
             if children or t.attrib:

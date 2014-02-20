@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 import os
 
 from ebaysdk.soa import Connection as BaseConnection
-from ebaysdk.utils import to_xml, getNodeText
+from ebaysdk.utils import dict2xml, getNodeText
 
 class Connection(BaseConnection):
     """
@@ -112,7 +112,7 @@ class Connection(BaseConnection):
         xml += "<" + verb + "Request"
         xml += ' xmlns="http://www.ebay.com/marketplace/search/v1/services"'
         xml += '>'
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml
