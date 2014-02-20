@@ -25,16 +25,16 @@ class Connection(BaseConnection):
     (all others, see API docs)
 
     Doctests:
-    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'))
+    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
     >>> retval = f.execute('findItemsAdvanced', {'keywords': u'niño'})
     >>> error = f.error()
     >>> print(error)
     None
     >>> if not f.error():
-    ...   print(f.response_obj().itemSearchURL != '')
-    ...   items = f.response_obj().searchResult.item
+    ...   print(f.response.reply.itemSearchURL != '')
+    ...   items = f.response.reply.searchResult.item
     ...   print(len(items) > 2)
-    ...   print(f.response_dict().ack)
+    ...   print(f.response.reply.ack)
     True
     True
     Success

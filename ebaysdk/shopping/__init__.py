@@ -190,7 +190,7 @@ class Connection(BaseConnection):
         if self.config.get('warnings') and len(warnings) > 0:
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
-        if self.response_dict().Ack == 'Failure':
+        if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             return errors

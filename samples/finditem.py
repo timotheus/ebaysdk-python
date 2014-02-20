@@ -52,6 +52,13 @@ def run(opts):
 
         api = FindItem(debug=opts.debug, consumer_id=opts.consumer_id, config_file=opts.yaml)
         
+        records = api.find_items_by_ids([itemIds[0]])
+
+        for r in records:
+            print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
+
+        dump(api)
+
         records = api.find_items_by_ids(itemIds)
 
         for r in records:

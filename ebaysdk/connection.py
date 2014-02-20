@@ -103,7 +103,7 @@ class BaseConnection(object):
     def execute(self, verb, data=None, listnodes=[]):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
-
+        
         self._reset()
         self.listnodes=listnodes
         self.build_request(verb, data)
@@ -206,7 +206,7 @@ class BaseConnection(object):
         return self._response_soup
 
     def response_obj(self):
-        return self.response.dict()
+        return self.response.reply
 
     def response_dom(self):
         """ Deprecated: use self.response.dom() instead
@@ -239,7 +239,7 @@ class BaseConnection(object):
     def response_dict(self):
         "Returns the response dictionary."
 
-        return self.response.dict()
+        return self.response.reply
 
     def response_json(self):
         "Returns the response JSON."

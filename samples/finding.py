@@ -38,11 +38,11 @@ def init_options():
 def run(opts):
 
     try:
-        api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid,
+        api = finding(debug=opts.debug, appid=opts.appid,
                       config_file=opts.yaml, warnings=True)
 
         api.execute('findItemsAdvanced', {
-            'keywords': 'python',
+            'keywords': u'niño',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},

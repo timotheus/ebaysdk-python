@@ -78,22 +78,23 @@ class Connection(BaseConnection):
             })
             
         args = {'id': ebay_item_ids, 'readSet': read_set_node}            
-        self.execute('findItemsByIds', args)
+        self.execute('findItemsByIds', args, listnodes=['record'])
         return self.mappedResponse()
 
     def mappedResponse(self):
         records = []
 
-        for r in self.response_dict().get('record', []):
+        for r in self.response.dict().get('record', []):
             mydict = dict()
             i = 0
-            for values_dict in r.value:                
-                for key, value in values_dict.iteritems():
+
+            for values_dict in r.get('value', {}):
+                for key, value in values_dict.items():
                     value_data = None
                     if type(value) == list:
-                        value_data = [x['value'] for x in value]
+                        value_data = [x for x in value]
                     else:
-                        value_data = value['value']
+                        value_data = value
 
                     mydict.update({self.read_set[i]: value_data})
 

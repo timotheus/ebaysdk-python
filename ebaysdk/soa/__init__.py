@@ -54,7 +54,8 @@ class Connection(BaseConnection):
         if self._response_dict:
             return self._response_dict
 
-        mydict = xml2dict().fromstring(self._response_content)
+
+        mydict = self.response.dict()
         
         try:
             verb = self.verb + 'Response'
