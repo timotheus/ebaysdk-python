@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 import os
 
 from ebaysdk.finding import Connection as FindingConnection
-from ebaysdk.utils import to_xml
+from ebaysdk.utils import dict2xml
 
 class Connection(FindingConnection):
     """Connection class for the Merchandising service
@@ -73,7 +73,7 @@ class Connection(FindingConnection):
     def build_request_data(self, verb, data):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"http://www.ebay.com/marketplace/services\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml

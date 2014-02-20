@@ -47,23 +47,24 @@ def run(opts):
     print("Shopping samples for SDK version %s" % ebaysdk.get_version())
 
     try:
-        api.execute('FindPopularItems', {'QueryKeywords': 'Python'})
+        api.execute('FindPopularItems', {'QueryKeywords': 'Python'},
+            listnodes=['ItemArray.Item'])
 
-        if api.response_content():
-            print("Call Success: %s in length" % len(api.response_content()))
+        if api.response.content:
+            print("Call Success: %s in length" % len(api.response.content))
 
         print("Response code: %s" % api.response_code())
         print("Response DOM: %s" % api.response_dom())
 
-        dictstr = "%s" % api.response_dict()
+        dictstr = "%s" % api.response.dict()
         print("Response dictionary: %s..." % dictstr[:50])
 
         print("Matching Titles:")
-        for item in api.response_dict().ItemArray.Item:
+        for item in api.response.reply.ItemArray.Item:
             print(item.Title)
 
     except ConnectionError as e:
-        print e 
+        print(e) 
 
 
 def popularSearches(opts):
@@ -89,19 +90,19 @@ def popularSearches(opts):
         }
 
         try:
-            api.execute('FindPopularSearches', mySearch)
+            api.execute('FindPopularSearches', mySearch, listnodes=['ItemArray.Item'])
 
             #dump(api, full=True)
 
-            print("Related: %s" % api.response_dict().PopularSearchResult.RelatedSearches)
+            print("Related: %s" % api.response.reply.PopularSearchResult.RelatedSearches)
 
-            for term in api.response_dict().PopularSearchResult.AlternativeSearches.split(';')[:3]:
+            for term in api.response.reply.PopularSearchResult.AlternativeSearches.split(';')[:3]:
                 api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
 
                 print("Term: %s" % term)
 
                 try:
-                    for item in api.response_dict().ItemArray.Item:
+                    for item in api.response.reply.ItemArray.Item:
                         print(item.Title)
                 except AttributeError:
                     pass
@@ -110,7 +111,7 @@ def popularSearches(opts):
 
             print("\n")
         except ConnectionError as e:
-            print e
+            print(e)
 
 def categoryInfo(opts):
 
@@ -122,7 +123,7 @@ def categoryInfo(opts):
         dump(api, full=False)
     
     except ConnectionError as e:
-        print e
+        print(e)
 
 def with_affiliate_info(opts):
     try:
@@ -139,7 +140,7 @@ def with_affiliate_info(opts):
         dump(api, full=False)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 def using_attributes(opts):
 
@@ -154,7 +155,7 @@ def using_attributes(opts):
         dump(api, full=False)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     (opts, args) = init_options()

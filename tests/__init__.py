@@ -24,16 +24,18 @@ def getTestSuite():
     suite = unittest.TestSuite()
 
     suite.addTest(doctest.DocTestSuite(ebaysdk.response))
-    #suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
     suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
-    #suite.addTest(doctest.DocTestSuite(ebaysdk.http))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.http))
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
-    suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
+    
+    # inside only
+    #suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
     
     return suite
 

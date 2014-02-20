@@ -56,9 +56,7 @@ def run(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
-
-
+        print(e)
 
 def run2(opts):
     try:
@@ -67,9 +65,9 @@ def run2(opts):
           '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>',
           listnodes=['searchResult.item'])
         dump(api)
-        
+
     except ConnectionError as e:
-        print e
+        print(e)
 
 
 if __name__ == "__main__":

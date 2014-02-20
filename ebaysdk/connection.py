@@ -19,12 +19,6 @@ from requests.adapters import HTTPAdapter
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
-try:
-    from bs4 import BeautifulStoneSoup
-except ImportError:
-    from BeautifulSoup import BeautifulStoneSoup
-    log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
-
 from ebaysdk import set_stream_logger, UserAgent
 from ebaysdk.utils import getNodeText as getNodeTextUtils
 from ebaysdk.utils import getValue
@@ -199,6 +193,12 @@ class BaseConnection(object):
         "Returns a BeautifulSoup object of the response."
 
         if not self._response_soup:
+            try:
+                from bs4 import BeautifulStoneSoup
+            except ImportError:
+                from BeautifulSoup import BeautifulStoneSoup
+                log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
+
             self._response_soup = BeautifulStoneSoup(
                 self.response_content.decode('utf-8')
             )
@@ -219,9 +219,8 @@ class BaseConnection(object):
 
             try:
                 if self.response.content:
-                    regex = re.compile('xmlns="[^"]+"')
-                    content = regex.sub('', self.response.content)
-
+                    regex = re.compile(b'xmlns="[^"]+"')
+                    content = regex.sub(b'', self.response.content)
                 else:
                     content = "<%sResponse></%sResponse>" % (self.verb, self.verb)
 

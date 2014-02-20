@@ -59,13 +59,13 @@ def run(opts):
         p.wait()
 
         if p.error():
-            print p.error()
+            print(p.error())
 
         for api in apis:
             dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     (opts, args) = init_options()

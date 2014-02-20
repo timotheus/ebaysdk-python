@@ -7,43 +7,31 @@ Licensed under CDDL 1.0
 '''
 import sys
 
-try:
-    from lxml import etree as ET
-    print("running with lxml.etree")
-except ImportError:    
-    try:
-        # Python 2.5
-        import xml.etree.cElementTree as ET
-        print("running with cElementTree on Python 2.5+")
-    except ImportError:
-        try:
-            # Python 2.5
-            import xml.etree.ElementTree as ET
-            print("running with ElementTree on Python 2.5+")
-        except ImportError:
-            try:
-                # normal cElementTree install
-                import cElementTree as ET
-                print("running with cElementTree")
-            except ImportError:
-                try:
-                    # normal ElementTree install
-                    import elementtree.ElementTree as ET
-                    print("running with ElementTree")
-                except ImportError:
-                    print("Failed to import ElementTree from any known place")
+from lxml import etree as ET
 
-def to_xml(data):
-    "Converts a list or dictionary to XML and returns it."
+def python_2_unicode_compatible(klass):
+    """
+    A decorator that defines __unicode__ and __str__ methods under Python 2.
+    Under Python 3 it does nothing.
 
-    if isinstance(data, str):
-        return data
-    else:
-        return dict2xml(data)
+    To support Python 2 and 3 with a single code base, define a __str__ method
+    returning text and apply this decorator to the class.
+    """
+    if sys.version_info[0] < 3:
+        if '__str__' not in klass.__dict__:
+            raise ValueError("@python_2_unicode_compatible cannot be applied "
+                             "to %s because it doesn't define __str__()." %
+                             klass.__name__)
+        klass.__unicode__ = klass.__str__
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    return klass
 
 def get_dom_tree(xml):
     tree = ET.fromstring(xml)
+    #try:
     return tree.getroottree().getroot()
+    #except AttributeError:
+    #    return tree
 
 def attribute_check(root):
     attrs = []
@@ -53,7 +41,7 @@ def attribute_check(root):
         if '#text' in root:
             value = root['#text']
         if '@attrs' in root:
-            for ak, av in root.pop('@attrs').iteritems():
+            for ak, av in sorted(root.pop('@attrs').items()):
                 attrs.append('%s="%s"' % (ak, av))
 
     return attrs, value
@@ -79,12 +67,12 @@ def dict2xml(root):
     ...    'sortOrder': 'StartTimeNewest'
     ... }
     >>> dict2xml(dict2)
-    '<paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><sortOrder>StartTimeNewest</sortOrder><searchFilter><categoryId site="US">222</categoryId></searchFilter>'
+    '<paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><searchFilter><categoryId site="US">222</categoryId></searchFilter><sortOrder>StartTimeNewest</sortOrder>'
     >>> dict3 = {
     ...    'parent': {'child': {'#text': 222, '@attrs': {'site': 'US', 'id': 1234}}}
     ... }
     >>> dict2xml(dict3)
-    '<parent><child site="US" id="1234">222</child></parent>'
+    '<parent><child id="1234" site="US">222</child></parent>'
     >>> dict4 = {
     ...     'searchFilter': {'categoryId': {'#text': 222, '@attrs': {'site': 'US'} }},
     ...     'paginationInput': {
@@ -100,12 +88,20 @@ def dict2xml(root):
     ...     'sortOrder': 'StartTimeNewest'
     ... }
     >>> dict2xml(dict4)
-    '<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><sortOrder>StartTimeNewest</sortOrder><searchFilter><categoryId site="US">222</categoryId></searchFilter>'
+    '<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><searchFilter><categoryId site="US">222</categoryId></searchFilter><sortOrder>StartTimeNewest</sortOrder>'
+    >>> dict2xml({})
+    ''
+    >>> dict2xml('<a>b</a>')
+    '<a>b</a>'
+    >>> dict2xml(None)
+    ''
     '''
 
     xml = ''
+    if root is None:
+        return xml
     if isinstance(root, dict):
-        for key in root.keys():
+        for key in sorted(root.keys()):
 
             if isinstance(root[key], dict):
                 attrs, value = attribute_check(root[key])
@@ -128,8 +124,8 @@ def dict2xml(root):
                     if not value:
                         value = dict2xml(item)
                     
-
-                    xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % {'xml': xml, 'tag': key, 'value': value}
+                    xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
+                        {'xml': xml, 'tag': key, 'value': value}
  
             else:
                 value = root[key]
@@ -139,7 +135,8 @@ def dict2xml(root):
     elif isinstance(root, str) or isinstance(root, int) or isinstance(root, unicode):
         xml = '%s%s' % (xml, root)
     else:
-        raise Exception('Unable to serialize node of type %s (%s)' % (type(root), root))
+        raise Exception('Unable to serialize node of type %s (%s)' % \
+            (type(root), root))
 
     return xml
 

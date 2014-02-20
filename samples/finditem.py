@@ -67,7 +67,7 @@ def run(opts):
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 
 if __name__ == "__main__":
