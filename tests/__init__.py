@@ -9,7 +9,6 @@ Licensed under CDDL 1.0
 import unittest
 import doctest
 import ebaysdk.utils
-import ebaysdk.utils2
 import ebaysdk.response
 import ebaysdk.config
 import ebaysdk.http
@@ -25,20 +24,19 @@ def getTestSuite():
     suite = unittest.TestSuite()
 
     suite.addTest(doctest.DocTestSuite(ebaysdk.response))
-    '''
-    suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
-    suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
+    #suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
     suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
-    suite.addTest(doctest.DocTestSuite(ebaysdk.http))
+    #suite.addTest(doctest.DocTestSuite(ebaysdk.http))
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
     suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
-    '''
+    
     return suite
 
 runner = unittest.TextTestRunner()
 runner.run(getTestSuite())
+

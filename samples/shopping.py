@@ -136,7 +136,7 @@ def with_affiliate_info(opts):
         }
 
         api.execute('FindPopularSearches', mySearch)
-        dump(api, full=True)
+        dump(api, full=False)
 
     except ConnectionError as e:
         print e

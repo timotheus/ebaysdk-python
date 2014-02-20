@@ -22,7 +22,7 @@ def dump(api, full=False):
 
     if full:
         print(api.response_content())
-        print((json.dumps(api.response_dict(), indent=2)))
+        print((json.dumps(api.response.dict(), indent=2)))
     else:
         dictstr = "%s" % api.response_dict()
         print("Response dictionary: %s..." % dictstr[:150])
