@@ -64,7 +64,6 @@ class Parallel(object):
 
             for idx, r in enumerate(self._requests):
                 r.response = gresponses[idx]
-                #from IPython import embed; embed()
                 r.process_response()
                 r.error_check()
 
