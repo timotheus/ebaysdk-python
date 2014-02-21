@@ -46,7 +46,8 @@ def run(opts):
         shopping = Shopping(debug=opts.debug, appid=opts.appid, 
             config_file=opts.yaml, warnings=False)
 
-        shopping.execute('FindPopularItems', {'QueryKeywords': 'Python'})
+        response = shopping.execute('FindPopularItems', {'QueryKeywords': 'Python'})
+        
         nodes = shopping.response_dom().getElementsByTagName('ItemID')
         itemIds = [getNodeText(n) for n in nodes]
 
@@ -65,7 +66,7 @@ def run(opts):
             print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
 
         dump(api)
-
+        from IPython import embed; embed()
     except ConnectionError as e:
         print(e)
 

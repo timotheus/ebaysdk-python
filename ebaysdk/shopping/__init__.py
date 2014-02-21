@@ -85,7 +85,12 @@ class Connection(BaseConnection):
         if self.config.get('https') and self.debug:
             print("HTTPS is not supported on the Shopping API.")
 
-        self.base_listnodes=[
+        self.datetime_nodes = ['timestamp', 'registrationdate', 'creationtime',
+            'commenttime', 'updatetime', 'estimateddeliverymintime',
+            'estimateddeliverymaxtime', 'creationtime', 'estimateddeliverymintime',
+            'estimateddeliverymaxtime', 'endtime', 'starttime']
+
+        self.base_list_nodes=[
             'findhalfproductsresponse.halfcatalogproducttype.productid',
             'findhalfproductsresponse.halfproductstype.product',
             'getshippingcostsresponse.internationalshippingserviceoptiontype.shipsto',

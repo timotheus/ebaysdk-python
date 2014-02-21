@@ -86,7 +86,9 @@ class Connection(BaseConnection):
         self.config.set('compatibility', '1.0.0')
         self.config.set('service', 'FindingService')
 
-        self.base_listnodes=[
+        self.datetime_nodes = ['starttimefrom', 'timestamp', 'starttime',
+                               'endtime']
+        self.base_list_nodes = [
             'findcompleteditemsresponse.categoryhistogramcontainer.categoryhistogram',
             'finditemsadvancedresponse.categoryhistogramcontainer.categoryhistogram',
             'finditemsbycategoryresponse.categoryhistogramcontainer.categoryhistogram',

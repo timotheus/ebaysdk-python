@@ -39,7 +39,7 @@ def run(opts):
         api = merchandising(debug=opts.debug, appid=opts.appid,
                             config_file=opts.yaml, warnings=True)
 
-        api.execute('getMostWatchedItems', {'maxResults': 3})
+        response = api.execute('getMostWatchedItems', {'maxResults': 4})
 
         dump(api)
     except ConnectionError as e:

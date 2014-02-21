@@ -47,20 +47,12 @@ def run(opts):
     print("Shopping samples for SDK version %s" % ebaysdk.get_version())
 
     try:
-        api.execute('FindPopularItems', {'QueryKeywords': 'Python'},
-            listnodes=['ItemArray.Item'])
+        response = api.execute('FindPopularItems', {'QueryKeywords': 'Python'})
 
-        if api.response.content:
-            print("Call Success: %s in length" % len(api.response.content))
-
-        print("Response code: %s" % api.response_code())
-        print("Response DOM: %s" % api.response_dom())
-
-        dictstr = "%s" % api.response.dict()
-        print("Response dictionary: %s..." % dictstr[:50])
+        dump(api)
 
         print("Matching Titles:")
-        for item in api.response.reply.ItemArray.Item:
+        for item in response.reply.ItemArray.Item:
             print(item.Title)
 
     except ConnectionError as e:
@@ -72,7 +64,6 @@ def popularSearches(opts):
     api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
 
-
     choice = True
 
     while choice:
@@ -83,26 +74,24 @@ def popularSearches(opts):
             break
 
         mySearch = {
-            # "CategoryID": " string ",
-            # "IncludeChildCategories": " boolean ",
             "MaxKeywords": 10,
             "QueryKeywords": choice,
         }
 
         try:
-            api.execute('FindPopularSearches', mySearch) #, listnodes=['ItemArray.Item'])
+            response = api.execute('FindPopularSearches', mySearch)
 
             dump(api, full=False)
 
-            print("Related: %s" % api.response.reply.PopularSearchResult.RelatedSearches)
+            print("Related: %s" % response.reply.PopularSearchResult.RelatedSearches)
 
-            for term in api.response.reply.PopularSearchResult.AlternativeSearches.split(';')[:3]:
+            for term in response.reply.PopularSearchResult.AlternativeSearches.split(';')[:3]:
                 api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
 
                 print("Term: %s" % term)
 
                 try:
-                    for item in api.response.reply.ItemArray.Item:
+                    for item in response.reply.ItemArray.Item:
                         print(item.Title)
                 except AttributeError:
                     pass
@@ -110,6 +99,7 @@ def popularSearches(opts):
                 dump(api)
 
             print("\n")
+
         except ConnectionError as e:
             print(e)
 
@@ -119,7 +109,7 @@ def categoryInfo(opts):
         api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                        warnings=True)
 
-        api.execute('GetCategoryInfo', {"CategoryID": 3410})
+        response = api.execute('GetCategoryInfo', {"CategoryID": 3410})
         dump(api, full=False)
     
     except ConnectionError as e:
@@ -136,7 +126,7 @@ def with_affiliate_info(opts):
             "QueryKeywords": 'shirt',
         }
 
-        api.execute('FindPopularSearches', mySearch)
+        response = api.execute('FindPopularSearches', mySearch)
         dump(api, full=False)
 
     except ConnectionError as e:
@@ -148,7 +138,7 @@ def using_attributes(opts):
         api = Shopping(debug=opts.debug, appid=opts.appid,
                        config_file=opts.yaml, warnings=True)
 
-        api.execute('FindProducts', {
+        response = api.execute('FindProducts', {
             "ProductID": {'@attrs': {'type': 'ISBN'}, 
                           '#text': '0596154488'}})
 
