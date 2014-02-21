@@ -101,6 +101,7 @@ class Connection(BaseConnection):
             'getshippingcostsresponse.shippingdetails.excludeshiptolocation',
             'getshippingcostsresponse.shippingserviceoption.shipsto',
             'findpopularitemsresponse.itemarray.item',
+            'findproductsresponse.itemarray.item',
             'getsingleitemresponse.item.paymentmethods',
             'getmultipleitemsresponse.item.pictureurl',
             'getsingleitemresponse.item.pictureurl',
