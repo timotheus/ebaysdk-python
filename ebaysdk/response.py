@@ -46,7 +46,6 @@ class ResponseDataObject(object):
                 ts = "%s %s" % (value.partition('T')[0], value.partition('T')[2].partition('.')[0])
                 value = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
             except ValueError:
-                print "Error: %s" % value
                 pass
 
         setattr(self, name, value)

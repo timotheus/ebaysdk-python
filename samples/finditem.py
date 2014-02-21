@@ -66,7 +66,7 @@ def run(opts):
             print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
 
         dump(api)
-        from IPython import embed; embed()
+        
     except ConnectionError as e:
         print(e)
 
