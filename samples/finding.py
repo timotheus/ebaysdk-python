@@ -41,7 +41,7 @@ def run(opts):
         api = finding(debug=opts.debug, appid=opts.appid,
                       config_file=opts.yaml, warnings=True)
 
-        api.execute('findItemsAdvanced', {
+        response = api.execute('findItemsAdvanced', {
             'keywords': u'niño',
             'itemFilter': [
                 {'name': 'Condition',
@@ -54,15 +54,17 @@ def run(opts):
         })
 
         dump(api)
-        #from IPython import embed; embed()
+
     except ConnectionError as e:
         print(e)
 
 def run2(opts):
     try:
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-        api.execute('findItemsByProduct', 
+        
+        response = api.execute('findItemsByProduct', 
           '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>')
+        
         dump(api)
 
     except ConnectionError as e:

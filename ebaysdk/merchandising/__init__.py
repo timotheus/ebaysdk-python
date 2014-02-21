@@ -58,6 +58,17 @@ class Connection(FindingConnection):
         self.config.set('uri', '/MerchandisingService', force=True)
         self.config.set('service', 'MerchandisingService', force=True)
 
+        self.datetime_nodes = ['endtimeto', 'endtimefrom', 'timestamp']
+        self.base_list_nodes = [
+            'getdealsresponse.itemrecommendations.item',
+            'getmostwatcheditemsresponse.itemrecommendations.item',
+            'getrelatedcategoryitemsresponse.itemrecommendations.item',
+            'getsimilaritemsresponse.itemrecommendations.item',
+            'gettopsellingproductsresponse.productrecommendations.product',
+            'getrelatedcategoryitemsresponse.itemfilter.value',
+            'getsimilaritemsresponse.itemfilter.value',
+        ]
+        
     def build_request_headers(self, verb):
         return {
             "X-EBAY-API-VERSION": self.config.get('version', ''),

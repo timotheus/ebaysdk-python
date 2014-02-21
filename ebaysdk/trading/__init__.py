@@ -26,17 +26,20 @@ class Connection(BaseConnection):
     (all others, see API docs)
 
     Doctests:
+    >>> import datetime
     >>> t = Connection(config_file=os.environ.get('EBAY_YAML'))
-    >>> retval = t.execute('GetCharities', {'CharityID': 3897})
+    >>> response = t.execute('GetCharities', {'CharityID': 3897})
     >>> charity_name = ''
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
     ...   charity_name = getNodeText(t.response_dom().getElementsByTagName('Name')[0])
     >>> print(charity_name)
     Sunshine Kids Foundation
+    >>> isinstance(response.reply.Timestamp, datetime.datetime)
+    True
     >>> print(t.error())
     None
     >>> t2 = Connection(errors=False, debug=False, config_file=os.environ.get('EBAY_YAML'))
-    >>> retval2 = t2.execute('VerifyAddItem', {})
+    >>> response = t2.execute('VerifyAddItem', {})
     >>> print(t2.response_codes())
     [10009]
     """
@@ -90,7 +93,102 @@ class Connection(BaseConnection):
         self.config.set('version', '837')
         self.config.set('compatibility', '837')
 
-        self.base_listnodes = [
+        self.datetime_nodes = [
+            'shippingtime',
+            'starttime',
+            'endtime',
+            'scheduletime',
+            'createdtime',
+            'hardexpirationtime',
+            'invoicedate',
+            'begindate',
+            'enddate',
+            'startcreationtime',
+            'endcreationtime',
+            'endtimefrom',
+            'endtimeto',
+            'updatetime',
+            'lastupdatetime',
+            'lastmodifiedtime',
+            'modtimefrom',
+            'modtimeto',
+            'createtimefrom',
+            'createtimeto',
+            'starttimefrom',
+            'starttimeto',
+            'timeto',
+            'paymenttimefrom',
+            'paymenttimeto',
+            'inventorycountlastcalculateddate',
+            'registrationdate',
+            'timefrom',
+            'timestamp',
+            'messagecreationtime',
+            'resolutiontime',
+            'date',
+            'bankmodifydate',
+            'creditcardexpiration',
+            'creditcardmodifydate',
+            'lastpaymentdate',
+            'submittedtime',
+            'announcementstarttime',
+            'eventtime',
+            'periodicstartdate',
+            'modtime',
+            'expirationtime',
+            'creationtime',
+            'lastusedtime',
+            'disputecreatedtime',
+            'disputemodifiedtime',
+            'externaltransactiontime',
+            'commenttime',
+            'lastbidtime',
+            'time',
+            'creationdate',
+            'lastmodifieddate',
+            'receivedate',
+            'expirationdate',
+            'resolutiondate',
+            'lastreaddate',
+            'userforwarddate',
+            'itemendtime',
+            'userresponsedate',
+            'nextretrytime',
+            'deliverytime',
+            'timebid',
+            'paidtime',
+            'shippedtime',
+            'expectedreleasedate',
+            'paymenttime',
+            'promotionalsalestarttime',
+            'promotionalsaleendtime',
+            'refundtime',
+            'refundrequestedtime',
+            'refundcompletiontime',
+            'estimatedrefundcompletiontime',
+            'lastemailsenttime',
+            'sellerinvoicetime',
+            'estimateddeliverydate',
+            'printedtime',
+            'deliverydate',
+            'refundgrantedtime',
+            'scheduleddeliverytimemin',
+            'scheduleddeliverytimemax',
+            'actualdeliverytime',
+            'usebydate',
+            'lastopenedtime',
+            'returndate',
+            'revocationtime',
+            'lasttimemodified',
+            'createddate',
+            'invoicesenttime',
+            'acceptedtime',
+            'sellerebaypaymentprocessenabletime',
+            'useridlastchanged',
+            'actionrequiredby',
+        ]
+
+        self.base_list_nodes = [
             'getmymessagesresponse.abstractrequesttype.detaillevel',
             'getaccountresponse.abstractrequesttype.outputselector',
             'getadformatleadsresponse.abstractrequesttype.outputselector',
@@ -566,7 +664,7 @@ class Connection(BaseConnection):
             'getebaydetailsresponse.verifieduserrequirementsdetailstype.feedbackscore',
             'getwantitnowsearchresultsresponse.wantitnowpostarraytype.wantitnowpost',
         ]
-        
+
     def build_request_headers(self, verb):
         headers = {
             "X-EBAY-API-COMPATIBILITY-LEVEL": self.config.get('version', ''),

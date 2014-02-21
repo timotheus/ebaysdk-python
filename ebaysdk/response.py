@@ -8,6 +8,8 @@ Licensed under CDDL 1.0
 import sys
 import lxml
 import copy
+import datetime
+
 from collections import defaultdict
 import json
 
@@ -16,8 +18,8 @@ from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible
 @python_2_unicode_compatible
 class ResponseDataObject(object):
 
-    def __init__(self, mydict={}):
-        self._load_dict(mydict)
+    def __init__(self, mydict, datetime_nodes):
+        self._load_dict(mydict, datetime_nodes)
 
     def __repr__(self):
         return str(self)
@@ -38,12 +40,23 @@ class ResponseDataObject(object):
         except AttributeError:
             return default
 
-    def _load_dict(self, mydict):
+    def _setattr(self, name, value, datetime_nodes):
+        if name.lower() in datetime_nodes:
+            try:
+                ts = "%s %s" % (value.partition('T')[0], value.partition('T')[2].partition('.')[0])
+                value = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                print "Error: %s" % value
+                pass
+
+        setattr(self, name, value)
+
+    def _load_dict(self, mydict, datetime_nodes):
         
         for a in mydict.items():
 
             if isinstance(a[1], dict):
-                o = ResponseDataObject(a[1])
+                o = ResponseDataObject(a[1], datetime_nodes)
                 setattr(self, a[0], o)
 
             elif isinstance(a[1], list):
@@ -52,12 +65,12 @@ class ResponseDataObject(object):
                     if isinstance(i, str):
                         objs.append(i)
                     else:
-                        objs.append(ResponseDataObject(i))
+                        objs.append(ResponseDataObject(i, datetime_nodes))
                 
                 setattr(self, a[0], objs)
             else:
-                setattr(self, a[0], a[1])
-
+                self._setattr(a[0], a[1], datetime_nodes)
+                
 class Response(object):
     '''
     <?xml version='1.0' encoding='UTF-8'?>
@@ -80,8 +93,8 @@ class Response(object):
 
     Doctests:
     >>> xml = '<?xml version="1.0" encoding="UTF-8"?><findItemsByProductResponse xmlns="http://www.ebay.com/marketplace/search/v1/services"><ack>Success</ack><version>1.12.0</version><timestamp>2014-02-07T23:31:13.941Z</timestamp><searchResult count="1"><item><name>Item Two</name></item></searchResult><paginationOutput><pageNumber>1</pageNumber><entriesPerPage>1</entriesPerPage><totalPages>90</totalPages><totalEntries>179</totalEntries></paginationOutput><itemSearchURL>http://www.ebay.com/ctg/53039031?_ddo=1&amp;_ipg=2&amp;_pgn=1</itemSearchURL></findItemsByProductResponse>'
-    >>> o = ResponseDataObject({'content': xml})
-    >>> r = Response(o, verb='findItemsByProduct', listnodes=['searchResult.item', 'findItemsByProductResponse.paginationOutput.pageNumber'])
+    >>> o = ResponseDataObject({'content': xml}, [])
+    >>> r = Response(o, verb='findItemsByProduct', list_nodes=['finditemsbyproductresponse.searchresult.item', 'finditemsbyproductresponse.paginationoutput.pagenumber'])
     >>> len(r.dom().getchildren()) > 2
     True
     >>> r.reply.searchResult._count == '1'
@@ -91,8 +104,8 @@ class Response(object):
     >>> len(r.reply.paginationOutput.pageNumber) == 1
     True
     >>> xml = '<?xml version="1.0" encoding="UTF-8"?><findItemsByProductResponse xmlns="http://www.ebay.com/marketplace/search/v1/services"><ack>Success</ack><version>1.12.0</version><timestamp>2014-02-07T23:31:13.941Z</timestamp><searchResult count="2"><item><name>Item Two</name><shipping><c>US</c><c>MX</c></shipping></item><item><name>Item One</name></item></searchResult><paginationOutput><pageNumber>1</pageNumber><entriesPerPage>2</entriesPerPage><totalPages>90</totalPages><totalEntries>179</totalEntries></paginationOutput><itemSearchURL>http://www.ebay.com/ctg/53039031?_ddo=1&amp;_ipg=2&amp;_pgn=1</itemSearchURL></findItemsByProductResponse>'
-    >>> o = ResponseDataObject({'content': xml})
-    >>> r = Response(o, verb='findItemsByProduct', listnodes=['searchResult.item'])
+    >>> o = ResponseDataObject({'content': xml}, [])
+    >>> r = Response(o, verb='findItemsByProduct', list_nodes=['searchResult.item'])
     >>> len(r.dom().getchildren()) > 2
     True
     >>> r.json()
@@ -112,8 +125,8 @@ class Response(object):
     True
     '''
     
-    def __init__(self, obj, verb=None, listnodes=[]):
-        self._listnodes=copy.copy(listnodes)
+    def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[]):
+        self._list_nodes=copy.copy(list_nodes)
         self._obj = obj
         
         try:
@@ -123,9 +136,10 @@ class Response(object):
             if verb:
                 self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
-            self.reply = ResponseDataObject(self._dict)
+            self.reply = ResponseDataObject(self._dict,
+                                            datetime_nodes=copy.copy(datetime_nodes))
         except lxml.etree.XMLSyntaxError:
-            self.reply = ResponseDataObject({})
+            self.reply = ResponseDataObject({}, [])
 
     def _get_node_path(self, t):
         i = t
@@ -161,7 +175,7 @@ class Response(object):
             parent_path = self._get_node_path(t)
             for k in d[t.tag].keys():
                 path = "%s.%s" % (parent_path, k)
-                if path.lower() in self._listnodes:
+                if path.lower() in self._list_nodes:
                     if not isinstance(d[t.tag][k], list):
                         d[t.tag][k] = [ d[t.tag][k] ]
 

@@ -12,7 +12,6 @@ import re
 import json
 import time
 import uuid
-import copy
 
 from requests import Request, Session
 from requests.adapters import HTTPAdapter
@@ -49,6 +48,8 @@ class BaseConnection(object):
         self.timeout = timeout
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
+        self.datetime_nodes = []
+        self._list_nodes = []
 
         self.proxies = dict()
         if self.proxy_host:
@@ -64,6 +65,9 @@ class BaseConnection(object):
 
         self.parallel = parallel
 
+        self.base_list_nodes = []
+        self.datetime_nodes = []
+        
         self._reset()
 
     def debug_callback(self, debug_type, debug_message):
@@ -79,7 +83,7 @@ class BaseConnection(object):
         self.response = None
         self.request = None
         self.verb = None
-        self._listnodes = []
+        self._list_nodes = []
         self._request_id = None
         self._time = time.time()
         self._response_content = None
@@ -95,20 +99,20 @@ class BaseConnection(object):
     def _add_prefix(self, nodes, verb):
         if verb:
             for i, v in enumerate(nodes):
-                if not nodes[i].startswith(verb):
-                    nodes[i] = "%sResponse.%s" % (verb, nodes[i])
+                if not nodes[i].startswith(verb.lower()):
+                    nodes[i] = "%sresponse.%s" % (verb.lower(), nodes[i].lower())
 
-    def execute(self, verb, data=None, listnodes=[]):
+    def execute(self, verb, data=None, list_nodes=[]):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
         
         self._reset()
 
-        self._listnodes += listnodes
-        self._add_prefix(self._listnodes, verb)
+        self._list_nodes += list_nodes
+        self._add_prefix(self._list_nodes, verb)
 
-        if getattr(self, 'base_listnodes'):
-            self._listnodes += self.base_listnodes
+        if hasattr(self, 'base_list_nodes'):
+            self._list_nodes += self.base_list_nodes
 
         self.build_request(verb, data)
         self.execute_request()        
@@ -118,8 +122,8 @@ class BaseConnection(object):
             self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))
-        
-        return self
+
+        return self.response        
 
     def build_request(self, verb, data):
  
@@ -171,7 +175,8 @@ class BaseConnection(object):
     def process_response(self):
         """Post processing of the response"""
 
-        self.response = Response(self.response, verb=self.verb, listnodes=self._listnodes)
+        self.response = Response(self.response, verb=self.verb,
+                list_nodes=self._list_nodes, datetime_nodes=self.datetime_nodes)
 
         if self.response.status_code != 200:
             self._response_error = self.response.reason

@@ -8,9 +8,15 @@ Quick Example::
     from ebaysdk.finding import Connection
     try:
         api = Connection(appid='YOUR_APPID_HERE')
-        api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+        response = api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
-        print api.response_dict()
+        print(response.reply.timestamp)
+        print(response.reply.version)
+
+        print(response.dict())
+        print(response.json())
+        print(response.dom())
+
     except ConnectionError as e:
         raise e
 

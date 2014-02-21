@@ -53,6 +53,9 @@ class Connection(BaseConnection):
 
         self.read_set = None
 
+        self.datetime_nodes += ['lastupdatetime', 'timestamp']
+        self.base_list_nodes += ['finditemsbyidsresponse.record']
+
     def build_request_headers(self, verb):
         return {
             "X-EBAY-SOA-SERVICE-NAME": self.config.get('service', ''),
@@ -78,7 +81,7 @@ class Connection(BaseConnection):
             })
             
         args = {'id': ebay_item_ids, 'readSet': read_set_node}            
-        self.execute('findItemsByIds', args, listnodes=['record'])
+        self.execute('findItemsByIds', args)
         return self.mappedResponse()
 
     def mappedResponse(self):
