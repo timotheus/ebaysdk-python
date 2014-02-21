@@ -90,9 +90,9 @@ def popularSearches(opts):
         }
 
         try:
-            api.execute('FindPopularSearches', mySearch, listnodes=['ItemArray.Item'])
+            api.execute('FindPopularSearches', mySearch) #, listnodes=['ItemArray.Item'])
 
-            #dump(api, full=True)
+            dump(api, full=False)
 
             print("Related: %s" % api.response.reply.PopularSearchResult.RelatedSearches)
 
@@ -107,7 +107,7 @@ def popularSearches(opts):
                 except AttributeError:
                     pass
 
-                # dump(api)
+                dump(api)
 
             print("\n")
         except ConnectionError as e:
@@ -120,7 +120,7 @@ def categoryInfo(opts):
                        warnings=True)
 
         api.execute('GetCategoryInfo', {"CategoryID": 3410})
-        dump(api, full=False)
+        #dump(api, full=False)
     
     except ConnectionError as e:
         print(e)
@@ -137,7 +137,7 @@ def with_affiliate_info(opts):
         }
 
         api.execute('FindPopularSearches', mySearch)
-        dump(api, full=False)
+        #dump(api, full=False)
 
     except ConnectionError as e:
         print(e)
@@ -152,7 +152,7 @@ def using_attributes(opts):
             "ProductID": {'@attrs': {'type': 'ISBN'}, 
                           '#text': '0596154488'}})
 
-        dump(api, full=False)
+        #dump(api, full=False)
 
     except ConnectionError as e:
         print(e)

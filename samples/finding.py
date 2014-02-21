@@ -54,7 +54,7 @@ def run(opts):
         })
 
         dump(api)
-
+        #from IPython import embed; embed()
     except ConnectionError as e:
         print(e)
 
@@ -62,8 +62,7 @@ def run2(opts):
     try:
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
         api.execute('findItemsByProduct', 
-          '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>',
-          listnodes=['searchResult.item'])
+          '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>')
         dump(api)
 
     except ConnectionError as e:

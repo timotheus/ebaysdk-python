@@ -7,6 +7,7 @@ Licensed under CDDL 1.0
 '''
 import sys
 import lxml
+import copy
 from collections import defaultdict
 import json
 
@@ -112,11 +113,9 @@ class Response(object):
     '''
     
     def __init__(self, obj, verb=None, listnodes=[]):
-        self._listnodes=listnodes
-        self._add_prefix(self._listnodes, verb)
-
+        self._listnodes=copy.copy(listnodes)
         self._obj = obj
-
+        
         try:
             self._dom = self._parse_xml(obj.content)
             self._dict = self._etree_to_dict(self._dom)
@@ -127,12 +126,6 @@ class Response(object):
             self.reply = ResponseDataObject(self._dict)
         except lxml.etree.XMLSyntaxError:
             self.reply = ResponseDataObject({})
-
-    def _add_prefix(self, nodes, verb):
-        if verb:
-            for i, v in enumerate(nodes):
-                if not nodes[i].startswith(verb):
-                    nodes[i] = "%sResponse.%s" % (verb, nodes[i])
 
     def _get_node_path(self, t):
         i = t
@@ -148,10 +141,10 @@ class Response(object):
         return '.'.join(path)
 
     def _etree_to_dict(self, t):
-        # remove xmlns from nodes, I find them meaningless
         if type(t) == lxml.etree._Comment:
             return {}
 
+        # remove xmlns from nodes, I find them meaningless
         t.tag = self._get_node_tag(t)
 
         d = {t.tag: {} if t.attrib else None}
@@ -168,7 +161,7 @@ class Response(object):
             parent_path = self._get_node_path(t)
             for k in d[t.tag].keys():
                 path = "%s.%s" % (parent_path, k)
-                if path in self._listnodes:
+                if path.lower() in self._listnodes:
                     if not isinstance(d[t.tag][k], list):
                         d[t.tag][k] = [ d[t.tag][k] ]
 
