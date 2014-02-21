@@ -12,6 +12,7 @@ import re
 import json
 import time
 import uuid
+import copy
 
 from requests import Request, Session
 from requests.adapters import HTTPAdapter
@@ -78,7 +79,7 @@ class BaseConnection(object):
         self.response = None
         self.request = None
         self.verb = None
-        self.listnodes = []
+        self._listnodes = []
         self._request_id = None
         self._time = time.time()
         self._response_content = None
@@ -91,15 +92,24 @@ class BaseConnection(object):
         self._resp_body_warnings = []
         self._resp_codes = []
 
-    def do(self, verb, call_data=dict()):
-        return self.execute(verb, call_data)
+    def _add_prefix(self, nodes, verb):
+        if verb:
+            for i, v in enumerate(nodes):
+                if not nodes[i].startswith(verb):
+                    nodes[i] = "%sResponse.%s" % (verb, nodes[i])
 
     def execute(self, verb, data=None, listnodes=[]):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
         
         self._reset()
-        self.listnodes=listnodes
+
+        self._listnodes += listnodes
+        self._add_prefix(self._listnodes, verb)
+
+        if getattr(self, 'base_listnodes'):
+            self._listnodes += self.base_listnodes
+
         self.build_request(verb, data)
         self.execute_request()        
 
@@ -161,7 +171,7 @@ class BaseConnection(object):
     def process_response(self):
         """Post processing of the response"""
 
-        self.response = Response(self.response, verb=self.verb, listnodes=self.listnodes)
+        self.response = Response(self.response, verb=self.verb, listnodes=self._listnodes)
 
         if self.response.status_code != 200:
             self._response_error = self.response.reason

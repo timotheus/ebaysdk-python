@@ -85,6 +85,40 @@ class Connection(BaseConnection):
         if self.config.get('https') and self.debug:
             print("HTTPS is not supported on the Shopping API.")
 
+        self.base_listnodes=[
+            'findhalfproductsresponse.halfcatalogproducttype.productid',
+            'findhalfproductsresponse.halfproductstype.product',
+            'getshippingcostsresponse.internationalshippingserviceoptiontype.shipsto',
+            'getsingleitemresponse.itemcompatibility.compatibility',
+            'getsingleitemresponse.itemcompatibility.namevaluelist',
+            'getsingleitemresponse.variationspecifics.namevaluelist',
+            'getsingleitemresponse.namevaluelist.value',
+            'getsingleitemresponse.pictures.variationspecificpictureset',
+            'getmultipleitemsresponse.pictures.variationspecificpictureset',
+            'findreviewsandguidesresponse.reviewdetailstype.review',
+            'getshippingcostsresponse.shippingdetails.internationalshippingserviceoption',
+            'getshippingcostsresponse.shippingdetails.shippingserviceoption',
+            'getshippingcostsresponse.shippingdetails.excludeshiptolocation',
+            'getshippingcostsresponse.shippingserviceoption.shipsto',
+            'findpopularitemsresponse.itemarray.item',
+            'getsingleitemresponse.item.paymentmethods',
+            'getmultipleitemsresponse.item.pictureurl',
+            'getsingleitemresponse.item.pictureurl',
+            'findproductsresponse.item.shiptolocations',
+            'getmultipleitemsresponse.item.shiptolocations',
+            'getsingleitemresponse.item.shiptolocations',
+            'getmultipleitemsresponse.item.paymentallowedsite',
+            'getsingleitemresponse.item.paymentallowedsite',
+            'getsingleitemresponse.item.excludeshiptolocation',
+            'getshippingcostsresponse.taxtable.taxjurisdiction',
+            'getsingleitemresponse.variationspecificpictureset.pictureurl',
+            'getmultipleitemsresponse.variationspecificpictureset.pictureurl',
+            'getsingleitemresponse.variations.variation',
+            'getmultipleitemsresponse.variations.variation',
+            'getsingleitemresponse.variations.pictures',
+            'getmultipleitemsresponse.variations.pictures',
+        ]
+
     def build_request_headers(self, verb):
         headers = {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
