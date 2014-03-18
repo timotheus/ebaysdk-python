@@ -54,14 +54,15 @@ class Connection(BaseConnection):
         if self._response_dict:
             return self._response_dict
 
-        mydict = xml2dict().fromstring(self._response_content)
-        
-        try:
-            verb = self.verb + 'Response'
-            self._response_dict = mydict['Envelope']['Body'][verb]
+        if self._response_content:
+            mydict = xml2dict().fromstring(self._response_content)
 
-        except KeyError:
-            self._response_dict = mydict.get(self.verb + 'Response', mydict)
+            try:
+                verb = self.verb + 'Response'
+                self._response_dict = mydict['Envelope']['Body'][verb]
+
+            except KeyError:
+                self._response_dict = mydict.get(self.verb + 'Response', mydict)
 
         return self._response_dict
 
