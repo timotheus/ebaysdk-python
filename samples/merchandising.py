@@ -14,7 +14,7 @@ sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 from common import dump
 
 import ebaysdk
-from ebaysdk import merchandising
+from ebaysdk.merchandising import Connection as merchandising
 from ebaysdk.exception import ConnectionError
 
 def init_options():

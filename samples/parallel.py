@@ -12,7 +12,8 @@ from optparse import OptionParser
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 from common import dump
-from ebaysdk import finding, html
+from ebaysdk.finding import Connection as finding
+from ebaysdk.http import Connection as html
 from ebaysdk.parallel import Parallel
 from ebaysdk.exception import ConnectionError
 
