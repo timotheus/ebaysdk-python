@@ -7,10 +7,11 @@ In order to use eBay aspects of this utility you must first register with eBay t
 
 Example::
 
-    from ebaysdk import finding, tag, nodeText
+    from ebaysdk import getNodeText
+    from ebaysdk.finding import Connection as finding
 
     f = finding()
-    f.execute('findItemsAdvanced', tag('keywords', 'shoes'))        
+    f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
 
     dom    = f.response_dom()
     mydict = f.response_dict()
@@ -22,7 +23,7 @@ Example::
     items = dom.getElementsByTagName('item')
 
     for item in items:
-      print nodeText(item.getElementsByTagName('title')[0])
+      print getNodeText(item.getElementsByTagName('title')[0])
 
 .. _eBay Developer Site: http://developer.ebay.com/
 

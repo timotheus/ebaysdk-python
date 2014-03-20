@@ -13,7 +13,7 @@ class Parallel(object):
     """
     >>> from ebaysdk.finding import Connection as finding
     >>> from ebaysdk.shopping import Connection as shopping
-    >>> from ebaysdk import html
+    >>> from ebaysdk.http import Connection as html
     >>> import os
     >>> p = Parallel()
     >>> r1 = html(parallel=p)
