@@ -54,21 +54,13 @@ class Connection(BaseConnection):
         if self._response_dict:
             return self._response_dict
 
-<<<<<<< HEAD
-
-        mydict = self.response.dict()
-        
-        try:
-            verb = self.verb + 'Response'
-            self._response_dict = mydict['Envelope']['Body'][verb]
-=======
         if self._response_content:
-            mydict = xml2dict().fromstring(self._response_content)
 
+            mydict = self.response.dict()
+            
             try:
                 verb = self.verb + 'Response'
                 self._response_dict = mydict['Envelope']['Body'][verb]
->>>>>>> master
 
             except KeyError:
                 self._response_dict = mydict.get(self.verb + 'Response', mydict)
