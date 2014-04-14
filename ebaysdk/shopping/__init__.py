@@ -129,7 +129,6 @@ class Connection(BaseConnection):
         headers = {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
             "X-EBAY-API-APP-ID":  self.config.get('appid', ''),
-            "X-EBAY-API-SITEID":  self.config.get('siteid', ''),
             "X-EBAY-API-SITE-ID":  self.config.get('siteid', ''),
             "X-EBAY-API-CALL-NAME": verb,
             "X-EBAY-API-REQUEST-ENCODING": "XML",

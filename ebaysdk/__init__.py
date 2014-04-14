@@ -35,7 +35,6 @@ def get_version():
 
 def set_file_logger(name, filepath, level=logging.INFO, format_string=None):
     global log
-    log.handlers=[]
     log.handlers = []
 
     if not format_string:
@@ -52,7 +51,6 @@ def set_file_logger(name, filepath, level=logging.INFO, format_string=None):
 
 def set_stream_logger(name, level=logging.DEBUG, format_string=None):
     global log
-    log.handlers=[]
     log.handlers = []
 
     if not format_string:
@@ -67,8 +65,6 @@ def set_stream_logger(name, level=logging.DEBUG, format_string=None):
     log = logger
 
 def trading(*args, **kwargs):
-    from ebaysdk.trading import Connection as Trading
-    return Trading(*args, **kwargs)
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import trading',
@@ -77,8 +73,6 @@ def trading(*args, **kwargs):
     )
 
 def shopping(*args, **kwargs):
-    from ebaysdk.shopping import Connection as Shopping
-    return Shopping(*args, **kwargs)
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import shopping',
@@ -87,8 +81,6 @@ def shopping(*args, **kwargs):
     )
 
 def finding(*args, **kwargs):
-    from ebaysdk.finding import Connection as Finding
-    return Finding(*args, **kwargs)
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import finding',
@@ -97,8 +89,6 @@ def finding(*args, **kwargs):
     )
 
 def merchandising(*args, **kwargs):
-    from ebaysdk.merchandising import Connection as Merchandising
-    return Merchandising(*args, **kwargs)
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import merchandising',
@@ -107,8 +97,6 @@ def merchandising(*args, **kwargs):
     )
 
 def html(*args, **kwargs):
-    from ebaysdk.http import Connection as HTTP
-    return HTTP(*args, **kwargs)
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import html',
@@ -117,9 +105,6 @@ def html(*args, **kwargs):
     )
 
 def parallel(*args, **kwargs):
-    from ebaysdk.parallel import Parallel
-    return Parallel(*args, **kwargs)
-
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
             'from ebaysdk import parallel',
