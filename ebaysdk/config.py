@@ -53,6 +53,7 @@ class Config(object):
 
         # check other directories
         dirs = ['.', os.environ.get('HOME'), '/etc']
+        dirs = ['.', os.path.expanduser('~'), '/etc']
         for mydir in dirs:
             myfile = "%s/%s" % (mydir, self.config_file)
 

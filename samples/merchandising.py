@@ -15,6 +15,7 @@ from common import dump
 
 import ebaysdk
 from ebaysdk import merchandising
+from ebaysdk.merchandising import Connection as merchandising
 from ebaysdk.exception import ConnectionError
 
 def init_options():
