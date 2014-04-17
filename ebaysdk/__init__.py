@@ -12,6 +12,12 @@ import logging
 __version__ = '1.0.3'
 Version = __version__  # for backware compatibility
 
+try:
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
 
 UserAgent = 'eBaySDK/%s Python/%s %s/%s' % (
     __version__,
@@ -20,49 +26,26 @@ UserAgent = 'eBaySDK/%s Python/%s %s/%s' % (
     platform.release()
 )
 
-class NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
-
 log = logging.getLogger('ebaysdk')
-perflog = logging.getLogger('ebaysdk.perf')
 
-log.addHandler(NullHandler())
-perflog.addHandler(NullHandler())
+if not log.handlers:
+    log.addHandler(NullHandler())
 
 def get_version():
     return __version__
 
-def set_file_logger(name, filepath, level=logging.INFO, format_string=None):
-    global log
-    log.handlers = []
+def set_stream_logger(level=logging.DEBUG, format_string=None):
+    log.handlers=[]
 
     if not format_string:
         format_string = "%(asctime)s %(name)s [%(levelname)s]:%(message)s"
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    fh = logging.FileHandler(filepath)
-    fh.setLevel(level)
-    formatter = logging.Formatter(format_string)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    log = logger
 
-
-def set_stream_logger(name, level=logging.DEBUG, format_string=None):
-    global log
-    log.handlers = []
-
-    if not format_string:
-        format_string = "%(asctime)s %(name)s [%(levelname)s]:%(message)s"
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+    log.setLevel(level)
     fh = logging.StreamHandler()
     fh.setLevel(level)
     formatter = logging.Formatter(format_string)
     fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    log = logger
+    log.addHandler(fh)
 
 def trading(*args, **kwargs):
     raise ImportError(
