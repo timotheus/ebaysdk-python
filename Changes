@@ -2,6 +2,7 @@ Changes for ebaysdk
 
 1.0.3
 - rework unicode fix
+- fix logging handler
 
 1.0.2 Sat Feb  8 20:44:00 PST 2014
 - fix unicode issue is dict to xml routine
