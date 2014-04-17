@@ -38,7 +38,7 @@ class BaseConnection(object):
                  parallel=None, **kwargs):
 
         if debug:
-            set_stream_logger('ebaysdk')
+            set_stream_logger()
 
         self.response = None
         self.request = None
