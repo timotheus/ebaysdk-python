@@ -57,6 +57,7 @@ class Connection(FindingConnection):
 
         self.config.set('uri', '/MerchandisingService', force=True)
         self.config.set('service', 'MerchandisingService', force=True)
+        self.config.set('doc_url', 'http://developer.ebay.com/Devzone/merchandising/docs/CallRef/index.html')
 
         self.datetime_nodes = ['endtimeto', 'endtimefrom', 'timestamp']
         self.base_list_nodes = [

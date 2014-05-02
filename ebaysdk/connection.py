@@ -9,9 +9,9 @@ Licensed under CDDL 1.0
 from ebaysdk import log
 
 import re
-import json
 import time
 import uuid
+import webbrowser
 
 from requests import Request, Session
 from requests.adapters import HTTPAdapter
@@ -85,6 +85,7 @@ class BaseConnection(object):
         self.verb = None
         self._list_nodes = []
         self._request_id = None
+        self._request_dict = {}
         self._time = time.time()
         self._response_content = None
         self._response_dom = None
@@ -128,6 +129,7 @@ class BaseConnection(object):
     def build_request(self, verb, data):
  
         self.verb = verb
+        self._request_dict = data
         self._request_id = uuid.uuid4()
 
         url = "%s://%s%s" % (
@@ -221,12 +223,14 @@ class BaseConnection(object):
         return self._response_soup
 
     def response_obj(self):
+        log.warn('response_obj() DEPRECATED, use response.reply instead')
         return self.response.reply
 
     def response_dom(self):
         """ Deprecated: use self.response.dom() instead
         Returns the response DOM (xml.dom.minidom).
         """
+        log.warn('response_dom() DEPRECATED, use response.dom instead')
 
         if not self._response_dom:
             dom = None
@@ -252,13 +256,15 @@ class BaseConnection(object):
 
     def response_dict(self):
         "Returns the response dictionary."
+        log.warn('response_dict() DEPRECATED, use response.dict() or response.reply instead')
 
         return self.response.reply
 
     def response_json(self):
         "Returns the response JSON."
+        log.warn('response_json() DEPRECATED, use response.json() instead')
 
-        return json.dumps(self.response.dict())
+        return self.response.json()
 
     def _get_resp_body_errors(self):
         """Parses the response content to pull errors.
@@ -277,7 +283,7 @@ class BaseConnection(object):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
@@ -298,3 +304,7 @@ class BaseConnection(object):
             return error_string
 
         return None
+
+    def opendoc(self):
+        webbrowser.open(self.config.get('doc_url'))
+

@@ -11,3 +11,9 @@ class ConnectionError(Exception):
 
 class ConnectionResponseError(Exception):
     pass
+
+class RequestPaginationError(Exception):
+    pass
+
+class PaginationLimit(Exception):
+    pass
