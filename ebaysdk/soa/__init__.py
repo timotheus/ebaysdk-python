@@ -51,6 +51,9 @@ class Connection(BaseConnection):
     #   It used to return None in some cases. If you get an empty dict,
     #   you can use the .error() method to look for the cause.
     def response_dict(self):
+        return self.response.dict()
+
+        '''
         if self._response_dict:
             return self._response_dict
 
@@ -66,6 +69,7 @@ class Connection(BaseConnection):
                 self._response_dict = mydict.get(self.verb + 'Response', mydict)
 
         return self._response_dict
+        '''
 
     def build_request_headers(self, verb):
         return {
@@ -144,29 +148,38 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("error"):
+        for e in dom.findall('error'):
+
             eSeverity = None
             eDomain = None
             eMsg = None
             eId = None
 
-            if e.getElementsByTagName('severity'):
-                eSeverity = getNodeText(e.getElementsByTagName('severity')[0])
+            try:
+                eSeverity = e.findall('severity')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('domain'):
-                eDomain = getNodeText(e.getElementsByTagName('domain')[0])
+            try:
+                eDomain = e.findall('domain')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('errorId'):
-                eId = getNodeText(e.getElementsByTagName('errorId')[0])
+            try:
+                eId = e.findall('errorId')[0].text
                 if int(eId) not in resp_codes:
                     resp_codes.append(int(eId))
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('message'):
-                eMsg = getNodeText(e.getElementsByTagName('message')[0])
+            try:
+                eMsg = e.findall('message')[0].text
+            except IndexError:
+                pass
 
             msg = "Domain: %s, Severity: %s, errorId: %s, %s" \
                 % (eDomain, eSeverity, eId, eMsg)
@@ -184,7 +197,7 @@ class Connection(BaseConnection):
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
-            if self.response_dict().ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
+            if self.response.reply.ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             elif len(errors) > 0:
                 if self.config.get('errors'):

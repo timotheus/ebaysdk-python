@@ -92,6 +92,7 @@ class Connection(BaseConnection):
         self.config.set('certid', None)
         self.config.set('version', '837')
         self.config.set('compatibility', '837')
+        self.config.set('doc_url', 'http://developer.ebay.com/devzone/xml/docs/reference/ebay/index.html')
 
         self.datetime_nodes = [
             'shippingtime',
@@ -724,33 +725,48 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("Errors"):
+        for e in dom.findall('Errors'):
             eSeverity = None
             eClass = None
             eShortMsg = None
             eLongMsg = None
             eCode = None
 
-            if e.getElementsByTagName('SeverityCode'):
-                eSeverity = getNodeText(e.getElementsByTagName('SeverityCode')[0])
+            try:
+                eSeverity = e.findall('SeverityCode')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorClassification'):
-                eClass = getNodeText(e.getElementsByTagName('ErrorClassification')[0])
+            try:
+                eClass = e.findall('ErrorClassification')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorCode'):
-                eCode = getNodeText(e.getElementsByTagName('ErrorCode')[0])
+            try:
+                eCode = e.findall('ErrorCode')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eShortMsg = e.findall('ShortMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eLongMsg = e.findall('LongMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eCode = e.findall('ErrorCode')[0].text
                 if int(eCode) not in resp_codes:
-                    resp_codes.append(int(eCode))
-
-            if e.getElementsByTagName('ShortMessage'):
-                eShortMsg = getNodeText(e.getElementsByTagName('ShortMessage')[0])
-
-            if e.getElementsByTagName('LongMessage'):
-                eLongMsg = getNodeText(e.getElementsByTagName('LongMessage')[0])
+                    resp_codes.append(int(eCode))    
+            except IndexError:
+                pass
 
             msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
                 % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
@@ -767,7 +783,7 @@ class Connection(BaseConnection):
         if self.config.get('warnings') and len(warnings) > 0:
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
-        if self.response_dict().Ack == 'Failure':
+        if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             

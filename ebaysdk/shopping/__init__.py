@@ -81,6 +81,7 @@ class Connection(BaseConnection):
         self.config.set('version', '799')
         self.config.set('trackingid', None)
         self.config.set('trackingpartnercode', None)
+        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/Shopping/docs/CallRef/index.html')
 
         if self.config.get('https') and self.debug:
             print("HTTPS is not supported on the Shopping API.")
@@ -184,36 +185,51 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("Errors"):
+        for e in dom.findall('Errors'):
             eSeverity = None
             eClass = None
             eShortMsg = None
             eLongMsg = None
             eCode = None
 
-            if e.getElementsByTagName('SeverityCode'):
-                eSeverity = getNodeText(e.getElementsByTagName('SeverityCode')[0])
+            try:
+                eSeverity = e.findall('SeverityCode')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorClassification'):
-                eClass = getNodeText(e.getElementsByTagName('ErrorClassification')[0])
+            try:
+                eClass = e.findall('ErrorClassification')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorCode'):
-                eCode = float(getNodeText(e.getElementsByTagName('ErrorCode')[0]))
+            try:
+                eCode = e.findall('ErrorCode')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eShortMsg = e.findall('ShortMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eLongMsg = e.findall('LongMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eCode = float(e.findall('ErrorCode')[0])
                 if eCode.is_integer():
                     eCode = int(eCode)
 
                 if eCode not in resp_codes:
                     resp_codes.append(eCode)
-
-            if e.getElementsByTagName('ShortMessage'):
-                eShortMsg = getNodeText(e.getElementsByTagName('ShortMessage')[0])
-
-            if e.getElementsByTagName('LongMessage'):
-                eLongMsg = getNodeText(e.getElementsByTagName('LongMessage')[0])
+            except IndexError:
+                pass
 
             msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
                 % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)

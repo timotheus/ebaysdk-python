@@ -132,7 +132,11 @@ class Response(object):
             self._dom = self._parse_xml(obj.content)
             self._dict = self._etree_to_dict(self._dom)
         
-            if verb:
+            if verb and 'Envelope' in self._dict.keys():
+                self._dom = self._dom.find('Body').find('%sResponse' % verb)
+                self._dict = self._dict['Envelope']['Body'].get('%sResponse' % verb, self._dict)
+            elif verb:
+                self._dom = self._dom.find('%sResponse' % verb)
                 self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
             self.reply = ResponseDataObject(self._dict,

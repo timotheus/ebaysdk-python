@@ -10,8 +10,9 @@ import os
 
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
+from ebaysdk.exception import RequestPaginationError, PaginationLimit
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, dict2xml
+from ebaysdk.utils import dict2xml
 
 class Connection(BaseConnection):
     """Connection class for the Finding service
@@ -85,6 +86,7 @@ class Connection(BaseConnection):
         self.config.set('version', '1.12.0')
         self.config.set('compatibility', '1.0.0')
         self.config.set('service', 'FindingService')
+        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/finding/CallRef/index.html')
 
         self.datetime_nodes = ['starttimefrom', 'timestamp', 'starttime',
                                'endtime']
@@ -231,19 +233,27 @@ class Connection(BaseConnection):
             eMsg = None
             eId = None
 
-            if e.getElementsByTagName('severity'):
-                eSeverity = getNodeText(e.getElementsByTagName('severity')[0])
+            try:
+                eSeverity = e.findall('severity')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('domain'):
-                eDomain = getNodeText(e.getElementsByTagName('domain')[0])
+            try:
+                eDomain = e.findall('domain')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('errorId'):
-                eId = getNodeText(e.getElementsByTagName('errorId')[0])
+            try:
+                eId = e.findall('errorId')[0].text
                 if int(eId) not in resp_codes:
                     resp_codes.append(int(eId))
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('message'):
-                eMsg = getNodeText(e.getElementsByTagName('message')[0])
+            try:
+                eMsg = e.findall('message')[0].text
+            except IndexError:
+                pass
 
             msg = "Domain: %s, Severity: %s, errorId: %s, %s" \
                 % (eDomain, eSeverity, eId, eMsg)
@@ -261,7 +271,7 @@ class Connection(BaseConnection):
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
-            if self.response_dict().ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
+            if self.response.reply.ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             elif len(errors) > 0:
                 if self.config.get('errors'):
@@ -271,3 +281,23 @@ class Connection(BaseConnection):
             pass
 
         return []
+
+    def next_page(self):
+        if type(self._request_dict) is not dict:
+            raise RequestPaginationError("request data is not of type dict") 
+
+        epp = self._request_dict.get('paginationInput', {}).get('enteriesPerPage', None)
+        num = int(self.response.reply.paginationOutput.pageNumber)
+
+        if num >= int(self.response.reply.paginationOutput.totalPages):
+            raise PaginationLimit("no more pages to process")
+            return None
+
+        self._request_dict['paginationInput'] = {}
+
+        if epp:
+            self._request_dict['paginationInput']['enteriesPerPage'] = epp
+
+        self._request_dict['paginationInput']['pageNumber'] = int(num) + 1
+        
+        self.execute(self.verb, self._request_dict)
