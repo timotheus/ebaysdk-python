@@ -118,7 +118,7 @@ class BaseConnection(object):
         self.build_request(verb, data)
         self.execute_request()        
 
-        if self.response:
+        if self.response.content:
             self.process_response()
             self.error_check()
 
