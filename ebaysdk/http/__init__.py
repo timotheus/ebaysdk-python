@@ -33,11 +33,9 @@ class Connection(BaseConnection):
     >>> retval = h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
     >>> print(h.response.reply.rss.channel.ttl)
     60
-    >>> title = h.response_dom().getElementsByTagName('title')[0]
-    >>> print(getNodeText(title))
+    >>> title = h.response.dom().xpath('//title')[0]
+    >>> print(title.text)
     mytouch slide
-    >>> print(title.toxml())
-    <title><![CDATA[mytouch slide]]></title>
     >>> print(h.error())
     None
     >>> h = Connection(method='POST', debug=False)

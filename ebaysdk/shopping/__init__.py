@@ -222,7 +222,7 @@ class Connection(BaseConnection):
                 pass
 
             try:
-                eCode = float(e.findall('ErrorCode')[0])
+                eCode = float(e.findall('ErrorCode')[0].text)
                 if eCode.is_integer():
                     eCode = int(eCode)
 

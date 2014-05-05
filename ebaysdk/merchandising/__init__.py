@@ -26,7 +26,7 @@ class Connection(FindingConnection):
     Doctests:
     >>> s = Connection(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = s.execute('getMostWatchedItems', {'maxResults': 3})
-    >>> print(s.response_obj().ack)
+    >>> print(s.response.reply.ack)
     Success
     >>> print(s.error())
     None
