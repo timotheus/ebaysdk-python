@@ -28,10 +28,7 @@ def python_2_unicode_compatible(klass):
 
 def get_dom_tree(xml):
     tree = ET.fromstring(xml)
-    #try:
     return tree.getroottree().getroot()
-    #except AttributeError:
-    #    return tree
 
 def attribute_check(root):
     attrs = []
@@ -51,6 +48,9 @@ def smart_encode(value):
         return unicode(value).encode('utf-8')
     else:
         return str(value)
+
+def to_xml(root):
+    return dict2xml(root)
 
 def dict2xml(root):
     '''
@@ -73,6 +73,11 @@ def dict2xml(root):
     ... }
     >>> dict2xml(dict3)
     '<parent><child id="1234" site="US">222</child></parent>'
+    >>> dict5 = {
+    ...    'parent': {'child': {'@attrs': {'site': 'US', 'id': 1234}, }}
+    ... }
+    >>> dict2xml(dict5)
+    '<parent><child id="1234" site="US"></child></parent>'
     >>> dict4 = {
     ...     'searchFilter': {'categoryId': {'#text': 222, '@attrs': {'site': 'US'} }},
     ...     'paginationInput': {
@@ -95,11 +100,36 @@ def dict2xml(root):
     '<a>b</a>'
     >>> dict2xml(None)
     ''
+    >>> common_attrs = {'xmlns:xs': 'http://www.w3.org/2001/XMLSchema', 'xsi:type': 'xs:string'}
+    >>> attrdict = { 'attributeAssertion': [
+    ...     {'@attrs': {'Name': 'DevId', 'NameFormat': 'String', 'FriendlyName': 'DeveloperID'},
+    ...        'urn:AttributeValue': {
+    ...            '@attrs': common_attrs,
+    ...            '#text': 'mydevid'
+    ...        },
+    ...    },            
+    ...    {'@attrs': {'Name': 'AppId', 'NameFormat': 'String', 'FriendlyName': 'ApplicationID'},
+    ...        'urn:AttributeValue': {
+    ...            '@attrs': common_attrs,
+    ...            '#text': 'myappid',
+    ...        },
+    ...    },
+    ...    {'@attrs': {'Name': 'CertId', 'NameFormat': 'String', 'FriendlyName': 'Certificate'},
+    ...        'urn:AttributeValue': {
+    ...            '@attrs': common_attrs,
+    ...            '#text': 'mycertid',
+    ...        },
+    ...    },        
+    ...    ],
+    ... }
+    >>> print dict2xml(attrdict)
+    <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
     '''
 
     xml = ''
     if root is None:
         return xml
+
     if isinstance(root, dict):
         for key in sorted(root.keys()):
 
@@ -118,14 +148,20 @@ def dict2xml(root):
                      'value': smart_encode(value), 'attrs_sp': attrs_sp}                          
 
             elif isinstance(root[key], list):
+                
                 for item in root[key]:
                     attrs, value = attribute_check(item)
 
                     if not value:
                         value = dict2xml(item)
                     
-                    xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
-                        {'xml': xml, 'tag': key, 'value': value}
+                    attrs_sp = ''
+                    if len(attrs) > 0:
+                        attrs_sp = ' '
+
+                    xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
+                        {'xml': xml, 'tag': key, 'attrs': ' '.join(attrs),
+                         'value': smart_encode(value), 'attrs_sp': attrs_sp}
  
             else:
                 value = root[key]
