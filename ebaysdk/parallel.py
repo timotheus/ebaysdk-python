@@ -25,11 +25,11 @@ class Parallel(object):
     >>> p.wait()
     >>> print(p.error())
     None
-    >>> print(r1.response_obj().rss.channel.ttl)
+    >>> print(r1.response.reply.rss.channel.ttl)
     60
-    >>> print(r2.response_dict().ack)
+    >>> print(r2.response.dict()['ack'])
     Success
-    >>> print(r3.response_obj().Ack)
+    >>> print(r3.response.reply.Ack)
     Success
     """
 
@@ -82,3 +82,12 @@ class Parallel(object):
             return "parallel error:\n%s\n" % ("\n".join(self._errors))
 
         return None
+
+
+if __name__ == '__main__':
+
+    import doctest
+    import sys
+
+    failure_count, test_count = doctest.testmod()
+    sys.exit(failure_count)

@@ -185,8 +185,8 @@ def verifyAddItemErrorCodes(opts):
     
     except ConnectionError as e:
         # traverse the DOM to look for error codes
-        for node in api.response_dom().getElementsByTagName('ErrorCode'):
-            print("error code: %s" % getNodeText(node))
+        for node in api.response.dom().findall('ErrorCode'):
+            print("error code: %s" % node.text)
 
         # check for invalid data - error code 37
         if 37 in api.response_codes():

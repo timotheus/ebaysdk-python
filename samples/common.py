@@ -16,12 +16,15 @@ def dump(api, full=False):
         print("Call Success: %s in length" % len(api.response.content))
 
     print("Response code: %s" % api.response_code())
-    print("Response DOM1: %s" % api.response_dom())
+    print("Response DOM1: %s" % api.response_dom()) # deprecated
     print("Response ETREE: %s" % api.response.dom())
 
     if full:
         print(api.response.content)
         print(api.response.json())
+        print("Response Reply: %s" % api.response.reply)
     else:
         dictstr = "%s" % api.response.dict()
         print("Response dictionary: %s..." % dictstr[:150])
+        replystr = "%s" % api.response.reply
+        print("Response Reply: %s" % replystr[:150])

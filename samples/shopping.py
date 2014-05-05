@@ -110,6 +110,7 @@ def categoryInfo(opts):
                        warnings=True)
 
         response = api.execute('GetCategoryInfo', {"CategoryID": 3410})
+
         dump(api, full=False)
     
     except ConnectionError as e:

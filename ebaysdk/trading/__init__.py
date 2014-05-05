@@ -30,8 +30,8 @@ class Connection(BaseConnection):
     >>> t = Connection(config_file=os.environ.get('EBAY_YAML'))
     >>> response = t.execute('GetCharities', {'CharityID': 3897})
     >>> charity_name = ''
-    >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
-    ...   charity_name = getNodeText(t.response_dom().getElementsByTagName('Name')[0])
+    >>> if len( t.response.dom().xpath('//Name') ) > 0:
+    ...   charity_name = t.response.dom().xpath('//Name')[0].text
     >>> print(charity_name)
     Sunshine Kids Foundation
     >>> isinstance(response.reply.Timestamp, datetime.datetime)
