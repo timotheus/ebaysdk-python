@@ -223,11 +223,11 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("error"):
+        for e in dom.findall("error"):
             eSeverity = None
             eDomain = None
             eMsg = None
@@ -273,12 +273,14 @@ class Connection(BaseConnection):
         try:
             if self.response.reply.ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+
             elif len(errors) > 0:
                 if self.config.get('errors'):
                     log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+
                 return errors
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            return errors
 
         return []
 
