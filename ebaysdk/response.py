@@ -18,8 +18,8 @@ from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible
 @python_2_unicode_compatible
 class ResponseDataObject(object):
 
-    def __init__(self, mydict, datetime_nodes):
-        self._load_dict(mydict, datetime_nodes)
+    def __init__(self, mydict, datetime_nodes=[]):
+        self._load_dict(mydict, list(datetime_nodes))
 
     def __repr__(self):
         return str(self)
@@ -127,16 +127,22 @@ class Response(object):
     def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[]):
         self._list_nodes=copy.copy(list_nodes)
         self._obj = obj
-        
+
         try:
             self._dom = self._parse_xml(obj.content)
             self._dict = self._etree_to_dict(self._dom)
 
             if verb and 'Envelope' in self._dict.keys():
-                self._dom = self._dom.find('Body').find('%sResponse' % verb)
+                elem = self._dom.find('Body').find('%sResponse' % verb)
+                if elem is not None:
+                    self._dom = elem
+
                 self._dict = self._dict['Envelope']['Body'].get('%sResponse' % verb, self._dict)
             elif verb:
-                self._dom = self._dom.find('%sResponse' % verb) or self._dom
+                elem = self._dom.find('%sResponse' % verb)
+                if elem is not None:
+                    self._dom = elem
+
                 self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
             self.reply = ResponseDataObject(self._dict,
