@@ -180,6 +180,9 @@ class BaseConnection(object):
         self.response = Response(self.response, verb=self.verb,
                 list_nodes=self._list_nodes, datetime_nodes=self.datetime_nodes)
 
+        # set for backward compatibility
+        self._response_content = self.response.content
+        
         if self.response.status_code != 200:
             self._response_error = self.response.reason
 

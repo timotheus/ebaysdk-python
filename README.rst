@@ -4,18 +4,22 @@ Welcome to the python ebaysdk
 This SDK is a programmatic interface into the eBay APIs. It simplifies development and cuts development time by standardizing calls, response processing, error handling, and debugging across the Finding, Shopping, Merchandising & Trading APIs. 
 
 Quick Example::
-
+    import datetime
+    from lxml.etree import _Element
     from ebaysdk.finding import Connection
+
     try:
         api = Connection(appid='YOUR_APPID_HERE')
-        response = api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+        response = api.execute('findItemsAdvanced', {'keywords': 'legos'})        
 
-        print(response.reply.timestamp)
-        print(response.reply.version)
-
-        print(response.dict())
-        print(response.json())
-        print(response.dom())
+        assert(response.reply.ack == 'Success')  
+        assert(type(response.reply.timestamp) == datetime.datetime)
+        assert(type(response.reply.searchResult.item) == list)
+  
+        item = response.reply.searchResult.item[0]
+        assert(type(item.listingInfo.endTime) == datetime.datetime)
+        assert(type(response.dict()) == dict)
+        assert(type(response.dom() == _Element)
 
     except ConnectionError as e:
         raise e

@@ -47,6 +47,7 @@ def smart_encode(value):
     if sys.version_info[0] < 3:
         return unicode(value).encode('utf-8')
     else:
+        return value
         return str(value)
 
 def to_xml(root):
@@ -122,7 +123,7 @@ def dict2xml(root):
     ...    },        
     ...    ],
     ... }
-    >>> print dict2xml(attrdict)
+    >>> print(dict2xml(attrdict))
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
     '''
 
