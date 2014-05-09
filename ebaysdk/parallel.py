@@ -5,6 +5,9 @@
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
+import sys
+if sys.version_info[0] >= 3:
+    raise ImportError('grequests does not work with python3+')
 
 import grequests
 from ebaysdk.exception import ConnectionError

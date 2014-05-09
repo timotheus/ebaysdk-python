@@ -1,5 +1,16 @@
 Changes for ebaysdk
 
+2.0.0
+- WARNING!! This release breaks some backward compatibility
+  Read https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2
+- imports: Modified package structure
+- execute(): Modified return value
+- Switched to lxml.etree
+- Added a new response class
+  response.reply, response.dom(), response.dict(), response.json()
+- Added ebaysdk exception classes
+- Modified utils.py (dict2xml, xml2dict)
+
 1.0.3
 - rework unicode fix
 - fix logging handler

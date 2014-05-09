@@ -54,7 +54,7 @@ def run(opts):
         })
 
         dump(api)
-
+        from IPython import embed; embed()
     except ConnectionError as e:
         print(e)
 
