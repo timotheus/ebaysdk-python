@@ -88,17 +88,6 @@ class Connection(BaseConnection):
         except ExpatError:
             raise ConnectionResponseError('response is not well-formed')
 
-    def process_response(self):
-        """Post processing of the response"""
-
-        self.response = Response(self.response, parse_response=False)
-
-        # set for backward compatibility
-        self._response_content = self.response.content
-        
-        if self.response.status_code != 200:
-            self._response_error = self.response.reason
-
     def execute(self, url, data=None, headers=dict(), method=None):
         "Executes the HTTP request."
         log.debug('execute: url=%s data=%s' % (url, data))
