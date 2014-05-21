@@ -44,11 +44,15 @@ def attribute_check(root):
     return attrs, value
 
 def smart_encode(value):
-    if sys.version_info[0] < 3:
-        return unicode(value).encode('utf-8')
-    else:
+    try:
+        if sys.version_info[0] < 3:
+            return unicode(value).encode('utf-8')
+        else:
+            return value
+            #return str(value)
+
+    except UnicodeDecodeError:
         return value
-        return str(value)
 
 def to_xml(root):
     return dict2xml(root)
