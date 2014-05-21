@@ -41,8 +41,9 @@ def run(opts):
         api = finding(debug=opts.debug, appid=opts.appid,
                       config_file=opts.yaml, warnings=True)
 
-        response = api.execute('findItemsAdvanced', {
-            'keywords': u'niño',
+        api_request = {
+            #'keywords': u'niño',
+            'keywords': u'GRAMMY Foundation®',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},
@@ -51,10 +52,11 @@ def run(opts):
             ],
             'affiliate': {'trackingId': 1},
             'sortOrder': 'CountryDescending',
-        })
+        }
+
+        response = api.execute('findItemsAdvanced', api_request)
 
         dump(api)
-        from IPython import embed; embed()
     except ConnectionError as e:
         print(e)
 
