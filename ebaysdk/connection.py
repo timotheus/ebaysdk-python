@@ -174,11 +174,14 @@ class BaseConnection(object):
         log.debug('headers=%s' % self.response.headers)
         log.debug('content=%s' % self.response.text)      
     
-    def process_response(self):
+    def process_response(self, parse_response=True):
         """Post processing of the response"""
 
-        self.response = Response(self.response, verb=self.verb,
-                list_nodes=self._list_nodes, datetime_nodes=self.datetime_nodes)
+        self.response = Response(self.response,
+                                 verb=self.verb,
+                                 list_nodes=self._list_nodes,
+                                 datetime_nodes=self.datetime_nodes,
+                                 parse_response=parse_response)
 
         # set for backward compatibility
         self._response_content = self.response.content

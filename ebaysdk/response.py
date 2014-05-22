@@ -125,31 +125,34 @@ class Response(object):
     True
     '''
     
-    def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[]):
+    def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[], parse_response=True):
         self._list_nodes=copy.copy(list_nodes)
         self._obj = obj
 
-        try:
-            self._dom = self._parse_xml(obj.content)
-            self._dict = self._etree_to_dict(self._dom)
+        if parse_response:
+            try:
+                self._dom = self._parse_xml(obj.content)
+                self._dict = self._etree_to_dict(self._dom)
 
-            if verb and 'Envelope' in self._dict.keys():
-                elem = self._dom.find('Body').find('%sResponse' % verb)
-                if elem is not None:
-                    self._dom = elem
+                if verb and 'Envelope' in self._dict.keys():
+                    elem = self._dom.find('Body').find('%sResponse' % verb)
+                    if elem is not None:
+                        self._dom = elem
 
-                self._dict = self._dict['Envelope']['Body'].get('%sResponse' % verb, self._dict)
-            elif verb:
-                elem = self._dom.find('%sResponse' % verb)
-                if elem is not None:
-                    self._dom = elem
+                    self._dict = self._dict['Envelope']['Body'].get('%sResponse' % verb, self._dict)
+                elif verb:
+                    elem = self._dom.find('%sResponse' % verb)
+                    if elem is not None:
+                        self._dom = elem
 
-                self._dict = self._dict.get('%sResponse' % verb, self._dict)
+                    self._dict = self._dict.get('%sResponse' % verb, self._dict)
 
-            self.reply = ResponseDataObject(self._dict,
-                                            datetime_nodes=copy.copy(datetime_nodes))
-        except lxml.etree.XMLSyntaxError as e:
-            log.debug('response parse failed: %s' % e)
+                self.reply = ResponseDataObject(self._dict,
+                                                datetime_nodes=copy.copy(datetime_nodes))
+            except lxml.etree.XMLSyntaxError as e:
+                log.debug('response parse failed: %s' % e)
+                self.reply = ResponseDataObject({}, [])
+        else:
             self.reply = ResponseDataObject({}, [])
 
     def _get_node_path(self, t):
