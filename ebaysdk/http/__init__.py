@@ -88,7 +88,7 @@ class Connection(BaseConnection):
         except ExpatError:
             raise ConnectionResponseError('response is not well-formed')
 
-    def execute(self, url, data=None, headers=dict(), method=None):
+    def execute(self, url, data=None, headers=dict(), method=None, parse_response=True):
         "Executes the HTTP request."
         log.debug('execute: url=%s data=%s' % (url, data))
         
@@ -103,7 +103,7 @@ class Connection(BaseConnection):
             self.parallel._add_request(self)
             return None        
         
-        self.process_response()
+        self.process_response(parse_response)
         self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))
