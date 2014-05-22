@@ -90,7 +90,6 @@ class Connection(BaseConnection):
         self.config.set('appid', None)
         self.config.set('devid', None)
         self.config.set('certid', None)
-        self.config.set('version', '837')
         self.config.set('compatibility', '837')
         self.config.set('doc_url', 'http://developer.ebay.com/devzone/xml/docs/reference/ebay/index.html')
 
@@ -668,7 +667,7 @@ class Connection(BaseConnection):
 
     def build_request_headers(self, verb):
         headers = {
-            "X-EBAY-API-COMPATIBILITY-LEVEL": self.config.get('version', ''),
+            "X-EBAY-API-COMPATIBILITY-LEVEL": self.config.get('compatibility', ''),
             "X-EBAY-API-DEV-NAME": self.config.get('devid', ''),
             "X-EBAY-API-APP-NAME": self.config.get('appid', ''),
             "X-EBAY-API-CERT-NAME": self.config.get('certid', ''),

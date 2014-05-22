@@ -43,7 +43,7 @@ class Connection(FindingConnection):
         uri           -- API endpoint uri (default: /MerchandisingService)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: 0 (US))
-        compatibility -- version number (default: 799)
+        version       -- version number (default: 799)
         https         -- execute of https (default: True)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number

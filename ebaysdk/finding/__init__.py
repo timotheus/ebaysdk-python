@@ -53,7 +53,7 @@ class Connection(BaseConnection):
         uri           -- API endpoint uri (default: /services/search/FindingService/v1)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: EBAY-US)
-        compatibility -- version number (default: 1.0.0)
+        version       -- version number (default: 1.0.0)
         https         -- execute of https (default: False)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number
@@ -84,7 +84,6 @@ class Connection(BaseConnection):
         self.config.set('iaf_token', None)
         self.config.set('appid', None)
         self.config.set('version', '1.12.0')
-        self.config.set('compatibility', '1.0.0')
         self.config.set('service', 'FindingService')
         self.config.set('doc_url', 'http://developer.ebay.com/DevZone/finding/CallRef/index.html')
 
