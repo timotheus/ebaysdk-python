@@ -103,7 +103,7 @@ class Connection(BaseConnection):
             self.parallel._add_request(self)
             return None        
         
-        self.process_response(parse_response)
+        self.process_response(parse_response=parse_response)
         self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))
