@@ -110,7 +110,7 @@ class Connection(BaseConnection):
     def find_items_by_ids(self, *args, **kwargs):
         return self.findItemsByIds(*args, **kwargs)
 
-    def build_request_data(self, verb, data):        
+    def build_request_data(self, verb, data, verb_attrs):        
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request"
         xml += ' xmlns="http://www.ebay.com/marketplace/search/v1/services"'

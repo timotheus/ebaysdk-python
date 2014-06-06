@@ -103,7 +103,7 @@ class BaseConnection(object):
                 if not nodes[i].startswith(verb.lower()):
                     nodes[i] = "%sresponse.%s" % (verb.lower(), nodes[i].lower())
 
-    def execute(self, verb, data=None, list_nodes=[]):
+    def execute(self, verb, data=None, list_nodes=[], verb_attrs=None):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
         
@@ -115,7 +115,7 @@ class BaseConnection(object):
         if hasattr(self, 'base_list_nodes'):
             self._list_nodes += self.base_list_nodes
 
-        self.build_request(verb, data)
+        self.build_request(verb, data, verb_attrs)
         self.execute_request()        
 
         if hasattr(self.response, 'content'):
@@ -126,7 +126,7 @@ class BaseConnection(object):
 
         return self.response        
 
-    def build_request(self, verb, data):
+    def build_request(self, verb, data, verb_attrs):
  
         self.verb = verb
         self._request_dict = data
@@ -144,7 +144,7 @@ class BaseConnection(object):
 
         request = Request(self.method, 
             url,
-            data=self.build_request_data(verb, data),
+            data=self.build_request_data(verb, data, verb_attrs),
             headers=headers,
         )
 

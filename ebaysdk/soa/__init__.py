@@ -82,7 +82,7 @@ class Connection(BaseConnection):
             'X-EBAY-SOA-MESSAGE-PROTOCOL': self.config.get('message_protocol'),
         }
 
-    def build_request_data(self, verb, data):
+    def build_request_data(self, verb, data, verb_attrs):
         xml = '<?xml version="1.0" encoding="utf-8"?>'
         xml += '<soap:Envelope'
         xml += ' xmlns:soap="http://www.w3.org/2003/05/soap-envelope"'

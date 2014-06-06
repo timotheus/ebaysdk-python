@@ -680,7 +680,7 @@ class Connection(BaseConnection):
 
         return headers
 
-    def build_request_data(self, verb, data):
+    def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
         if not self.config.get('iaf_token', None):
