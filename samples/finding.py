@@ -59,6 +59,7 @@ def run(opts):
         dump(api)
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def run2(opts):
     try:
@@ -71,6 +72,7 @@ def run2(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 
 if __name__ == "__main__":

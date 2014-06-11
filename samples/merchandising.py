@@ -44,6 +44,7 @@ def run(opts):
         dump(api)
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 
 if __name__ == "__main__":

@@ -194,7 +194,7 @@ class BaseConnection(object):
 
         if estr and self.config.get('errors', True):
             log.error(estr)
-            raise ConnectionError(estr)
+            raise ConnectionError(estr, self.response)
 
     def response_codes(self):
         return self._resp_codes
@@ -254,7 +254,7 @@ class BaseConnection(object):
                     self.verb + 'Response')[0]
 
             except ExpatError as e:
-                raise ConnectionResponseError("Invalid Verb: %s (%s)" % (self.verb, e))
+                raise ConnectionResponseError("Invalid Verb: %s (%s)" % (self.verb, e), self.response)
             except IndexError:
                 self._response_dom = dom
 
@@ -305,7 +305,7 @@ class BaseConnection(object):
         error_array.extend(self._get_resp_body_errors())
 
         if len(error_array) > 0:
-            error_string = "%s: %s" % (self.verb, ", ".join(error_array))
+            error_string = u"%s: %s" % (self.verb, u", ".join(error_array))
 
             return error_string
 

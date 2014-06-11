@@ -56,8 +56,8 @@ def run(opts):
             print(item.Title)
 
     except ConnectionError as e:
-        print(e) 
-
+        print(e)
+        print(e.response.dict())
 
 def popularSearches(opts):
 
@@ -102,6 +102,7 @@ def popularSearches(opts):
 
         except ConnectionError as e:
             print(e)
+            print(e.response.dict())
 
 def categoryInfo(opts):
 
@@ -115,6 +116,7 @@ def categoryInfo(opts):
     
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def with_affiliate_info(opts):
     try:
@@ -132,6 +134,7 @@ def with_affiliate_info(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def using_attributes(opts):
 
@@ -147,6 +150,7 @@ def using_attributes(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 if __name__ == "__main__":
     (opts, args) = init_options()
