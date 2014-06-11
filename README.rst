@@ -36,7 +36,7 @@ For a complete guide on migrating from ebaysdk v1 to v2 and see an overview of t
 Getting Started
 ---------------
 
-SDK Classes
+1) SDK Classes
 
 * `Trading API Class`_ - secure, authenticated access to private eBay data.
 * `Finding API Class`_ - access eBay's next generation search capabilities.
@@ -45,12 +45,14 @@ SDK Classes
 * `HTML Class`_ - generic back-end class the enbles and standardized way to make API calls.
 * `Parallel Class`_ - SDK support for concurrent API calls.
 
-SDK Configuration
+2) SDK Configuration
 
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
 
-Sample code can be found in the `samples directory`_.
+3) Sample code can be found in the `samples directory`_.
+
+4) Understanding the `Request Dictionary`_.
 
 Support
 -------
@@ -85,3 +87,4 @@ License
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
 .. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
 .. _samples directory: https://github.com/timotheus/ebaysdk-python/tree/master/samples
+.. _Request Dictionary: https://github.com/timotheus/ebaysdk-python/wiki/Request-Dictionary
