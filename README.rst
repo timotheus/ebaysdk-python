@@ -50,6 +50,9 @@ SDK Configuration
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
 
+Sample Code
+
+Sample code can be found in the `samples directory`_.
 
 Support
 -------
@@ -83,4 +86,4 @@ License
 .. _eBay Developer Forums: https://www.x.com/developers/ebay/forums
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
 .. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
-
+.. _samples directory: https://github.com/timotheus/ebaysdk-python/tree/master/samples
