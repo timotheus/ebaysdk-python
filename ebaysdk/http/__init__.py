@@ -22,7 +22,8 @@ from ebaysdk import log, UserAgent
 from ebaysdk.connection import BaseConnection
 from ebaysdk.exception import ConnectionResponseError
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, xml2dict
+from ebaysdk.utils import getNodeText
+from ebaysdk.response import Response
 
 class Connection(BaseConnection):
     """HTML class for traditional calls.
@@ -30,21 +31,21 @@ class Connection(BaseConnection):
     Doctests:
     >>> h = Connection()
     >>> retval = h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
-    >>> print(h.response_obj().rss.channel.ttl)
+    >>> print(h.response.reply.rss.channel.ttl)
     60
-    >>> title = h.response_dom().getElementsByTagName('title')[0]
-    >>> print(getNodeText(title))
+    >>> title = h.response.dom().xpath('//title')[0]
+    >>> print(title.text)
     mytouch slide
-    >>> print(title.toxml())
-    <title><![CDATA[mytouch slide]]></title>
     >>> print(h.error())
     None
     >>> h = Connection(method='POST', debug=False)
     >>> retval = h.execute('http://www.ebay.com/')
-    >>> print(h.response_content() != '')
+    >>> print(h.response.content != '')
     True
     >>> print(h.response_code())
     200
+    >>> h.response.reply
+    {}
     """
 
     def __init__(self, method='GET', **kwargs):
@@ -71,7 +72,7 @@ class Connection(BaseConnection):
 
         try:
             if not self._response_dom:
-                self._response_dom = parseString(self._response_content)
+                self._response_dom = parseString(self.response.content)
 
             return self._response_dom
         except ExpatError:
@@ -81,14 +82,13 @@ class Connection(BaseConnection):
         "Return the HTTP response dictionary."
 
         try:
-            if not self._response_dict and self.response_content:
-                self._response_dict = xml2dict().fromstring(self._response_content)
 
-            return self._response_dict
+            return self.response.dict()
+
         except ExpatError:
             raise ConnectionResponseError('response is not well-formed')
 
-    def execute(self, url, data=None, headers=dict(), method=None):
+    def execute(self, url, data=None, headers=dict(), method=None, parse_response=True):
         "Executes the HTTP request."
         log.debug('execute: url=%s data=%s' % (url, data))
         
@@ -103,7 +103,7 @@ class Connection(BaseConnection):
             self.parallel._add_request(self)
             return None        
         
-        self.process_response()
+        self.process_response(parse_response=parse_response)
         self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))

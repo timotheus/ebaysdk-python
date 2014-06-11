@@ -35,11 +35,10 @@ def run(opts):
         api = HTTP(debug=opts.debug, method='GET')
 
         api.execute('http://feeds.wired.com/wired/index')
-
         dump(api)
 
     except ConnectionError as e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     print("HTTP samples for SDK version %s" % ebaysdk.get_version())

@@ -38,11 +38,12 @@ def init_options():
 def run(opts):
 
     try:
-        api = finding(siteid='EBAY-NLBE', debug=opts.debug, appid=opts.appid,
+        api = finding(debug=opts.debug, appid=opts.appid,
                       config_file=opts.yaml, warnings=True)
 
-        api.execute('findItemsAdvanced', {
-            'keywords': u'niño',
+        api_request = {
+            #'keywords': u'niño',
+            'keywords': u'GRAMMY Foundation®',
             'itemFilter': [
                 {'name': 'Condition',
                  'value': 'Used'},
@@ -51,24 +52,27 @@ def run(opts):
             ],
             'affiliate': {'trackingId': 1},
             'sortOrder': 'CountryDescending',
-        })
+        }
+
+        response = api.execute('findItemsAdvanced', api_request)
 
         dump(api)
-
     except ConnectionError as e:
         print(e)
-
-
+        print(e.response.dict())
 
 def run2(opts):
     try:
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-        api.execute('findItemsByProduct', '<productId type="ReferenceID">53039031</productId>')
-    
+        
+        response = api.execute('findItemsByProduct', 
+          '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>')
+        
         dump(api)
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 
 if __name__ == "__main__":
