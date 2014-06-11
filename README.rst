@@ -5,14 +5,33 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 
 Quick Example::
 
+    import datetime
+    from lxml.etree import _Element
     from ebaysdk.finding import Connection
+
     try:
         api = Connection(appid='YOUR_APPID_HERE')
-        api.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+        response = api.execute('findItemsAdvanced', {'keywords': 'legos'})        
 
-        print api.response_dict()
+        assert(response.reply.ack == 'Success')  
+        assert(type(response.reply.timestamp) == datetime.datetime)
+        assert(type(response.reply.searchResult.item) == list)
+  
+        item = response.reply.searchResult.item[0]
+        assert(type(item.listingInfo.endTime) == datetime.datetime)
+        assert(type(response.dict()) == dict)
+        assert(type(response.dom() == _Element)
+
     except ConnectionError as e:
-        raise e
+        print(e)
+        print(e.response.dict())
+
+
+Migrating from v1 to v2
+-----------------------
+
+For a complete guide on migrating from ebaysdk v1 to v2 and see an overview of the additional features in v2 please read the `v1 to v2 guide`_
+
 
 Getting Started
 ---------------
@@ -63,5 +82,5 @@ License
 .. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
 .. _eBay Developer Forums: https://www.x.com/developers/ebay/forums
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
-
+.. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
 

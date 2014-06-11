@@ -10,8 +10,9 @@ import os
 
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
+from ebaysdk.exception import RequestPaginationError, PaginationLimit
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import dict2xml
 
 class Connection(BaseConnection):
     """Connection class for the Finding service
@@ -25,16 +26,16 @@ class Connection(BaseConnection):
     (all others, see API docs)
 
     Doctests:
-    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'))
+    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
     >>> retval = f.execute('findItemsAdvanced', {'keywords': u'niño'})
     >>> error = f.error()
     >>> print(error)
     None
     >>> if not f.error():
-    ...   print(f.response_obj().itemSearchURL != '')
-    ...   items = f.response_obj().searchResult.item
+    ...   print(f.response.reply.itemSearchURL != '')
+    ...   items = f.response.reply.searchResult.item
     ...   print(len(items) > 2)
-    ...   print(f.response_dict().ack)
+    ...   print(f.response.reply.ack)
     True
     True
     Success
@@ -52,7 +53,7 @@ class Connection(BaseConnection):
         uri           -- API endpoint uri (default: /services/search/FindingService/v1)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: EBAY-US)
-        compatibility -- version number (default: 1.0.0)
+        version       -- version number (default: 1.0.0)
         https         -- execute of https (default: False)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number
@@ -83,8 +84,95 @@ class Connection(BaseConnection):
         self.config.set('iaf_token', None)
         self.config.set('appid', None)
         self.config.set('version', '1.12.0')
-        self.config.set('compatibility', '1.0.0')
         self.config.set('service', 'FindingService')
+        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/finding/CallRef/index.html')
+
+        self.datetime_nodes = ['starttimefrom', 'timestamp', 'starttime',
+                               'endtime']
+        self.base_list_nodes = [
+            'findcompleteditemsresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsadvancedresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsbycategoryresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsbyimageresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsbykeywordsresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsbyproductresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsinebaystoresresponse.categoryhistogramcontainer.categoryhistogram',
+            'findcompleteditemsresponse.aspecthistogramcontainer.aspect',
+            'finditemsadvancedresponse.aspecthistogramcontainer.aspect',
+            'finditemsbycategoryresponse.aspecthistogramcontainer.aspect',
+            'finditemsbyimageresponse.aspecthistogramcontainer.aspect',
+            'finditemsbykeywordsresponse.aspecthistogramcontainer.aspect',
+            'finditemsbyproductresponse.aspecthistogramcontainer.aspect',
+            'finditemsinebaystoresresponse.aspecthistogramcontainer.aspect',
+            'findcompleteditemsresponse.aspect.valuehistogram',
+            'finditemsadvancedresponse.aspect.valuehistogram',
+            'finditemsbycategoryresponse.aspect.valuehistogram',
+            'finditemsbyimageresponse.aspect.valuehistogram',
+            'finditemsbykeywordsresponse.aspect.valuehistogram',
+            'finditemsbyproductresponse.aspect.valuehistogram',
+            'finditemsinebaystoresresponse.aspect.valuehistogram',
+            'findcompleteditemsresponse.aspectfilter.aspectvaluename',
+            'finditemsadvancedresponse.aspectfilter.aspectvaluename',
+            'finditemsbycategoryresponse.aspectfilter.aspectvaluename',
+            'finditemsbyimageresponse.aspectfilter.aspectvaluename',
+            'finditemsbykeywordsresponse.aspectfilter.aspectvaluename',
+            'finditemsbyproductresponse.aspectfilter.aspectvaluename',
+            'finditemsinebaystoresresponse.aspectfilter.aspectvaluename',
+            'findcompleteditemsresponse.searchresult.item',
+            'finditemsadvancedresponse.searchresult.item',
+            'finditemsbycategoryresponse.searchresult.item',
+            'finditemsbyimageresponse.searchresult.item',
+            'finditemsbykeywordsresponse.searchresult.item',
+            'finditemsbyproductresponse.searchresult.item',
+            'finditemsinebaystoresresponse.searchresult.item',
+            'findcompleteditemsresponse.domainfilter.domainname',
+            'finditemsadvancedresponse.domainfilter.domainname',
+            'finditemsbycategoryresponse.domainfilter.domainname',
+            'finditemsbyimageresponse.domainfilter.domainname',
+            'finditemsbykeywordsresponse.domainfilter.domainname',
+            'finditemsinebaystoresresponse.domainfilter.domainname',
+            'findcompleteditemsresponse.itemfilter.value',
+            'finditemsadvancedresponse.itemfilter.value',
+            'finditemsbycategoryresponse.itemfilter.value',
+            'finditemsbyimageresponse.itemfilter.value',
+            'finditemsbykeywordsresponse.itemfilter.value',
+            'finditemsbyproductresponse.itemfilter.value',
+            'finditemsinebaystoresresponse.itemfilter.value',
+            'findcompleteditemsresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsadvancedresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsbycategoryresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsbyimageresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsbykeywordsresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsinebaystoresresponse.conditionhistogramcontainer.conditionhistogram',
+            'finditemsbyproductresponse.conditionhistogramcontainer.conditionhistogram',
+            'findcompleteditemsresponse.searchitem.paymentmethod',
+            'finditemsadvancedresponse.searchitem.paymentmethod',
+            'finditemsbycategoryresponse.searchitem.paymentmethod',
+            'finditemsbyimageresponse.searchitem.paymentmethod',
+            'finditemsbykeywordsresponse.searchitem.paymentmethod',
+            'finditemsbyproductresponse.searchitem.paymentmethod',
+            'finditemsinebaystoresresponse.searchitem.paymentmethod',
+            'findcompleteditemsresponse.searchitem.gallerypluspictureurl',
+            'finditemsadvancedresponse.searchitem.gallerypluspictureurl',
+            'finditemsbycategoryresponse.searchitem.gallerypluspictureurl',
+            'finditemsbyimageresponse.searchitem.gallerypluspictureurl',
+            'finditemsbykeywordsresponse.searchitem.gallerypluspictureurl',
+            'finditemsbyproductresponse.searchitem.gallerypluspictureurl',
+            'finditemsinebaystoresresponse.searchitem.gallerypluspictureurl',
+            'finditemsbycategoryresponse.searchitem.attribute',
+            'finditemsadvancedresponse.searchitem.attribute',
+            'finditemsbykeywordsresponse.searchitem.attribute',
+            'finditemsinebaystoresresponse.searchitem.attribute',
+            'finditemsbyproductresponse.searchitem.attribute',
+            'findcompleteditemsresponse.searchitem.attribute',
+            'findcompleteditemsresponse.shippinginfo.shiptolocations',
+            'finditemsadvancedresponse.shippinginfo.shiptolocations',
+            'finditemsbycategoryresponse.shippinginfo.shiptolocations',
+            'finditemsbyimageresponse.shippinginfo.shiptolocations',
+            'finditemsbykeywordsresponse.shippinginfo.shiptolocations',
+            'finditemsbyproductresponse.shippinginfo.shiptolocations',
+            'finditemsinebaystoresresponse.shippinginfo.shiptolocations',
+        ]
 
     def build_request_headers(self, verb):
         return {
@@ -98,10 +186,10 @@ class Connection(BaseConnection):
             "Content-Type": "text/xml"
         }
 
-    def build_request_data(self, verb, data):
+    def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml
@@ -134,29 +222,37 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("error"):
+        for e in dom.findall("error"):
             eSeverity = None
             eDomain = None
             eMsg = None
             eId = None
 
-            if e.getElementsByTagName('severity'):
-                eSeverity = getNodeText(e.getElementsByTagName('severity')[0])
+            try:
+                eSeverity = e.findall('severity')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('domain'):
-                eDomain = getNodeText(e.getElementsByTagName('domain')[0])
+            try:
+                eDomain = e.findall('domain')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('errorId'):
-                eId = getNodeText(e.getElementsByTagName('errorId')[0])
+            try:
+                eId = e.findall('errorId')[0].text
                 if int(eId) not in resp_codes:
                     resp_codes.append(int(eId))
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('message'):
-                eMsg = getNodeText(e.getElementsByTagName('message')[0])
+            try:
+                eMsg = e.findall('message')[0].text
+            except IndexError:
+                pass
 
             msg = "Domain: %s, Severity: %s, errorId: %s, %s" \
                 % (eDomain, eSeverity, eId, eMsg)
@@ -174,13 +270,35 @@ class Connection(BaseConnection):
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
-            if self.response_dict().ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
+            if self.response.reply.ack == 'Success' and len(errors) > 0 and self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+
             elif len(errors) > 0:
                 if self.config.get('errors'):
                     log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+
                 return errors
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            return errors
 
         return []
+
+    def next_page(self):
+        if type(self._request_dict) is not dict:
+            raise RequestPaginationError("request data is not of type dict") 
+
+        epp = self._request_dict.get('paginationInput', {}).get('enteriesPerPage', None)
+        num = int(self.response.reply.paginationOutput.pageNumber)
+
+        if num >= int(self.response.reply.paginationOutput.totalPages):
+            raise PaginationLimit("no more pages to process")
+            return None
+
+        self._request_dict['paginationInput'] = {}
+
+        if epp:
+            self._request_dict['paginationInput']['enteriesPerPage'] = epp
+
+        self._request_dict['paginationInput']['pageNumber'] = int(num) + 1
+        
+        self.execute(self.verb, self._request_dict)
