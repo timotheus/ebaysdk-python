@@ -50,8 +50,6 @@ SDK Configuration
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
 
-Sample Code
-
 Sample code can be found in the `samples directory`_.
 
 Support
