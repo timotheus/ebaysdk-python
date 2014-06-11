@@ -143,6 +143,8 @@ def dict2xml(root):
                 
                 if not value:
                     value = dict2xml(root[key])
+                elif isinstance(value, dict):
+                    value = dict2xml(value)
 
                 attrs_sp = ''
                 if len(attrs) > 0:
@@ -159,6 +161,8 @@ def dict2xml(root):
 
                     if not value:
                         value = dict2xml(item)
+                    elif isinstance(value, dict):
+                        value = dict2xml(value)
                     
                     attrs_sp = ''
                     if len(attrs) > 0:
