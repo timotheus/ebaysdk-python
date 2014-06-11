@@ -67,6 +67,7 @@ def run(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 if __name__ == "__main__":
     (opts, args) = init_options()

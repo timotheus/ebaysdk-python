@@ -55,6 +55,7 @@ def run(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def feedback(opts):
     try:
@@ -71,7 +72,7 @@ def feedback(opts):
     
     except ConnectionError as e:
         print(e)
-
+        print(e.response.dict())
 
 def getTokenStatus(opts):
 
@@ -84,6 +85,7 @@ def getTokenStatus(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def verifyAddItem(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
@@ -135,6 +137,8 @@ def verifyAddItem(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
+
 
 def verifyAddItemErrorCodes(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
@@ -193,6 +197,7 @@ def verifyAddItemErrorCodes(opts):
             print("Invalid data in request")
 
         print(e)
+        print(e.response.dict())
 
 def uploadPicture(opts):
 
@@ -211,6 +216,7 @@ def uploadPicture(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def memberMessages(opts):
 
@@ -247,6 +253,7 @@ def memberMessages(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def getUser(opts):
     try:
@@ -259,6 +266,7 @@ def getUser(opts):
     
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def getOrders(opts):
 
@@ -271,6 +279,7 @@ def getOrders(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 def categories(opts):
 
@@ -289,6 +298,7 @@ def categories(opts):
 
     except ConnectionError as e:
         print(e)
+        print(e.response.dict())
 
 '''
 api = trading(domain='api.sandbox.ebay.com')
