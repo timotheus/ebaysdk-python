@@ -76,7 +76,7 @@ class Connection(BaseConnection):
 
             return self._response_dom
         except ExpatError:
-            raise ConnectionResponseError('response is not well-formed')
+            raise ConnectionResponseError('response is not well-formed', self.response)
 
     def response_dict(self):
         "Return the HTTP response dictionary."
@@ -86,7 +86,7 @@ class Connection(BaseConnection):
             return self.response.dict()
 
         except ExpatError:
-            raise ConnectionResponseError('response is not well-formed')
+            raise ConnectionResponseError('response is not well-formed', self.response)
 
     def execute(self, url, data=None, headers=dict(), method=None, parse_response=True):
         "Executes the HTTP request."
