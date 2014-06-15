@@ -17,7 +17,7 @@ class ConnectionError(Exception):
 
 class ConnectionResponseError(Exception):
     def __init__(self, msg, response):
-        super(ConnectionError, self).__init__(u'%s' % msg)
+        super(ConnectionResponseError, self).__init__(u'%s' % msg)
         self.message = u'%s' % msg
         self.response = response
 
@@ -26,7 +26,7 @@ class ConnectionResponseError(Exception):
 
 class RequestPaginationError(Exception):
     def __init__(self, msg, response):
-        super(ConnectionError, self).__init__(u'%s' % msg)
+        super(RequestPaginationError, self).__init__(u'%s' % msg)
         self.message = u'%s' % msg
         self.response = response
 
@@ -35,7 +35,7 @@ class RequestPaginationError(Exception):
 
 class PaginationLimit(Exception):
     def __init__(self, msg, response):
-        super(ConnectionError, self).__init__(u'%s' % msg)
+        super(PaginationLimit, self).__init__(u'%s' % msg)
         self.message = u'%s' % msg
         self.response = response
 
