@@ -285,13 +285,13 @@ class Connection(BaseConnection):
 
     def next_page(self):
         if type(self._request_dict) is not dict:
-            raise RequestPaginationError("request data is not of type dict") 
+            raise RequestPaginationError("request data is not of type dict", self.response) 
 
         epp = self._request_dict.get('paginationInput', {}).get('enteriesPerPage', None)
         num = int(self.response.reply.paginationOutput.pageNumber)
 
         if num >= int(self.response.reply.paginationOutput.totalPages):
-            raise PaginationLimit("no more pages to process")
+            raise PaginationLimit("no more pages to process", self.response)
             return None
 
         self._request_dict['paginationInput'] = {}
