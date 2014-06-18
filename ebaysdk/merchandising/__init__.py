@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 import os
 
 from ebaysdk.finding import Connection as FindingConnection
-from ebaysdk.utils import to_xml
+from ebaysdk.utils import dict2xml
 
 class Connection(FindingConnection):
     """Connection class for the Merchandising service
@@ -26,7 +26,7 @@ class Connection(FindingConnection):
     Doctests:
     >>> s = Connection(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = s.execute('getMostWatchedItems', {'maxResults': 3})
-    >>> print(s.response_obj().ack)
+    >>> print(s.response.reply.ack)
     Success
     >>> print(s.error())
     None
@@ -43,7 +43,7 @@ class Connection(FindingConnection):
         uri           -- API endpoint uri (default: /MerchandisingService)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: 0 (US))
-        compatibility -- version number (default: 799)
+        version       -- version number (default: 799)
         https         -- execute of https (default: True)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number
@@ -57,7 +57,19 @@ class Connection(FindingConnection):
 
         self.config.set('uri', '/MerchandisingService', force=True)
         self.config.set('service', 'MerchandisingService', force=True)
+        self.config.set('doc_url', 'http://developer.ebay.com/Devzone/merchandising/docs/CallRef/index.html')
 
+        self.datetime_nodes = ['endtimeto', 'endtimefrom', 'timestamp']
+        self.base_list_nodes = [
+            'getdealsresponse.itemrecommendations.item',
+            'getmostwatcheditemsresponse.itemrecommendations.item',
+            'getrelatedcategoryitemsresponse.itemrecommendations.item',
+            'getsimilaritemsresponse.itemrecommendations.item',
+            'gettopsellingproductsresponse.productrecommendations.product',
+            'getrelatedcategoryitemsresponse.itemfilter.value',
+            'getsimilaritemsresponse.itemfilter.value',
+        ]
+        
     def build_request_headers(self, verb):
         return {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
@@ -70,10 +82,10 @@ class Connection(FindingConnection):
         }
 
 
-    def build_request_data(self, verb, data):
+    def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"http://www.ebay.com/marketplace/services\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml

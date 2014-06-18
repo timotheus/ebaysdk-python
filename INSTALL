@@ -1,7 +1,7 @@
 Running the tests:
 ~/> export EBAY_YAML='myebay.yaml'; python setup.py test
 
-Installing ebaysdk on Mac:
+Installing ebaysdk on Mac, Linux, Unix:
 
 1) Install the SDK with easy_install
    

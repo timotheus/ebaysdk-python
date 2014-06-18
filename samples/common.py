@@ -5,8 +5,6 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-import json
-
 def dump(api, full=False):
 
     print("\n")
@@ -14,15 +12,19 @@ def dump(api, full=False):
     if api.warnings():
         print("Warnings" + api.warnings())
 
-    if api.response_content():
-        print("Call Success: %s in length" % len(api.response_content()))
+    if api.response.content:
+        print("Call Success: %s in length" % len(api.response.content))
 
     print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
+    print("Response DOM1: %s" % api.response_dom()) # deprecated
+    print("Response ETREE: %s" % api.response.dom())
 
     if full:
-        print(api.response_content())
-        print((json.dumps(api.response_dict(), indent=2)))
+        print(api.response.content)
+        print(api.response.json())
+        print("Response Reply: %s" % api.response.reply)
     else:
-        dictstr = "%s" % api.response_dict()
+        dictstr = "%s" % api.response.dict()
         print("Response dictionary: %s..." % dictstr[:150])
+        replystr = "%s" % api.response.reply
+        print("Response Reply: %s" % replystr[:150])
