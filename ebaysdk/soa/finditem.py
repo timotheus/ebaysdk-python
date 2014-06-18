@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 import os
 
 from ebaysdk.soa import Connection as BaseConnection
-from ebaysdk.utils import to_xml, getNodeText
+from ebaysdk.utils import dict2xml, getNodeText
 
 class Connection(BaseConnection):
     """
@@ -53,6 +53,9 @@ class Connection(BaseConnection):
 
         self.read_set = None
 
+        self.datetime_nodes += ['lastupdatetime', 'timestamp']
+        self.base_list_nodes += ['finditemsbyidsresponse.record']
+
     def build_request_headers(self, verb):
         return {
             "X-EBAY-SOA-SERVICE-NAME": self.config.get('service', ''),
@@ -84,16 +87,17 @@ class Connection(BaseConnection):
     def mappedResponse(self):
         records = []
 
-        for r in self.response_dict().get('record', []):
+        for r in self.response.dict().get('record', []):
             mydict = dict()
             i = 0
-            for values_dict in r.value:                
-                for key, value in values_dict.iteritems():
+
+            for values_dict in r.get('value', {}):
+                for key, value in values_dict.items():
                     value_data = None
                     if type(value) == list:
-                        value_data = [x['value'] for x in value]
+                        value_data = [x for x in value]
                     else:
-                        value_data = value['value']
+                        value_data = value
 
                     mydict.update({self.read_set[i]: value_data})
 
@@ -106,12 +110,12 @@ class Connection(BaseConnection):
     def find_items_by_ids(self, *args, **kwargs):
         return self.findItemsByIds(*args, **kwargs)
 
-    def build_request_data(self, verb, data):        
+    def build_request_data(self, verb, data, verb_attrs):        
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request"
         xml += ' xmlns="http://www.ebay.com/marketplace/search/v1/services"'
         xml += '>'
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml

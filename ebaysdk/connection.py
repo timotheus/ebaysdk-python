@@ -9,9 +9,9 @@ Licensed under CDDL 1.0
 from ebaysdk import log
 
 import re
-import json
 import time
 import uuid
+import webbrowser
 
 from requests import Request, Session
 from requests.adapters import HTTPAdapter
@@ -21,7 +21,8 @@ from xml.parsers.expat import ExpatError
 
 from ebaysdk import set_stream_logger, UserAgent
 from ebaysdk.utils import getNodeText as getNodeTextUtils
-from ebaysdk.utils import dict2xml, xml2dict, getValue
+from ebaysdk.utils import getValue
+from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
 
 HTTP_SSL = {
@@ -30,23 +31,14 @@ HTTP_SSL = {
 }
 
 class BaseConnection(object):
-    """Base Connection Class.
-
-    Doctests:
-    >>> d = { 'list': ['a', 'b', 'c']}
-    >>> print(dict2xml(d, listnames={'': 'list'}))
-    <list>a</list><list>b</list><list>c</list>
-    >>> d2 = {'node': {'@attrs': {'a': 'b'}, '#text': 'foo'}}
-    >>> print(dict2xml(d2))
-    <node a="b">foo</node>
-    """
+    """Base Connection Class."""
 
     def __init__(self, debug=False, method='GET',
                  proxy_host=None, timeout=20, proxy_port=80,
                  parallel=None, **kwargs):
 
         if debug:
-            set_stream_logger('ebaysdk')
+            set_stream_logger()
 
         self.response = None
         self.request = None
@@ -56,6 +48,8 @@ class BaseConnection(object):
         self.timeout = timeout
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
+        self.datetime_nodes = []
+        self._list_nodes = []
 
         self.proxies = dict()
         if self.proxy_host:
@@ -71,13 +65,16 @@ class BaseConnection(object):
 
         self.parallel = parallel
 
+        self.base_list_nodes = []
+        self.datetime_nodes = []
+        
         self._reset()
 
     def debug_callback(self, debug_type, debug_message):
         log.debug('type: ' + str(debug_type) + ' message' + str(debug_message))
 
     def v(self, *args, **kwargs):
-        return getValue(self.response_dict(), *args, **kwargs)
+        return getValue(self.response.dict(), *args, **kwargs)
         
     def getNodeText(self, nodelist):
         return getNodeTextUtils(nodelist)
@@ -86,7 +83,9 @@ class BaseConnection(object):
         self.response = None
         self.request = None
         self.verb = None
+        self._list_nodes = []
         self._request_id = None
+        self._request_dict = {}
         self._time = time.time()
         self._response_content = None
         self._response_dom = None
@@ -98,28 +97,39 @@ class BaseConnection(object):
         self._resp_body_warnings = []
         self._resp_codes = []
 
-    def do(self, verb, call_data=dict()):
-        return self.execute(verb, call_data)
+    def _add_prefix(self, nodes, verb):
+        if verb:
+            for i, v in enumerate(nodes):
+                if not nodes[i].startswith(verb.lower()):
+                    nodes[i] = "%sresponse.%s" % (verb.lower(), nodes[i].lower())
 
-    def execute(self, verb, data=None):
+    def execute(self, verb, data=None, list_nodes=[], verb_attrs=None):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
-
+        
         self._reset()
-        self.build_request(verb, data)
+
+        self._list_nodes += list_nodes
+        self._add_prefix(self._list_nodes, verb)
+
+        if hasattr(self, 'base_list_nodes'):
+            self._list_nodes += self.base_list_nodes
+
+        self.build_request(verb, data, verb_attrs)
         self.execute_request()        
 
-        if self.response:
+        if hasattr(self.response, 'content'):
             self.process_response()
             self.error_check()
 
         log.debug('total time=%s' % (time.time() - self._time))
-        
-        return self
 
-    def build_request(self, verb, data):
+        return self.response        
+
+    def build_request(self, verb, data, verb_attrs):
  
         self.verb = verb
+        self._request_dict = data
         self._request_id = uuid.uuid4()
 
         url = "%s://%s%s" % (
@@ -134,7 +144,7 @@ class BaseConnection(object):
 
         request = Request(self.method, 
             url,
-            data=self.build_request_data(verb, data),
+            data=self.build_request_data(verb, data, verb_attrs),
             headers=headers,
         )
 
@@ -164,22 +174,27 @@ class BaseConnection(object):
         log.debug('headers=%s' % self.response.headers)
         log.debug('content=%s' % self.response.text)      
     
-    def process_response(self):
+    def process_response(self, parse_response=True):
         """Post processing of the response"""
+
+        self.response = Response(self.response,
+                                 verb=self.verb,
+                                 list_nodes=self._list_nodes,
+                                 datetime_nodes=self.datetime_nodes,
+                                 parse_response=parse_response)
+
+        # set for backward compatibility
+        self._response_content = self.response.content
         
         if self.response.status_code != 200:
             self._response_error = self.response.reason
-
-        # remove xml namespace
-        regex = re.compile('xmlns="[^"]+"')
-        self._response_content = regex.sub('', self.response.content)
 
     def error_check(self):
         estr = self.error()
 
         if estr and self.config.get('errors', True):
             log.error(estr)
-            raise ConnectionError(estr)
+            raise ConnectionError(estr, self.response)
 
     def response_codes(self):
         return self._resp_codes
@@ -195,36 +210,42 @@ class BaseConnection(object):
         return self.response.status_code
 
     def response_content(self):
-        return self._response_content
+        return self.response.content
 
     def response_soup(self):
         "Returns a BeautifulSoup object of the response."
-        try:
-            from bs4 import BeautifulStoneSoup
-        except ImportError:
-            from BeautifulSoup import BeautifulStoneSoup
-            log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
 
         if not self._response_soup:
+            try:
+                from bs4 import BeautifulStoneSoup
+            except ImportError:
+                from BeautifulSoup import BeautifulStoneSoup
+                log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
+
             self._response_soup = BeautifulStoneSoup(
-                self._response_content.decode('utf-8')
+                self.response_content.decode('utf-8')
             )
 
         return self._response_soup
 
     def response_obj(self):
-        return self.response_dict()
+        log.warn('response_obj() DEPRECATED, use response.reply instead')
+        return self.response.reply
 
     def response_dom(self):
-        "Returns the response DOM (xml.dom.minidom)."
+        """ Deprecated: use self.response.dom() instead
+        Returns the response DOM (xml.dom.minidom).
+        """
+        log.warn('response_dom() DEPRECATED, use response.dom instead')
 
         if not self._response_dom:
             dom = None
             content = None
 
             try:
-                if self._response_content:
-                    content = self._response_content
+                if self.response.content:
+                    regex = re.compile(b'xmlns="[^"]+"')
+                    content = regex.sub(b'', self.response.content)
                 else:
                     content = "<%sResponse></%sResponse>" % (self.verb, self.verb)
 
@@ -233,7 +254,7 @@ class BaseConnection(object):
                     self.verb + 'Response')[0]
 
             except ExpatError as e:
-                raise ConnectionResponseError("Invalid Verb: %s (%s)" % (self.verb, e))
+                raise ConnectionResponseError("Invalid Verb: %s (%s)" % (self.verb, e), self.response)
             except IndexError:
                 self._response_dom = dom
 
@@ -241,17 +262,15 @@ class BaseConnection(object):
 
     def response_dict(self):
         "Returns the response dictionary."
+        log.warn('response_dict() DEPRECATED, use response.dict() or response.reply instead')
 
-        if not self._response_dict and self._response_content:
-            mydict = xml2dict().fromstring(self._response_content)
-            self._response_dict = mydict.get(self.verb + 'Response', mydict)
-
-        return self._response_dict
+        return self.response.reply
 
     def response_json(self):
         "Returns the response JSON."
+        log.warn('response_json() DEPRECATED, use response.json() instead')
 
-        return json.dumps(self.response_dict())
+        return self.response.json()
 
     def _get_resp_body_errors(self):
         """Parses the response content to pull errors.
@@ -270,7 +289,7 @@ class BaseConnection(object):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
@@ -286,8 +305,12 @@ class BaseConnection(object):
         error_array.extend(self._get_resp_body_errors())
 
         if len(error_array) > 0:
-            error_string = "%s: %s" % (self.verb, ", ".join(error_array))
+            error_string = u"%s: %s" % (self.verb, u", ".join(error_array))
 
             return error_string
 
         return None
+
+    def opendoc(self):
+        webbrowser.open(self.config.get('doc_url'))
+

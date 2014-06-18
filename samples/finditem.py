@@ -46,21 +46,32 @@ def run(opts):
         shopping = Shopping(debug=opts.debug, appid=opts.appid, 
             config_file=opts.yaml, warnings=False)
 
-        shopping.execute('FindPopularItems', {'QueryKeywords': 'Python'})
-        nodes = shopping.response_dom().getElementsByTagName('ItemID')
-        itemIds = [getNodeText(n) for n in nodes]
+        response = shopping.execute('FindPopularItems',
+            {'QueryKeywords': 'Python'})
 
-        api = FindItem(debug=opts.debug, consumer_id=opts.consumer_id, config_file=opts.yaml)
+        nodes = response.dom().xpath('//ItemID')
+        itemIds = [n.text for n in nodes]
+
+        api = FindItem(debug=opts.debug,
+            consumer_id=opts.consumer_id, config_file=opts.yaml)
         
-        records = api.find_items_by_ids(itemIds)
+        records = api.find_items_by_ids([itemIds[0]])
 
         for r in records:
             print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
 
         dump(api)
 
+        records = api.find_items_by_ids(itemIds)
+
+        for r in records:
+            print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
+
+        dump(api)
+        
     except ConnectionError as e:
-        print e
+        print(e)
+        print(e.response.dict())
 
 
 if __name__ == "__main__":

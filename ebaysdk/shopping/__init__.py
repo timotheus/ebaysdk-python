@@ -11,7 +11,7 @@ import os
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, to_xml
+from ebaysdk.utils import getNodeText, dict2xml
 
 class Connection(BaseConnection):
     """Shopping API class
@@ -81,9 +81,50 @@ class Connection(BaseConnection):
         self.config.set('version', '799')
         self.config.set('trackingid', None)
         self.config.set('trackingpartnercode', None)
+        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/Shopping/docs/CallRef/index.html')
 
         if self.config.get('https') and self.debug:
             print("HTTPS is not supported on the Shopping API.")
+
+        self.datetime_nodes = ['timestamp', 'registrationdate', 'creationtime',
+            'commenttime', 'updatetime', 'estimateddeliverymintime',
+            'estimateddeliverymaxtime', 'creationtime', 'estimateddeliverymintime',
+            'estimateddeliverymaxtime', 'endtime', 'starttime']
+
+        self.base_list_nodes=[
+            'findhalfproductsresponse.halfcatalogproducttype.productid',
+            'findhalfproductsresponse.halfproductstype.product',
+            'getshippingcostsresponse.internationalshippingserviceoptiontype.shipsto',
+            'getsingleitemresponse.itemcompatibility.compatibility',
+            'getsingleitemresponse.itemcompatibility.namevaluelist',
+            'getsingleitemresponse.variationspecifics.namevaluelist',
+            'getsingleitemresponse.namevaluelist.value',
+            'getsingleitemresponse.pictures.variationspecificpictureset',
+            'getmultipleitemsresponse.pictures.variationspecificpictureset',
+            'findreviewsandguidesresponse.reviewdetailstype.review',
+            'getshippingcostsresponse.shippingdetails.internationalshippingserviceoption',
+            'getshippingcostsresponse.shippingdetails.shippingserviceoption',
+            'getshippingcostsresponse.shippingdetails.excludeshiptolocation',
+            'getshippingcostsresponse.shippingserviceoption.shipsto',
+            'findpopularitemsresponse.itemarray.item',
+            'findproductsresponse.itemarray.item',
+            'getsingleitemresponse.item.paymentmethods',
+            'getmultipleitemsresponse.item.pictureurl',
+            'getsingleitemresponse.item.pictureurl',
+            'findproductsresponse.item.shiptolocations',
+            'getmultipleitemsresponse.item.shiptolocations',
+            'getsingleitemresponse.item.shiptolocations',
+            'getmultipleitemsresponse.item.paymentallowedsite',
+            'getsingleitemresponse.item.paymentallowedsite',
+            'getsingleitemresponse.item.excludeshiptolocation',
+            'getshippingcostsresponse.taxtable.taxjurisdiction',
+            'getsingleitemresponse.variationspecificpictureset.pictureurl',
+            'getmultipleitemsresponse.variationspecificpictureset.pictureurl',
+            'getsingleitemresponse.variations.variation',
+            'getmultipleitemsresponse.variations.variation',
+            'getsingleitemresponse.variations.pictures',
+            'getmultipleitemsresponse.variations.pictures',
+        ]
 
     def build_request_headers(self, verb):
         headers = {
@@ -107,11 +148,11 @@ class Connection(BaseConnection):
 
         return headers
 
-    def build_request_data(self, verb, data):
+    def build_request_data(self, verb, data, verb_attrs):
 
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
-        xml += to_xml(data) or ''
+        xml += dict2xml(data)
         xml += "</" + verb + "Request>"
 
         return xml
@@ -144,36 +185,51 @@ class Connection(BaseConnection):
         if self.verb is None:
             return errors
 
-        dom = self.response_dom()
+        dom = self.response.dom()
         if dom is None:
             return errors
 
-        for e in dom.getElementsByTagName("Errors"):
+        for e in dom.findall('Errors'):
             eSeverity = None
             eClass = None
             eShortMsg = None
             eLongMsg = None
             eCode = None
 
-            if e.getElementsByTagName('SeverityCode'):
-                eSeverity = getNodeText(e.getElementsByTagName('SeverityCode')[0])
+            try:
+                eSeverity = e.findall('SeverityCode')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorClassification'):
-                eClass = getNodeText(e.getElementsByTagName('ErrorClassification')[0])
+            try:
+                eClass = e.findall('ErrorClassification')[0].text
+            except IndexError:
+                pass
 
-            if e.getElementsByTagName('ErrorCode'):
-                eCode = float(getNodeText(e.getElementsByTagName('ErrorCode')[0]))
+            try:
+                eCode = e.findall('ErrorCode')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eShortMsg = e.findall('ShortMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eLongMsg = e.findall('LongMessage')[0].text
+            except IndexError:
+                pass
+
+            try:
+                eCode = float(e.findall('ErrorCode')[0].text)
                 if eCode.is_integer():
                     eCode = int(eCode)
 
                 if eCode not in resp_codes:
                     resp_codes.append(eCode)
-
-            if e.getElementsByTagName('ShortMessage'):
-                eShortMsg = getNodeText(e.getElementsByTagName('ShortMessage')[0])
-
-            if e.getElementsByTagName('LongMessage'):
-                eLongMsg = getNodeText(e.getElementsByTagName('LongMessage')[0])
+            except IndexError:
+                pass
 
             msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
                 % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
@@ -190,7 +246,7 @@ class Connection(BaseConnection):
         if self.config.get('warnings') and len(warnings) > 0:
             log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
-        if self.response_dict().Ack == 'Failure':
+        if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
                 log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
             return errors
