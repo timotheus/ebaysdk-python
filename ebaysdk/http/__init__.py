@@ -108,7 +108,7 @@ class Connection(BaseConnection):
 
         log.debug('total time=%s' % (time.time() - self._time))
         
-        return self
+        return self.response
 
     def build_request(self, url, data, headers):
  
