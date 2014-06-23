@@ -80,4 +80,16 @@ dict5 = {
 
 assert(dict2xml(dict5)=='<tag1 site="US" tag1attr="myvalue"><tag2 tag2attr="myvalue">tag2 value</tag2></tag1>')
 
+''' dict6 outputSelector
+<outputSelector>SellerInfo</outputSelector>
+<outputSelector>GalleryInfo</outputSelector>
+'''
 
+dict6 = {
+    'outputSelector': [
+        'SellerInfo',
+        'GalleryInfo'
+    ]
+}
+
+assert(dict2xml(dict6)=='<outputSelector>SellerInfo</outputSelector><outputSelector>GalleryInfo</outputSelector>')
