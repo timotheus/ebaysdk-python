@@ -92,6 +92,10 @@ class Connection(BaseConnection):
             i = 0
 
             for values_dict in r.get('value', {}):
+
+                if values_dict is None:
+                    continue
+
                 for key, value in values_dict.items():
                     value_data = None
                     if type(value) == list:
