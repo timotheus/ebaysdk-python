@@ -15,6 +15,14 @@ class ConnectionError(Exception):
     def __str__(self):
         return repr(self.message)
 
+class ConnectionConfigError(Exception):
+    def __init__(self, msg):
+        super(ConnectionConfigError, self).__init__(u'%s' % msg)
+        self.message = u'%s' % msg
+
+    def __str__(self):
+        return repr(self.message)
+
 class ConnectionResponseError(Exception):
     def __init__(self, msg, response):
         super(ConnectionResponseError, self).__init__(u'%s' % msg)
