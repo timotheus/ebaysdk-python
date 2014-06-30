@@ -20,7 +20,7 @@ Quick Example::
         item = response.reply.searchResult.item[0]
         assert(type(item.listingInfo.endTime) == datetime.datetime)
         assert(type(response.dict()) == dict)
-        assert(type(response.dom() == _Element)
+        assert(type(response.dom() == _Element))
 
     except ConnectionError as e:
         print(e)
