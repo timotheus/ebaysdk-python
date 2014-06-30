@@ -10,7 +10,7 @@ import os
 import yaml
 
 from ebaysdk import log
-from ebaysdk.exception import ConnectionError
+from ebaysdk.exception import ConnectionConfigError
 
 class Config(object):
     """Config Class for all APIs connections
@@ -69,7 +69,7 @@ class Config(object):
                 return self
 
         if self.config_file:
-            raise ConnectionError('config file %s not found' % self.config_file)
+            raise ConnectionConfigError('config file %s not found' % self.config_file)
 
     def file(self):
         return self.config_file_used
