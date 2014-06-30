@@ -23,7 +23,7 @@ class Connection(BaseConnection):
     SOAP support. FindItemServiceNextGen works fine with standard XML
     and lets avoid all of the ugliness associated with SOAP.
 
-    >>> from ebaysdk.shopping import Connection as Shopping 
+    >>> from ebaysdk.shopping import Connection as Shopping
     >>> s = Shopping(config_file=os.environ.get('EBAY_YAML'))
     >>> retval = s.execute('FindPopularItems', {'QueryKeywords': 'Python'})
     >>> nodes = s.response_dom().getElementsByTagName('ItemID')
@@ -36,15 +36,15 @@ class Connection(BaseConnection):
     True
     """
 
-    def __init__(self, site_id='EBAY-US', debug=False, consumer_id=None, 
-                 **kwargs):
+    def __init__(self, site_id='EBAY-US', debug=False, consumer_id=None,
+                 domain='apifindingcore.vip.ebay.com', **kwargs):
 
         super(Connection, self).__init__(consumer_id=consumer_id,
-                                         domain='apifindingcore.vip.ebay.com',
+                                         domain=domain,
                                          app_config=None,
                                          site_id=site_id,
                                          debug=debug, **kwargs)
-        
+
         self.config.set('domain', 'apifindingcore.vip.ebay.com')
         self.config.set('service', 'FindItemServiceNextGen', force=True)
         self.config.set('https', False)
@@ -79,8 +79,8 @@ class Connection(BaseConnection):
                     'name': rtype
                 }
             })
-            
-        args = {'id': ebay_item_ids, 'readSet': read_set_node}            
+
+        args = {'id': ebay_item_ids, 'readSet': read_set_node}
         self.execute('findItemsByIds', args)
         return self.mappedResponse()
 
@@ -109,12 +109,12 @@ class Connection(BaseConnection):
 
             records.append(mydict)
 
-        return records                    
+        return records
 
     def find_items_by_ids(self, *args, **kwargs):
         return self.findItemsByIds(*args, **kwargs)
 
-    def build_request_data(self, verb, data, verb_attrs):        
+    def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request"
         xml += ' xmlns="http://www.ebay.com/marketplace/search/v1/services"'
