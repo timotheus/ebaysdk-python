@@ -1,5 +1,9 @@
 Changes for ebaysdk
 
+2.1.0 Mon Jul  7 10:03:36 PDT 2014
+- modify install instructions
+- remove grequests install dep from setup.py
+
 2.0.0
 - WARNING!! This release breaks some backward compatibility
   Read https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2
