@@ -115,7 +115,7 @@ class BaseConnection(object):
         if hasattr(self, 'base_list_nodes'):
             self._list_nodes += self.base_list_nodes
 
-        self.build_request(verb, data, verb_attrs)
+        self.build_request(verb, data, verb_attrs, files)
         self.execute_request()        
 
         if hasattr(self.response, 'content'):
