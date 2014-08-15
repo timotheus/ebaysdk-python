@@ -25,6 +25,7 @@ from BeautifulSoup import BeautifulStoneSoup
 
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, object_dict
 
+content_type_re = re.compile('^Content\-Type:\s([^;]+);charset=(.*?)$', re.I)
 
 def get_version():
     "Get the version."
@@ -356,6 +357,24 @@ class ebaybase(object):
         self._response_status = self._response_header.getvalue().splitlines()[0]
         self._response_reason = re.match(r'^HTTP.+? +\d+ +(.*) *$', self._response_status).group(1)
         response_data = self._response_body.getvalue()
+
+        # Look for charset specifier and decode the response_data
+        # based on it.
+        for header in self._response_header.getvalue().splitlines():
+            header_match = content_type_re.match(header)
+
+            try:
+                if header_match and header_match.group(2):
+                    response_data = response_data.decode(header_match.group(2))
+                    break
+            except Exception as e:
+                charset = ''
+                try:
+                    charset = header_match.group(2)
+                except Exception:
+                    pass
+
+                sys.stderr.write("Failed to decode response using charset %s (%s)\n" % (charset, str(e)))
 
         self._response_header = None
         self._response_body = None
