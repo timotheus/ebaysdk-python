@@ -9,6 +9,8 @@ from BeautifulSoup import BeautifulStoneSoup
 from ebaysdk.utils import xml2dict, dict2xml, list2xml, make_struct, object_dict
 import ebaysdk.utils2
 
+content_type_re = re.compile('^Content\-Type:\s([^;]+);charset=(.*?)$', re.I)
+
 def get_version():
     # Get the version
     VERSIONFILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "_version.py")
@@ -84,11 +86,11 @@ class ebaybase(object):
             return h
 
     def load_yaml(self, config_file):
-    
+
         # check for absolute path
     	if os.path.exists( config_file ):
             try:
-                f = open( config_file, "r" ) 
+                f = open( config_file, "r" )
             except IOError, e:
                 print "unable to open file %s" % e
 
@@ -105,7 +107,7 @@ class ebaybase(object):
 
             if os.path.exists( myfile ):
                 try:
-                    f = open( myfile, "r" ) 
+                    f = open( myfile, "r" )
                 except IOError, e:
                     print "unable to open file %s" % e
 
@@ -117,7 +119,7 @@ class ebaybase(object):
 
     def api_config_append(self, config):
         for c in config:
-            self.api_config[c] = config[c] 
+            self.api_config[c] = config[c]
 
     def getNodeText(self, nodelist):
         rc = ""
@@ -462,6 +464,24 @@ class html(ebaybase):
             response_reason = re.match( r'^HTTP.+? +\d+ +(.*) *$', response_status ).group(1)
             response_data   = response_body.getvalue()
 
+            # Look for charset specifier and decode the response_data
+            # based on it.
+            for header in response_header.getvalue().splitlines():
+                header_match = content_type_re.match(header)
+
+                try:
+                    if header_match and header_match.group(2):
+                        response_data = response_data.decode(header_match.group(2))
+                        break
+                except Exception as e:
+                    charset = ''
+                    try:
+                        charset = header_match.group(2)
+                    except Exception:
+                        pass
+
+                    sys.stderr.write("Failed to decode response using charset %s (%s)\n" % (charset, str(e)))
+
             if response_code != 200:
                 self._response_error = "Error: %s" % response_reason
                 raise Exception('%s' % response_reason)
@@ -482,11 +502,11 @@ class trading(ebaybase):
     http://developer.ebay.com/products/trading/
 
     >>> t = trading()
-    >>> retval = t.execute('GetCharities', { 'CharityID': 3897 }) 
+    >>> retval = t.execute('GetCharities', { 'CharityID': 3897 })
     >>> charity_name = ''
     >>> if len( t.response_dom().getElementsByTagName('Name') ) > 0:
     ...   charity_name = nodeText(t.response_dom().getElementsByTagName('Name')[0])
-    >>> print charity_name 
+    >>> print charity_name
     Sunshine Kids Foundation
     >>> print t.error()
     <BLANKLINE>
@@ -573,7 +593,7 @@ class finding(ebaybase):
     http://developer.ebay.com/products/finding/
 
     >>> f = finding()
-    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})        
+    >>> retval = f.execute('findItemsAdvanced', {'keywords': 'shoes'})
     >>> error = f.error()
     >>> print error
     <BLANKLINE>
