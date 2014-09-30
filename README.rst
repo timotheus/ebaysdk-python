@@ -42,7 +42,7 @@ Getting Started
 * `Finding API Class`_ - access eBay's next generation search capabilities.
 * `Shopping API Class`_ - performance-optimized, lightweight APIs for accessing public eBay data.
 * `Merchandising API Class`_ - find items and products on eBay that provide good value or are otherwise popular with eBay buyers.
-* `HTML Class`_ - generic back-end class the enbles and standardized way to make API calls.
+* `HTTP Class`_ - generic back-end class the enbles and standardized way to make API calls.
 * `Parallel Class`_ - SDK support for concurrent API calls.
 
 2) SDK Configuration
