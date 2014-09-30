@@ -39,7 +39,9 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
 
-    if not sys.version_info[0] >= 3:
+    if not sys.version_info[0] >= 3 \
+        and sys.modules.has_key('grequests') is True:
+
         suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))    
     
     
