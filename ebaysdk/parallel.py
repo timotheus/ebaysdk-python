@@ -20,7 +20,7 @@ class Parallel(object):
     >>> import os
     >>> p = Parallel()
     >>> r1 = html(parallel=p)
-    >>> retval = r1.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
+    >>> retval = r1.execute('http://feeds.feedburner.com/slashdot/audio?format=xml')
     >>> r2 = finding(parallel=p, config_file=os.environ.get('EBAY_YAML'))
     >>> retval = r2.execute('findItemsAdvanced', {'keywords': 'shoes'})
     >>> r3 = shopping(parallel=p, config_file=os.environ.get('EBAY_YAML'))
@@ -29,7 +29,7 @@ class Parallel(object):
     >>> print(p.error())
     None
     >>> print(r1.response.reply.rss.channel.ttl)
-    60
+    2
     >>> print(r2.response.dict()['ack'])
     Success
     >>> print(r3.response.reply.Ack)
