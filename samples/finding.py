@@ -74,9 +74,29 @@ def run2(opts):
         print(e)
         print(e.response.dict())
 
+def run_motors(opts):
+    api = finding(siteid='EBAY-MOTOR', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+                  warnings=True)
 
+    api.execute('findItemsAdvanced', {
+        'keywords': 'tesla',
+    })
+
+    if api.error():
+        raise Exception(api.error())
+
+    if api.response_content():
+        print "Call Success: %s in length" % len(api.response_content())
+
+    print "Response code: %s" % api.response_code()
+    print "Response DOM: %s" % api.response_dom()
+
+    dictstr = "%s" % api.response_dict()
+    print "Response dictionary: %s..." % dictstr[:250]
+    
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())
     (opts, args) = init_options()
     run(opts)
     run2(opts)
+    run_motors(opts)
