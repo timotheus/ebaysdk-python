@@ -12,7 +12,7 @@ from lxml import etree as ET
 # shim so isinstance(..., unicode) can work in Python 3
 #
 # to do this in other modules: from ebaysdk.utils import unicode
-if sys.version_info[0] < 3
+if sys.version_info[0] < 3:
     unicode = unicode
 else:
     unicode = str
