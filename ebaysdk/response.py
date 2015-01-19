@@ -13,7 +13,7 @@ import datetime
 from collections import defaultdict
 import json
 
-from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible
+from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible, unicode
 from ebaysdk import log
 
 @python_2_unicode_compatible
@@ -52,7 +52,7 @@ class ResponseDataObject(object):
         setattr(self, name, value)
 
     def _load_dict(self, mydict, datetime_nodes):
-        
+
         for a in mydict.items():
 
             if isinstance(a[1], dict):
@@ -66,11 +66,11 @@ class ResponseDataObject(object):
                         objs.append(i)
                     else:
                         objs.append(ResponseDataObject(i, datetime_nodes))
-                
+
                 setattr(self, a[0], objs)
             else:
                 self._setattr(a[0], a[1], datetime_nodes)
-                
+
 class Response(object):
     '''
     <?xml version='1.0' encoding='UTF-8'?>
@@ -124,7 +124,7 @@ class Response(object):
     >>> len(item.shipping.c) == 2
     True
     '''
-    
+
     def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[], parse_response=True):
         self._list_nodes=copy.copy(list_nodes)
         self._obj = obj
@@ -191,7 +191,7 @@ class Response(object):
                     dd[k].append(v)
 
             d = {t.tag: dict((k, self._pullval(v)) for k, v in dd.items())}
-            #d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}    
+            #d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}
 
             # TODO: Optimizations? Forces a node to type list
             parent_path = self._get_node_path(t)
@@ -217,7 +217,7 @@ class Response(object):
 
     def _parse_xml(self, xml):
         return get_dom_tree(xml)
-        
+
     def _get_node_tag(self, node):
         return node.tag.replace('{' + node.nsmap.get(node.prefix, '') + '}', '')
 
