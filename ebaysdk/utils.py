@@ -9,8 +9,14 @@ import sys
 
 from lxml import etree as ET
 
-if sys.version_info[0] >= 3:
+# shim so isinstance(..., unicode) can work in Python 3
+#
+# to do this in other modules: from ebaysdk.utils import unicode
+if sys.version_info[0] < 3
+    unicode = unicode
+else:
     unicode = str
+
 
 def python_2_unicode_compatible(klass):
     """
