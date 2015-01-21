@@ -15,7 +15,7 @@ from ebaysdk.config import Config
 from ebaysdk.utils import dict2xml
 
 class Connection(BaseConnection):
-    """Connection class for the Business Polices service
+    """Connection class for the Business Policies service
 
     API documentation:
     http://developer.ebay.com/Devzone/business-policies
