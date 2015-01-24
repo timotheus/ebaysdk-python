@@ -141,7 +141,6 @@ class BaseConnection(object):
         headers = self.build_request_headers(verb)
         headers.update({'User-Agent': UserAgent, 
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
-
         request = Request(self.method, 
             url,
             data=self.build_request_data(verb, data, verb_attrs),
