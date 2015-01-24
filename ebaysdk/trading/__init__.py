@@ -692,7 +692,14 @@ class Connection(BaseConnection):
                 if self.config.get('password', None):
                     xml += "<Password>%s</Password>" % self.config.get('password', '')
             xml += "</RequesterCredentials>"
-        xml += dict2xml(data)
+
+        try:        
+            xml += dict2xml(data)
+        except:
+            print data
+            print dict2xml(data)
+            raise        
+
         xml += "</" + self.verb + "Request>"
         return xml
 
