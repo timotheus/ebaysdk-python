@@ -83,7 +83,7 @@ License
 .. _Merchandising API Class: https://github.com/timotheus/ebaysdk-python/wiki/Merchandising-API-Class
 .. _HTTP Class: https://github.com/timotheus/ebaysdk-python/wiki/HTTP-Class
 .. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
-.. _eBay Developer Forums: https://go.developer.ebay.com/developers/ebay/forums-support/support
+.. _eBay Developer Forums: https://forums.developer.ebay.com
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
 .. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
 .. _samples directory: https://github.com/timotheus/ebaysdk-python/tree/master/samples
