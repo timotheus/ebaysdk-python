@@ -6,9 +6,9 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 import sys
-from contextlib import contextmanager
 
 from lxml import etree as ET
+from contextlib import contextmanager
 
 @contextmanager
 def file_lock(lock_file):
