@@ -6,21 +6,7 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 import sys
-
 from lxml import etree as ET
-from contextlib import contextmanager
-
-@contextmanager
-def file_lock(lock_file):
-    if os.path.exists(lock_file):
-        LOG.info("skipping run, lock file found (%s)" % lock_file)
-        sys.exit(-1)
-    else:
-        open(lock_file, 'w').write("1")
-        try:
-            yield
-        finally:
-            os.remove(lock_file)
 
 def python_2_unicode_compatible(klass):
     """
