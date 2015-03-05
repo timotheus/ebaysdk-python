@@ -16,7 +16,7 @@ def main(opts):
     with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
         log.debug("Started poller %s" % __file__)
 
-        to_time = datetime.utcnow() - timedelta(days=10)
+        to_time = datetime.utcnow()
         from_time = to_time - timedelta(days=29)
 
         ebay_api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
@@ -25,7 +25,8 @@ def main(opts):
 
         resp = ebay_api.execute('GetOrders', {
             'DetailLevel': 'ReturnAll',
-            #'OrderStatus': 'Completed',
+            'OrderRole': 'Buyer',
+            'OrderStatus': 'All',
             'Pagination': {
                 'EntriesPerPage': 25,
                 'PageNumber': 1,
@@ -37,20 +38,29 @@ def main(opts):
 
         if resp.reply.OrderArray:
             for order in resp.reply.OrderArray.Order:
+                #from IPython import embed; embed()
 
                 log.debug("ID: %s" % order.OrderID)
                 log.debug("Status: %s" % order.OrderStatus)
                 log.debug("Seller Email: %s" % order.SellerEmail)
                 log.debug("Title: %s" % order.TransactionArray.Transaction.Item.Title)
                 log.debug("ItemID: %s" % order.TransactionArray.Transaction.Item.ItemID)
-                log.debug("SKU: %s" % order.TransactionArray.Transaction.Variation.SKU)
+                log.debug("QTY: %s" % order.TransactionArray.Transaction.QuantityPurchased)
+                log.debug("Payment Method: %s" % order.CheckoutStatus.PaymentMethod)
+                log.debug("Payment Date: %s" % order.PaidTime)
+                log.debug("Total: %s %s" % (order.Total._currencyID, order.Total.value))
+
+                if order.TransactionArray.Transaction.get('Variation', None):
+                    log.debug("SKU: %s" % order.TransactionArray.Transaction.Variation.SKU)
+                    log.debug("SKU2: %s" % order.TransactionArray.Transaction.Item.get('SKU', 'None'))
 
                 if order.ShippingDetails.get('ShipmentTrackingDetails', None):
                     log.debug("Tracking: %s" % order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber)
                     log.debug("Carrier: %s" % order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed)
-                    log.debug("Cost: %s" % order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost)
+                    log.debug("Cost: %s %s" % (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
         else:
             log.debug("no orders to process")
+
 
         '''
         - item title .. Title

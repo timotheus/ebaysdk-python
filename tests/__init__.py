@@ -19,6 +19,7 @@ import ebaysdk.trading
 import ebaysdk.merchandising
 import ebaysdk.soa.finditem
 import ebaysdk.finding
+import ebaysdk.poller.orders
 
 # does not pass with python3.3
 try:
@@ -29,6 +30,9 @@ except ImportError:
 def getTestSuite():
     suite = unittest.TestSuite()
 
+    suite.addTest(doctest.DocTestSuite(ebaysdk.poller.orders))
+
+    '''
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.response))
@@ -39,11 +43,13 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
 
+
     if not sys.version_info[0] >= 3 \
         and sys.modules.has_key('grequests') is True:
 
         suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))    
     
+    '''
     
     # inside only
     #suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
