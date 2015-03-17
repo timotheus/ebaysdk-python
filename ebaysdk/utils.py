@@ -9,6 +9,15 @@ import sys
 
 from lxml import etree as ET
 
+# shim so isinstance(..., unicode) can work in Python 3
+#
+# to do this in other modules: from ebaysdk.utils import unicode
+if sys.version_info[0] < 3:
+    unicode = unicode
+else:
+    unicode = str
+
+
 def python_2_unicode_compatible(klass):
     """
     A decorator that defines __unicode__ and __str__ methods under Python 2.
@@ -112,7 +121,7 @@ def dict2xml(root):
     ...            '@attrs': common_attrs,
     ...            '#text': 'mydevid'
     ...        },
-    ...    },            
+    ...    },
     ...    {'@attrs': {'Name': 'AppId', 'NameFormat': 'String', 'FriendlyName': 'ApplicationID'},
     ...        'urn:AttributeValue': {
     ...            '@attrs': common_attrs,
@@ -124,7 +133,7 @@ def dict2xml(root):
     ...            '@attrs': common_attrs,
     ...            '#text': 'mycertid',
     ...        },
-    ...    },        
+    ...    },
     ...    ],
     ... }
     >>> print(dict2xml(attrdict))
@@ -140,7 +149,7 @@ def dict2xml(root):
 
             if isinstance(root[key], dict):
                 attrs, value = attribute_check(root[key])
-                
+
                 if not value:
                     value = dict2xml(root[key])
                 elif isinstance(value, dict):
@@ -151,11 +160,11 @@ def dict2xml(root):
                     attrs_sp = ' '
 
                 xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
-                    {'tag': key, 'xml': xml, 'attrs': ' '.join(attrs), 
-                     'value': smart_encode(value), 'attrs_sp': attrs_sp}                          
+                    {'tag': key, 'xml': xml, 'attrs': ' '.join(attrs),
+                     'value': smart_encode(value), 'attrs_sp': attrs_sp}
 
             elif isinstance(root[key], list):
-                
+
                 for item in root[key]:
                     attrs, value = attribute_check(item)
 
@@ -163,7 +172,7 @@ def dict2xml(root):
                         value = dict2xml(item)
                     elif isinstance(value, dict):
                         value = dict2xml(value)
-                    
+
                     attrs_sp = ''
                     if len(attrs) > 0:
                         attrs_sp = ' '
@@ -171,7 +180,7 @@ def dict2xml(root):
                     xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
                         {'xml': xml, 'tag': key, 'attrs': ' '.join(attrs),
                          'value': smart_encode(value), 'attrs_sp': attrs_sp}
- 
+
             else:
                 value = root[key]
                 xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
@@ -245,12 +254,12 @@ def perftest_dict2xml():
         ],
         'sortOrder': 'StartTimeNewest'
     }
-    
-    xml = dict2xml(sample_dict)   
+
+    xml = dict2xml(sample_dict)
 
 if __name__ == '__main__':
 
-    import timeit    
+    import timeit
     print("perftest_dict2xml() %s" % \
         timeit.timeit("perftest_dict2xml()", number=50000,
                       setup="from __main__ import perftest_dict2xml"))
@@ -258,4 +267,3 @@ if __name__ == '__main__':
     import doctest
     failure_count, test_count = doctest.testmod()
     sys.exit(failure_count)
-
