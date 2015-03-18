@@ -31,6 +31,9 @@ def parse_args(usage):
     parser.add_option("-d", "--debug",
                       action="store_true", dest="debug", default=False,
                       help="Enabled debugging [default: %default]")
+    parser.add_option("-H", "--hours",
+                      dest="hours", default=12, type='int',
+                      help="Specifies the number of hours [default: %default]")    
     parser.add_option("-y", "--yaml",
                       dest="yaml", default='ebay.yaml',
                       help="Specifies the name of the YAML defaults file. [default: %default]")
