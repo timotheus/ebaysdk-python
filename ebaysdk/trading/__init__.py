@@ -681,19 +681,26 @@ class Connection(BaseConnection):
         return headers
 
     def build_request_data(self, verb, data, verb_attrs):
-        xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
+        xml = u"<?xml version='1.0' encoding='utf-8'?>"
+        xml += u"<" + self.verb + u"Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
         if not self.config.get('iaf_token', None):
-            xml += "<RequesterCredentials>"
+            xml += u"<RequesterCredentials>"
             if self.config.get('token', None):
-                xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.config.get('token')
+                xml += u"<eBayAuthToken>%s</eBayAuthToken>" % self.config.get('token')
             elif self.config.get('username', None):
-                xml += "<Username>%s</Username>" % self.config.get('username', '')
+                xml += u"<Username>%s</Username>" % self.config.get('username', '')
                 if self.config.get('password', None):
-                    xml += "<Password>%s</Password>" % self.config.get('password', '')
-            xml += "</RequesterCredentials>"
-        xml += dict2xml(data)
-        xml += "</" + self.verb + "Request>"
+                    xml += u"<Password>%s</Password>" % self.config.get('password', '')
+            xml += u"</RequesterCredentials>"
+
+        try:        
+            xml += dict2xml(data)
+        except:
+            print data
+            print dict2xml(data)
+            raise        
+
+        xml += u"</" + self.verb + u"Request>"
         return xml
 
     def warnings(self):
