@@ -63,7 +63,7 @@ def main(opts):
                     ])
             
                     if order.ShippingDetails.get('ShipmentTrackingDetails', None):
-                        data.append([
+                        data.extend([
                             ("Min Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
                             ("Max Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
                             ("Tracking", order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber),
