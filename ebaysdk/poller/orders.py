@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-© 2012-2013 eBay Software Foundation
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
@@ -12,9 +11,6 @@ from ebaysdk.trading import Connection as Trading
 from ebaysdk.poller import parse_args, file_lock
 from ebaysdk import log
 
-
-def sample():
-    pass
 
 def main(opts):
 
@@ -33,7 +29,7 @@ def main(opts):
             'OrderRole': 'Buyer',
             'OrderStatus': 'All',
             'Pagination': {
-                'EntriesPerPage': 2,
+                'EntriesPerPage': 25,
                 'PageNumber': 1,
             },
             'ModTimeFrom': from_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
