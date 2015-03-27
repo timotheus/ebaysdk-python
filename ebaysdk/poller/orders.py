@@ -21,7 +21,7 @@ def main(opts):
     with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
         log.debug("Started poller %s" % __file__)
 
-        to_time = datetime.utcnow() - timedelta(days=29)
+        to_time = datetime.utcnow()# - timedelta(days=80)
         from_time = to_time - timedelta(hours=opts.hours)
 
         ebay_api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
@@ -46,29 +46,38 @@ def main(opts):
 
                 for order in resp.reply.OrderArray.Order:
 
-                    log.debug("ID: %s" % order.OrderID)
-                    log.debug("Status: %s" % order.OrderStatus)
-                    log.debug("Seller Email: %s" % order.SellerEmail)
-                    log.debug("Title: %s" % order.TransactionArray.Transaction.Item.Title)
-                    log.debug("ItemID: %s" % order.TransactionArray.Transaction.Item.ItemID)
-                    log.debug("QTY: %s" % order.TransactionArray.Transaction.QuantityPurchased)
-                    log.debug("Payment Method: %s" % order.CheckoutStatus.PaymentMethod)
-                    log.debug("Payment Date: %s" % order.PaidTime)
-                    log.debug("Total: %s %s" % (order.Total._currencyID, order.Total.value))
+                    data = [
+                        ("ID", order.OrderID),
+                        ("Status", order.OrderStatus),
+                        ("Seller Email", order.SellerEmail),
+                        ("Title", order.TransactionArray.Transaction.Item.Title),
+                        ("ItemID", order.TransactionArray.Transaction.Item.ItemID),
+                        ("QTY", order.TransactionArray.Transaction.QuantityPurchased),
+                        ("Payment Method", order.CheckoutStatus.PaymentMethod),
+                        ("Payment Date", order.PaidTime),
+                        ("Total", (order.Total._currencyID + ' ' + order.Total.value))
+                    ]
 
                     if order.TransactionArray.Transaction.get('Variation', None):
-                        log.debug("SKU: %s" % order.TransactionArray.Transaction.Variation.SKU)
+                        data.append(("SKU", order.TransactionArray.Transaction.Variation.SKU)),
 
-                    log.debug("Shipped Time: %s" % order.ShippedTime)
-                    log.debug("Shipping Service: %s" % order.ShippingServiceSelected)
+                    data.extend([
+                        ("Shipped Time", order.ShippedTime),
+                        ("Shipping Service", order.ShippingServiceSelected)
+                    ])
             
                     if order.ShippingDetails.get('ShipmentTrackingDetails', None):
-                        log.debug("Min Shipping Days: %s" % order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin)
-                        log.debug("Max Shipping Days: %s" % order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax)
-                        log.debug("Tracking: %s" % order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber)
-                        log.debug("Carrier: %s" % order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed)
-                        log.debug("Cost: %s %s" % (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
-            
+                        data.append([
+                            ("Min Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
+                            ("Max Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
+                            ("Tracking", order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber),
+                            ("Carrier", order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed),
+                            ("Cost", (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
+                        ])
+
+                    values_array = map((lambda x: "%s=%s" % (x[0], x[1])), data)
+                    log.debug(", ".join(values_array))
+
                     # execute SQL here
 
             else:
