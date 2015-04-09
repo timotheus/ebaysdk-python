@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 '''
 © 2012-2013 eBay Software Foundation
@@ -129,6 +130,10 @@ def dict2xml(root):
     ... }
     >>> print(dict2xml(attrdict))
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
+
+    >>> dict1 = {'Item': {'Name': 'Kartenlesegerät'}}
+    >>> dict2xml(dict1)
+    '<Item><Name>Kartenleseger\\xc3\\xa4t</Name></Item>'
     '''
 
     xml = ''
