@@ -682,18 +682,18 @@ class Connection(BaseConnection):
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
+        xml += "<{verb}Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">".format(verb=self.verb)
         if not self.config.get('iaf_token', None):
             xml += "<RequesterCredentials>"
             if self.config.get('token', None):
-                xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.config.get('token')
+                xml += "<eBayAuthToken>{token}</eBayAuthToken>".format(token=self.config.get('token'))
             elif self.config.get('username', None):
-                xml += "<Username>%s</Username>" % self.config.get('username', '')
+                xml += "<Username>{username}</Username>".format(username=self.config.get('username', ''))
                 if self.config.get('password', None):
-                    xml += "<Password>%s</Password>" % self.config.get('password', '')
+                    xml += "<Password>{password}</Password>".format(password=self.config.get('password', None))
             xml += "</RequesterCredentials>"
         xml += dict2xml(data)
-        xml += "</" + self.verb + "Request>"
+        xml += "</{verb}Request>".format(verb=self.verb)
         return xml
 
     def warnings(self):
