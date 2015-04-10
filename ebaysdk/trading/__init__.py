@@ -686,11 +686,11 @@ class Connection(BaseConnection):
         if not self.config.get('iaf_token', None):
             xml += "<RequesterCredentials>"
             if self.config.get('token', None):
-                xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.config.get('token')
+                xml += "<eBayAuthToken>{token}</eBayAuthToken>".format(token=self.config.get('token'))
             elif self.config.get('username', None):
-                xml += "<Username>%s</Username>" % self.config.get('username', '')
+                xml += "<Username>{username}</Username>".format(username=self.config.get('username', ''))
                 if self.config.get('password', None):
-                    xml += "<Password>%s</Password>" % self.config.get('password', '')
+                    xml += "<Password>{password}</Password>".format(password=self.config.get('password', None))
             xml += "</RequesterCredentials>"
         xml += dict2xml(data)
         xml += "</" + self.verb + "Request>"
