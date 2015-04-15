@@ -61,6 +61,31 @@ def run(opts):
         print(e)
         print(e.response.dict())
 
+
+def run_unicode(opts):
+
+    try:
+        api = finding(debug=opts.debug, appid=opts.appid,
+                      config_file=opts.yaml, warnings=True)
+
+        api_request = {
+            'keywords': u'Kościół',
+        }
+
+        response = api.execute('findItemsAdvanced', api_request)
+        for i in response.reply.searchResult.item:
+            if i.title.find(u'ś') >= 0:
+                print("Matched: %s" % i.title)
+                break
+
+        dump(api)
+
+    except ConnectionError as e:
+        print(e)
+        print(e.response.dict())
+
+
+
 def run2(opts):
     try:
         api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
@@ -100,3 +125,4 @@ if __name__ == "__main__":
     run(opts)
     run2(opts)
     run_motors(opts)
+    run_unicode(opts)
