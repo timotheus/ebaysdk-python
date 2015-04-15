@@ -12,6 +12,7 @@ from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml
+from ebaysdk.exception import RequestPaginationError, PaginationLimit
 
 class Connection(BaseConnection):
     """Trading API class
@@ -471,7 +472,7 @@ class Connection(BaseConnection):
             'getebaydetailsresponse.numberofpolicyviolationsdetailstype.count',
             'getallbiddersresponse.offerarraytype.offer',
             'gethighbiddersresponse.offerarraytype.offer',
-            'getordersresponse.orderarraytype.order',
+            'getordersresponse.orderarray.order',
             'getordersresponse.orderidarraytype.orderid',
             'getmyebaybuyingresponse.ordertransactionarraytype.ordertransaction',
             'addorderresponse.ordertype.paymentmethods',
@@ -789,3 +790,24 @@ class Connection(BaseConnection):
             return errors
 
         return []
+
+    def pages(self):
+
+        tot_pages = 0
+        epp = self._request_dict.get('Pagination', {}).get('EntriesPerPage', None)
+
+        if not self.response:
+            resp = self.execute(self.verb, self._request_dict)
+            tot_pages = int(resp.reply.PaginationResult.TotalNumberOfPages)
+            yield resp
+
+
+        for page in range(tot_pages)[1:]:
+            self._request_dict['Pagination'] = {}
+
+            if epp:
+                self._request_dict['Pagination']['EntriesPerPage'] = epp
+
+            self._request_dict['Pagination']['PageNumber'] = int(page) + 1
+
+            yield self.execute(self.verb, self._request_dict)
