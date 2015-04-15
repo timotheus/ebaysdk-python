@@ -7,7 +7,6 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 import sys
-
 from lxml import etree as ET
 
 def python_2_unicode_compatible(klass):
