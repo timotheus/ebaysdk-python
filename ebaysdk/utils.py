@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 '''
 © 2012-2013 eBay Software Foundation
@@ -39,7 +40,7 @@ def attribute_check(root):
             value = root['#text']
         if '@attrs' in root:
             for ak, av in sorted(root.pop('@attrs').items()):
-                attrs.append('%s="%s"' % (ak, av))
+                attrs.append(str('{0}="{1}"').format(ak, smart_encode(av)))
 
     return attrs, value
 
@@ -129,9 +130,26 @@ def dict2xml(root):
     ... }
     >>> print(dict2xml(attrdict))
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
+
+    >>> dict_special = {
+    ...     'searchFilter': {'categoryId': {'#text': 'SomeID - łśżźć', '@attrs': {'site': 'US - łśżźć'} }},
+    ...     'paginationInput': {
+    ...         'pageNumber': '1 - łśżźć',
+    ...         'pageSize': '25 - łśżźć'
+    ...     },
+    ...     'itemFilter': [
+    ...         {'name': 'Condition - łśżźć',
+    ...          'value': 'Used - łśżźć'},
+    ...          {'name': 'LocatedIn - łśżźć',
+    ...          'value': 'GB - łśżźć'},
+    ...     ],
+    ...     'sortOrder': 'StartTimeNewest - łśżźć'
+    ... }
+    >>> dict2xml(dict_special)
+    '<itemFilter><name>Condition - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>Used - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><itemFilter><name>LocatedIn - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>GB - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><paginationInput><pageNumber>1 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageNumber><pageSize>25 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageSize></paginationInput><searchFilter><categoryId site="US - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87">SomeID - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</categoryId></searchFilter><sortOrder>StartTimeNewest - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</sortOrder>'
     '''
 
-    xml = ''
+    xml = str('')
     if root is None:
         return xml
 
@@ -146,13 +164,13 @@ def dict2xml(root):
                 elif isinstance(value, dict):
                     value = dict2xml(value)
 
-                attrs_sp = ''
+                attrs_sp = str('')
                 if len(attrs) > 0:
-                    attrs_sp = ' '
+                    attrs_sp = str(' ')
 
-                xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
-                    {'tag': key, 'xml': xml, 'attrs': ' '.join(attrs), 
-                     'value': smart_encode(value), 'attrs_sp': attrs_sp}                          
+                xml = str('{xml}<{tag}{attrs_sp}{attrs}>{value}</{tag}>') \
+                    .format(**{'tag': key, 'xml': str(xml), 'attrs': str(' ').join(attrs),
+                               'value': smart_encode(value), 'attrs_sp': attrs_sp})
 
             elif isinstance(root[key], list):
                 
@@ -168,19 +186,19 @@ def dict2xml(root):
                     if len(attrs) > 0:
                         attrs_sp = ' '
 
-                    xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
-                        {'xml': xml, 'tag': key, 'attrs': ' '.join(attrs),
-                         'value': smart_encode(value), 'attrs_sp': attrs_sp}
- 
+                    xml = str('{xml}<{tag}{attrs_sp}{attrs}>{value}</{tag}>') \
+                        .format(**{'xml': str(xml), 'tag': key, 'attrs': ' '.join(attrs), 'value': smart_encode(value),
+                                   'attrs_sp': attrs_sp})
+
             else:
                 value = root[key]
-                xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
-                    {'xml': xml, 'tag': key, 'value': smart_encode(value)}
+                xml = str('{xml}<{tag}>{value}</{tag}>') \
+                    .format(**{'xml': str(xml), 'tag': key, 'value': smart_encode(value)})
 
     elif isinstance(root, str) or isinstance(root, int) \
         or isinstance(root, unicode) or isinstance(root, long) \
         or isinstance(root, float):
-        xml = '%s%s' % (xml, root)
+        xml = str('{0}{1}').format(str(xml), root)
     else:
         raise Exception('Unable to serialize node of type %s (%s)' % \
             (type(root), root))
