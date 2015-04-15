@@ -9,7 +9,7 @@ Licensed under CDDL 1.0
 import platform
 import logging
 
-__version__ = '2.1.0-dev1'
+__version__ = '2.1.1'
 Version = __version__  # for backware compatibility
 
 try:
