@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- set ssl verify to True in connection class
+
 2.1.1 Tue Apr 14 20:16:47 PDT 2015
 - merge in pull request to fix unicode issues
 - remove PyYAML dependency
