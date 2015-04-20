@@ -162,7 +162,7 @@ class BaseConnection(object):
             return None
 
         self.response = self.session.send(self.request,
-            verify=False,
+            verify=True,
             proxies=self.proxies,
             timeout=self.timeout,
             allow_redirects=True
