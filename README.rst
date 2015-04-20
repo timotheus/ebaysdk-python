@@ -6,7 +6,6 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 Quick Example::
 
     import datetime
-    from lxml.etree import _Element
     from ebaysdk.finding import Connection
 
     try:
@@ -20,7 +19,6 @@ Quick Example::
         item = response.reply.searchResult.item[0]
         assert(type(item.listingInfo.endTime) == datetime.datetime)
         assert(type(response.dict()) == dict)
-        assert(type(response.dom() == _Element))
 
     except ConnectionError as e:
         print(e)
