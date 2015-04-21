@@ -30,12 +30,12 @@ class Connection(BaseConnection):
 
     Doctests:
     >>> h = Connection()
-    >>> retval = h.execute('http://shop.ebay.com/i.html?rt=nc&_nkw=mytouch+slide&_dmpt=PDA_Accessories&_rss=1')
+    >>> retval = h.execute('http://feeds.feedburner.com/slashdot/audio?format=xml')
     >>> print(h.response.reply.rss.channel.ttl)
-    60
+    2
     >>> title = h.response.dom().xpath('//title')[0]
     >>> print(title.text)
-    mytouch slide
+    Slashdot
     >>> print(h.error())
     None
     >>> h = Connection(method='POST', debug=False)

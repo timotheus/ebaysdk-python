@@ -1,5 +1,12 @@
 Changes for ebaysdk
 
+- set ssl verify to True in connection class
+
+2.1.1 Tue Apr 14 20:16:47 PDT 2015
+- merge in pull request to fix unicode issues
+- remove PyYAML dependency
+- add poller package for pulling orders
+
 2.1.0 Mon Jul  7 10:03:36 PDT 2014
 - modify install instructions
 - remove grequests install dep from setup.py
