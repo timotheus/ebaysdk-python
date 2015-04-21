@@ -62,8 +62,11 @@ class Parallel(object):
                                         allow_redirects=True)
 
                 self._grequests.append(req)
+                
+            def exception_handler(request, exception):
+                self._errors.append(request.error())
 
-            gresponses = grequests.map(self._grequests)
+            gresponses = grequests.map(self._grequests, exception_handler=exception_handler)
 
             for idx, r in enumerate(self._requests):
                 r.response = gresponses[idx]
