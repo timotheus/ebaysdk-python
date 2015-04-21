@@ -12,6 +12,7 @@ from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml
+from ebaysdk.exception import RequestPaginationError, PaginationLimit
 
 class Connection(BaseConnection):
     """Trading API class
@@ -471,7 +472,7 @@ class Connection(BaseConnection):
             'getebaydetailsresponse.numberofpolicyviolationsdetailstype.count',
             'getallbiddersresponse.offerarraytype.offer',
             'gethighbiddersresponse.offerarraytype.offer',
-            'getordersresponse.orderarraytype.order',
+            'getordersresponse.orderarray.order',
             'getordersresponse.orderidarraytype.orderid',
             'getmyebaybuyingresponse.ordertransactionarraytype.ordertransaction',
             'addorderresponse.ordertype.paymentmethods',
@@ -682,18 +683,18 @@ class Connection(BaseConnection):
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += "<" + self.verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
+        xml += "<{verb}Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">".format(verb=self.verb)
         if not self.config.get('iaf_token', None):
             xml += "<RequesterCredentials>"
             if self.config.get('token', None):
-                xml += "<eBayAuthToken>%s</eBayAuthToken>" % self.config.get('token')
+                xml += "<eBayAuthToken>{token}</eBayAuthToken>".format(token=self.config.get('token'))
             elif self.config.get('username', None):
-                xml += "<Username>%s</Username>" % self.config.get('username', '')
+                xml += "<Username>{username}</Username>".format(username=self.config.get('username', ''))
                 if self.config.get('password', None):
-                    xml += "<Password>%s</Password>" % self.config.get('password', '')
+                    xml += "<Password>{password}</Password>".format(password=self.config.get('password', None))
             xml += "</RequesterCredentials>"
         xml += dict2xml(data)
-        xml += "</" + self.verb + "Request>"
+        xml += "</{verb}Request>".format(verb=self.verb)
         return xml
 
     def warnings(self):
@@ -789,3 +790,24 @@ class Connection(BaseConnection):
             return errors
 
         return []
+
+    def pages(self):
+
+        tot_pages = 0
+        epp = self._request_dict.get('Pagination', {}).get('EntriesPerPage', None)
+
+        if not self.response:
+            resp = self.execute(self.verb, self._request_dict)
+            tot_pages = int(resp.reply.PaginationResult.TotalNumberOfPages)
+            yield resp
+
+
+        for page in range(tot_pages)[1:]:
+            self._request_dict['Pagination'] = {}
+
+            if epp:
+                self._request_dict['Pagination']['EntriesPerPage'] = epp
+
+            self._request_dict['Pagination']['PageNumber'] = int(page) + 1
+
+            yield self.execute(self.verb, self._request_dict)

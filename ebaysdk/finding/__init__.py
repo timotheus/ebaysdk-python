@@ -301,4 +301,4 @@ class Connection(BaseConnection):
 
         self._request_dict['paginationInput']['pageNumber'] = int(num) + 1
         
-        self.execute(self.verb, self._request_dict)
+        return self.execute(self.verb, self._request_dict)

@@ -6,7 +6,6 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 Quick Example::
 
     import datetime
-    from lxml.etree import _Element
     from ebaysdk.finding import Connection
 
     try:
@@ -20,7 +19,6 @@ Quick Example::
         item = response.reply.searchResult.item[0]
         assert(type(item.listingInfo.endTime) == datetime.datetime)
         assert(type(response.dict()) == dict)
-        assert(type(response.dom() == _Element))
 
     except ConnectionError as e:
         print(e)
@@ -42,7 +40,7 @@ Getting Started
 * `Finding API Class`_ - access eBay's next generation search capabilities.
 * `Shopping API Class`_ - performance-optimized, lightweight APIs for accessing public eBay data.
 * `Merchandising API Class`_ - find items and products on eBay that provide good value or are otherwise popular with eBay buyers.
-* `HTML Class`_ - generic back-end class the enbles and standardized way to make API calls.
+* `HTTP Class`_ - generic back-end class the enbles and standardized way to make API calls.
 * `Parallel Class`_ - SDK support for concurrent API calls.
 
 2) SDK Configuration
@@ -81,9 +79,9 @@ License
 .. _Finding API Class: https://github.com/timotheus/ebaysdk-python/wiki/Finding-API-Class
 .. _Shopping API Class: https://github.com/timotheus/ebaysdk-python/wiki/Shopping-API-Class
 .. _Merchandising API Class: https://github.com/timotheus/ebaysdk-python/wiki/Merchandising-API-Class
-.. _HTML Class: https://github.com/timotheus/ebaysdk-python/wiki/HTML-Class
+.. _HTTP Class: https://github.com/timotheus/ebaysdk-python/wiki/HTTP-Class
 .. _Parallel Class: https://github.com/timotheus/ebaysdk-python/wiki/Parallel-Class
-.. _eBay Developer Forums: https://go.developer.ebay.com/developers/ebay/forums-support/support
+.. _eBay Developer Forums: https://forums.developer.ebay.com
 .. _Github issue tracking: https://github.com/timotheus/ebaysdk-python/issues
 .. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
 .. _samples directory: https://github.com/timotheus/ebaysdk-python/tree/master/samples
