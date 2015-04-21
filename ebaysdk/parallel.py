@@ -64,7 +64,7 @@ class Parallel(object):
                 self._grequests.append(req)
                 
             def exception_handler(request, exception):
-                self._errors.append(request.error())
+                self._errors.append("%s" % exception)
 
             gresponses = grequests.map(self._grequests, exception_handler=exception_handler)
 
