@@ -142,18 +142,23 @@ class BaseConnection(object):
         headers.update({'User-Agent': UserAgent, 
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
                         
-       # if we are adding files, we ensure there is no Content-Type header already defined
-       # otherwise Request will use the existing one which is likely not to be multipart/form-data
+        # if we are adding files, we ensure there is no Content-Type header already defined
+        # otherwise Request will use the existing one which is likely not to be multipart/form-data
+        # data must also be a dict so we make it so if needed
+
+        requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
+            if isinstance(requestData, basestring):
+                requestData = {'XMLPayload':requestData}
 
-        request = Request(self.method, 
+        request = Request(self.method,
             url,
-            data=self.build_request_data(verb, data, verb_attrs),
+            data=requestData,
             headers=headers,
             files=files,
         )
-        
+
 
         self.request = request.prepare()
 
