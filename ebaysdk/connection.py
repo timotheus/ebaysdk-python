@@ -132,11 +132,7 @@ class BaseConnection(object):
         self._request_dict = data
         self._request_id = uuid.uuid4()
 
-        url = "%s://%s%s" % (
-            HTTP_SSL[self.config.get('https', False)],
-            self.config.get('domain'),
-            self.config.get('uri')
-        )
+        url = self.build_request_url(verb)
 
         headers = self.build_request_headers(verb)
         headers.update({'User-Agent': UserAgent, 
@@ -149,6 +145,14 @@ class BaseConnection(object):
         )
 
         self.request = request.prepare()
+
+    def build_request_url(self, verb):
+        url = "%s://%s%s" % (
+            HTTP_SSL[self.config.get('https', False)],
+            self.config.get('domain'),
+            self.config.get('uri')
+        )
+        return url
 
     def execute_request(self):
 
