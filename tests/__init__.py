@@ -20,6 +20,7 @@ import ebaysdk.merchandising
 import ebaysdk.soa.finditem
 import ebaysdk.finding
 import ebaysdk.poller.orders
+import ebaysdk.inventorymanagement
 
 # does not pass with python3.3
 try:
@@ -41,6 +42,7 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
     suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.inventorymanagement))
 
     if not sys.version_info[0] >= 3 \
         and sys.modules.has_key('grequests') is True:
