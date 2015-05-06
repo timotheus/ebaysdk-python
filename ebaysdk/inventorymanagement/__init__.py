@@ -9,9 +9,9 @@ import os
 
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
-from ebaysdk.exception import RequestPaginationError, PaginationLimit
 from ebaysdk.config import Config
-from ebaysdk.utils import dict2xml
+from ebaysdk.utils import dict2xml, smart_encode
+
 
 class Connection(BaseConnection):
     """Connection class for the Inventory Management service
@@ -29,8 +29,11 @@ class Connection(BaseConnection):
     Doctests:
     Create location first
     >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
-    >>> retval = f.execute('AddInventoryLocation', {
-    ...     'Address1': u'Alexanderplatz 12',
+
+    Take care here, unicode string is put here specially to ensure lib can handle it properly. If not we got an error:
+    UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 28: ordinal not in range(128)
+    >>> retval = f.execute(u'AddInventoryLocation', {
+    ...     'Address1': u'Alexanderplatz 12 ąśćł',
     ...     'Address2': u'Gebaude 6',
     ...     'City': u'Berlin',
     ...     'Country': u'DE',
@@ -80,20 +83,49 @@ class Connection(BaseConnection):
     ...   print(f.response.reply.LocationID.lower())
     ebaysdk_test
 
+
+    Check errors handling
+    >>> f = Connection(token='WRONG TOKEN', config_file=os.environ.get('EBAY_YAML'), debug=False, errors=False)
+    >>> retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
+    >>> print(f.error())
+    DeleteInventoryLocation: Bad Request, Class: RequestError, Severity: Error, Code: 503, Authentication: Invalid user token Authentication: Invalid user token
+
+
+    Sometimes ebay returns us really weird error message, already reported to ebay, if it will be fixed I will remove
+    all special cases to handle it.
+    Example of wrong response:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
+       <soapenv:Body>
+          <Response>
+             <Timestamp>Wed May 06 2015 02:15:49 GMT-0700 (GMT-07:00)</Timestamp>
+             <Ack>Failure</Ack>
+             <Errors>
+                <ShortMessage>Gateway Error</ShortMessage>
+                <LongMessage>Failover endpoint : Selling_Inventory_REST_SVC_V1 - no ready child endpoints</LongMessage>
+                <ErrorCode>99.99</ErrorCode>
+                <SeverityCode>Error</SeverityCode>
+                <ErrorClassification>RequestError</ErrorClassification>
+             </Errors>
+             <ResponseCode>null</ResponseCode>
+             <Version>653</Version>
+          </Response>
+       </soapenv:Body>
+    </soapenv:Envelope>
     """
 
     def __init__(self, **kwargs):
-        """Finding class constructor.
+        """Inventory Management class constructor.
 
         Keyword arguments:
-        domain        -- API endpoint (default: svcs.ebay.com)
+        domain        -- API endpoint (default: api.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
         warnings      -- warnings enabled (default: False)
-        uri           -- API endpoint uri (default: /services/search/FindingService/v1)
+        uri           -- API endpoint uri (default: /selling/inventory/v1)
         token         -- eBay application/user token
         version       -- version number (default: 1.0.0)
-        https         -- execute of https (default: False)
+        https         -- execute of https (required by this API) (default: True)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number
         timeout       -- HTTP request timeout (default: 20)
@@ -151,9 +183,9 @@ class Connection(BaseConnection):
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        xml += "<" + verb + "Request>"
+        xml += "<{verb}Request>".format(verb=verb)
         xml += dict2xml(data)
-        xml += "</" + verb + "Request>"
+        xml += "</{verb}Request>".format(verb=verb)
 
         return xml
 
@@ -161,8 +193,8 @@ class Connection(BaseConnection):
         warning_string = ""
 
         if len(self._resp_body_warnings) > 0:
-            warning_string = "%s: %s" \
-                % (self.verb, ", ".join(self._resp_body_warnings))
+            warning_string = "{verb}: {message}" \
+                .format(verb=self.verb, message=", ".join(self._resp_body_warnings))
 
         return warning_string
 
@@ -187,6 +219,14 @@ class Connection(BaseConnection):
             return errors
 
         dom = self.response.dom()
+
+        if dom is None:
+            return errors
+
+        # In special case we get errors in this format...
+        if not dom.findall('Errors') and dom.find('Body') is not None:
+            dom = dom.find('Body').find('Response')
+
         if dom is None:
             return errors
 
@@ -235,8 +275,9 @@ class Connection(BaseConnection):
             except IndexError:
                 pass
 
-            msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
-                % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
+            msg = "Class: {eClass}, Severity: {severity}, Code: {code}, {shortMsg} {longMsg}" \
+                .format(eClass=eClass, severity=eSeverity, code=eCode, shortMsg=smart_encode(eShortMsg),
+                        longMsg=smart_encode(eLongMsg))
 
             if eSeverity == 'Warning':
                 warnings.append(msg)
@@ -248,11 +289,16 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+            log.warn("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(warnings)))
 
-        if self.response.reply.Ack == 'Failure':
+        # In special case of error 500 on ebay side, we get really weird response so I need to fallback to this one
+        Ack = getattr(self.response.reply, 'Ack', None)
+        if Ack is None:
+            Ack = self.response.reply.Envelope.Body.Response.Ack
+
+        if Ack == 'Failure':
             if self.config.get('errors'):
-                log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+                log.error("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(errors)))
 
             return errors
 
