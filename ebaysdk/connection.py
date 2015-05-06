@@ -20,7 +20,7 @@ from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
 from ebaysdk import set_stream_logger, UserAgent
-from ebaysdk.utils import getNodeText as getNodeTextUtils
+from ebaysdk.utils import getNodeText as getNodeTextUtils, smart_encode
 from ebaysdk.utils import getValue
 from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
@@ -132,11 +132,7 @@ class BaseConnection(object):
         self._request_dict = data
         self._request_id = uuid.uuid4()
 
-        url = "%s://%s%s" % (
-            HTTP_SSL[self.config.get('https', False)],
-            self.config.get('domain'),
-            self.config.get('uri')
-        )
+        url = self.build_request_url(verb)
 
         headers = self.build_request_headers(verb)
         headers.update({'User-Agent': UserAgent, 
@@ -149,6 +145,14 @@ class BaseConnection(object):
         )
 
         self.request = request.prepare()
+
+    def build_request_url(self, verb):
+        url = "%s://%s%s" % (
+            HTTP_SSL[self.config.get('https', False)],
+            self.config.get('domain'),
+            self.config.get('uri')
+        )
+        return url
 
     def execute_request(self):
 
@@ -305,7 +309,9 @@ class BaseConnection(object):
         error_array.extend(self._get_resp_body_errors())
 
         if len(error_array) > 0:
-            error_string = u"%s: %s" % (self.verb, u", ".join(error_array))
+            # Force all errors to be unicode in a proper way
+            error_array = [smart_encode(e).decode('utf-8') for e in error_array]
+            error_string = u"{verb}: {message}".format(verb=self.verb, message=u", ".join(error_array))
 
             return error_string
 
