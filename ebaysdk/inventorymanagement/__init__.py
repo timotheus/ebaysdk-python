@@ -9,6 +9,7 @@ import os
 
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
+from ebaysdk.exception import ConnectionError
 from ebaysdk.config import Config
 from ebaysdk.utils import dict2xml, smart_encode
 
@@ -32,62 +33,68 @@ class Connection(BaseConnection):
 
     Take care here, unicode string is put here specially to ensure lib can handle it properly. If not we got an error:
     UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 28: ordinal not in range(128)
-    >>> retval = f.execute(u'AddInventoryLocation', {
-    ...     'Address1': u'Alexanderplatz 12 ąśćł',
-    ...     'Address2': u'Gebaude 6',
-    ...     'City': u'Berlin',
-    ...     'Country': u'DE',
-    ...     'PostalCode': u'13355',
-    ...     'Latitude': u'37.374488',
-    ...     'Longitude': u'-122.032876',
-    ...     'LocationID': u'ebaysdk_test',
-    ...     'LocationType': u'STORE',
-    ...     'Phone': u'(408)408-4080',
-    ...     'URL': u'http://store.com',
-    ...     'UTCOffset': u'+02:00',
-    ...     'Name': 'Test',
-    ...     'Region': 'Berlin',
-    ...     'PickupInstructions': 'Pick it up soon',
-    ...     'Hours': [{'Day': {'DayOfWeek': 1, 'Interval': {'Open': '08:00:00', 'Close': '10:00:00'}}}]
+    >>> try:
+    ...     retval = f.execute(u'AddInventoryLocation', {
+    ...         'Address1': u'Alexanderplatz 12 ąśćł',
+    ...         'Address2': u'Gebaude 6',
+    ...         'City': u'Berlin',
+    ...         'Country': u'DE',
+    ...         'PostalCode': u'13355',
+    ...         'Latitude': u'37.374488',
+    ...         'Longitude': u'-122.032876',
+    ...         'LocationID': u'ebaysdk_test',
+    ...         'LocationType': u'STORE',
+    ...         'Phone': u'(408)408-4080',
+    ...         'URL': u'http://store.com',
+    ...         'UTCOffset': u'+02:00',
+    ...         'Name': 'Test',
+    ...         'Region': 'Berlin',
+    ...         'PickupInstructions': 'Pick it up soon',
+    ...         'Hours': [{'Day': {'DayOfWeek': 1, 'Interval': {'Open': '08:00:00', 'Close': '10:00:00'}}}]
     ...     })
-    >>> error = f.error()
-    >>> if not f.error():
-    ...   print(f.response.reply.LocationID.lower())
+    ...     print(f.response.reply.LocationID.lower())
+    ... except ConnectionError as e:
+    ...     print(f.error()) # doctest: +SKIP
     ebaysdk_test
 
     And now add item it it
-    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
-    >>> retval = f.execute('AddInventory', {"SKU": "SKU_TEST", "Locations": {"Location": [
-    ...    {"Availability": "IN_STOCK", "LocationID": "ebaysdk_test", "Quantity": 10}
+    >>> try:
+    ...     f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
+    ...     retval = f.execute('AddInventory', {"SKU": "SKU_TEST", "Locations": {"Location": [
+    ...     {"Availability": "IN_STOCK", "LocationID": "ebaysdk_test", "Quantity": 10}
     ...     ]}})
-    >>> error = f.error()
-    >>> if not f.error():
-    ...   print(f.response.reply.SKU.lower())
+    ...     print(f.response.reply.SKU.lower())
+    ... except ConnectionError as e:
+    ...     print(f.error()) # doctest: +SKIP
     sku_test
 
 
     Delete item from all locations
-    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
-    >>> retval = f.execute('DeleteInventory', {"SKU": "SKU_TEST", "Confirm": 'true'})
-    >>> error = f.error()
-    >>> if not f.error():
-    ...   print(f.response.reply.SKU.lower())
+    >>> try:
+    ...     f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
+    ...     retval = f.execute('DeleteInventory', {"SKU": "SKU_TEST", "Confirm": 'true'})
+    ...     print(f.response.reply.SKU.lower())
+    ... except ConnectionError as e:
+    ...     print(f.error()) # doctest: +SKIP
     sku_test
 
 
     Delete location
-    >>> f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
-    >>> retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
-    >>> error = f.error()
-    >>> if not f.error():
-    ...   print(f.response.reply.LocationID.lower())
+    >>> try:
+    ...     f = Connection(config_file=os.environ.get('EBAY_YAML'), debug=False)
+    ...     retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
+    ...     print(f.response.reply.LocationID.lower())
+    ... except ConnectionError as e:
+    ...     print(f.error()) # doctest: +SKIP
     ebaysdk_test
 
 
     Check errors handling
-    >>> f = Connection(token='WRONG TOKEN', config_file=os.environ.get('EBAY_YAML'), debug=False, errors=False)
-    >>> retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
-    >>> print(f.error())
+    >>> try:
+    ...     f = Connection(token='WRONG TOKEN', config_file=os.environ.get('EBAY_YAML'), debug=False, errors=True)
+    ...     retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
+    ... except ConnectionError as e:
+    ...     print(f.error())
     DeleteInventoryLocation: Bad Request, Class: RequestError, Severity: Error, Code: 503, Authentication: Invalid user token Authentication: Invalid user token
 
 
