@@ -11,7 +11,7 @@ import os
 from ebaysdk import log
 from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
-from ebaysdk.utils import getNodeText, dict2xml
+from ebaysdk.utils import getNodeText, dict2xml, smart_encode
 from ebaysdk.exception import RequestPaginationError, PaginationLimit
 
 class Connection(BaseConnection):
@@ -29,7 +29,7 @@ class Connection(BaseConnection):
     Doctests:
     >>> import datetime
     >>> t = Connection(config_file=os.environ.get('EBAY_YAML'))
-    >>> response = t.execute('GetCharities', {'CharityID': 3897})
+    >>> response = t.execute(u'GetCharities', {'CharityID': 3897})
     >>> charity_name = ''
     >>> if len( t.response.dom().xpath('//Name') ) > 0:
     ...   charity_name = t.response.dom().xpath('//Name')[0].text
@@ -40,9 +40,15 @@ class Connection(BaseConnection):
     >>> print(t.error())
     None
     >>> t2 = Connection(errors=False, debug=False, config_file=os.environ.get('EBAY_YAML'))
-    >>> response = t2.execute('VerifyAddItem', {})
+    >>> response = t2.execute(u'VerifyAddItem', {})
     >>> print(t2.response_codes())
     [10009]
+
+    Proof that utf8 errors work (calling .error() was triggering UTF8 Errors
+    >>> t3 = Connection(token="WRONG_TOKEN", errors=False, debug=False, config_file=os.environ.get('EBAY_YAML'))
+    >>> response = t3.execute(u'VerifyAddItem', {u'ErrorLanguage': u'de_DE'})
+    >>> t3.error()
+    u'VerifyAddItem: Class: RequestError, Severity: Error, Code: 931, Ung\\xfcltiges Authentifizierungs-Token. Die Pr\\xfcfung des Authentifizierungs-Tokens in der API-Anforderung war nicht erfolgreich.'
     """
 
     def __init__(self, **kwargs):
@@ -701,8 +707,8 @@ class Connection(BaseConnection):
         warning_string = ""
 
         if len(self._resp_body_warnings) > 0:
-            warning_string = "%s: %s" \
-                % (self.verb, ", ".join(self._resp_body_warnings))
+            warning_string = "{verb}: {message}" \
+                .format(verb=self.verb, message=", ".join(self._resp_body_warnings))
 
         return warning_string
 
@@ -752,12 +758,12 @@ class Connection(BaseConnection):
                 pass
 
             try:
-                eShortMsg = e.findall('ShortMessage')[0].text
+                eShortMsg = smart_encode(e.findall('ShortMessage')[0].text)
             except IndexError:
                 pass
 
             try:
-                eLongMsg = e.findall('LongMessage')[0].text
+                eLongMsg = smart_encode(e.findall('LongMessage')[0].text)
             except IndexError:
                 pass
 
@@ -768,8 +774,9 @@ class Connection(BaseConnection):
             except IndexError:
                 pass
 
-            msg = "Class: %s, Severity: %s, Code: %s, %s%s" \
-                % (eClass, eSeverity, eCode, eShortMsg, eLongMsg)
+            msg = "Class: {eClass}, Severity: {severity}, Code: {code}, {shortMsg} {longMsg}" \
+                .format(eClass=eClass, severity=eSeverity, code=eCode, shortMsg=eShortMsg,
+                        longMsg=eLongMsg)
 
             if eSeverity == 'Warning':
                 warnings.append(msg)
@@ -781,11 +788,11 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+            log.warn("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(warnings)))
 
         if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
-                log.error("%s: %s\n\n" % (self.verb, "\n".join(errors)))
+                log.error("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(errors)))
             
             return errors
 

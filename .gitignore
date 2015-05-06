@@ -6,3 +6,4 @@ ebaysdk.egg-info/
 *.swp
 *.pyc
 .svn
+.idea
