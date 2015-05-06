@@ -46,8 +46,8 @@ def getTestSuite():
 
     if not sys.version_info[0] >= 3 \
         and sys.modules.has_key('grequests') is True:
-
-        suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
+        #suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
+        pass
 
     # inside only
     #suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
