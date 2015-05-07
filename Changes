@@ -1,5 +1,6 @@
 Changes for ebaysdk
 
+- merged in backend support for inventory management (from bimusiek)
 - add backend for Business Policy API (from nickspring)
 - set ssl verify to True in connection class
 
