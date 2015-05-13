@@ -47,7 +47,7 @@ class Storage(object):
         log.debug(", ".join(values_array))
 
 
-class Orders(object):
+class Poller(object):
 
     def __init__(self, opts, storage=None):
         self.opts = opts
@@ -94,5 +94,5 @@ class Orders(object):
 if __name__ == '__main__':
     (opts, args) = parse_args("usage: python -m ebaysdk.poller.orders [options]")
 
-    poller = Orders(opts, Storage())
+    poller = Poller(opts, Storage())
     poller.run()
