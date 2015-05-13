@@ -49,6 +49,9 @@ def parse_args(usage):
     parser.add_option("-s", "--siteid",
                       dest="siteid", default=None,
                       help="Specifies the eBay site id to use.")
+    parser.add_option("-o", "--OrderRole",
+                      dest="OrderRole", default='Buyer',
+                      help="Specifies which OrderRole value to use. [default: %default]")
 
     (opts, args) = parser.parse_args()
 

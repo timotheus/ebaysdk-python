@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- refactor order poller into a Class and implement a base Storage class
+  that can be used for any domain specific actions (e.g. inserting into a DB)
 - merged in backend support for inventory management (from bimusiek)
 - add backend for Business Policy API (from nickspring)
 - set ssl verify to True in connection class
