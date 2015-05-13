@@ -17,7 +17,7 @@ class CustomStorage(object):
         print(order.TransactionArray.Transaction.Item.Title)
 
 if __name__ == '__main__':
-    (opts, args) = parse_args("usage: python -m ebaysdk.samples.poller [options]")
+    (opts, args) = parse_args("usage: python -m samples.poller [options]")
 
     poller = Poller(opts, CustomStorage())
     poller.run()
