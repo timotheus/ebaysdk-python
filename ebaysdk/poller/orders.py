@@ -12,74 +12,87 @@ from ebaysdk.poller import parse_args, file_lock
 from ebaysdk import log
 
 
-def main(opts):
+class Storage(object):
+    def set(self, order):
+        data = [
+            ("ID", order.OrderID),
+            ("Status", order.OrderStatus),
+            ("Seller Email", order.SellerEmail),
+            ("Title", order.TransactionArray.Transaction.Item.Title),
+            ("ItemID", order.TransactionArray.Transaction.Item.ItemID),
+            ("QTY", order.TransactionArray.Transaction.QuantityPurchased),
+            ("Payment Method", order.CheckoutStatus.PaymentMethod),
+            ("Payment Date", order.PaidTime),
+            ("Total", (order.Total._currencyID + ' ' + order.Total.value))
+        ]
 
-    with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
-        log.debug("Started poller %s" % __file__)
+        if order.TransactionArray.Transaction.get('Variation', None):
+            data.append(("SKU", order.TransactionArray.Transaction.Variation.SKU)),
 
-        to_time = datetime.utcnow()# - timedelta(days=80)
-        from_time = to_time - timedelta(hours=opts.hours)
+        data.extend([
+            ("Shipped Time", order.ShippedTime),
+            ("Shipping Service", order.ShippingServiceSelected)
+        ])
 
-        ebay_api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
-            certid=opts.certid, devid=opts.devid, siteid=opts.siteid, warnings=False
-        )
+        if order.ShippingDetails.get('ShipmentTrackingDetails', None):
+            data.extend([
+                ("Min Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
+                ("Max Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
+                ("Tracking", order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber),
+                ("Carrier", order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed),
+                ("Cost", (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
+            ])
 
-        ebay_api.build_request('GetOrders', {
-            'DetailLevel': 'ReturnAll',
-            'OrderRole': 'Buyer',
-            'OrderStatus': 'All',
-            'Pagination': {
-                'EntriesPerPage': 25,
-                'PageNumber': 1,
-            },
-            'ModTimeFrom': from_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
-            'ModTimeTo': to_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
-        }, None)
+        values_array = map((lambda x: "%s=%s" % (x[0], x[1])), data)
+        log.debug(", ".join(values_array))
 
-        for resp in ebay_api.pages(): 
 
-            if resp.reply.OrderArray:
+class Orders(object):
 
-                for order in resp.reply.OrderArray.Order:
+    def __init__(self, opts, storage=None):
+        self.opts = opts
+        self.storage = storage
 
-                    data = [
-                        ("ID", order.OrderID),
-                        ("Status", order.OrderStatus),
-                        ("Seller Email", order.SellerEmail),
-                        ("Title", order.TransactionArray.Transaction.Item.Title),
-                        ("ItemID", order.TransactionArray.Transaction.Item.ItemID),
-                        ("QTY", order.TransactionArray.Transaction.QuantityPurchased),
-                        ("Payment Method", order.CheckoutStatus.PaymentMethod),
-                        ("Payment Date", order.PaidTime),
-                        ("Total", (order.Total._currencyID + ' ' + order.Total.value))
-                    ]
+    def run(self):
 
-                    if order.TransactionArray.Transaction.get('Variation', None):
-                        data.append(("SKU", order.TransactionArray.Transaction.Variation.SKU)),
+        with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
+            log.debug("Started poller %s" % __file__)
 
-                    data.extend([
-                        ("Shipped Time", order.ShippedTime),
-                        ("Shipping Service", order.ShippingServiceSelected)
-                    ])
-            
-                    if order.ShippingDetails.get('ShipmentTrackingDetails', None):
-                        data.extend([
-                            ("Min Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
-                            ("Max Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
-                            ("Tracking", order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber),
-                            ("Carrier", order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed),
-                            ("Cost", (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
-                        ])
+            to_time = datetime.utcnow() #- timedelta(days=80)
+            from_time = to_time - timedelta(hours=self.opts.hours)
 
-                    values_array = map((lambda x: "%s=%s" % (x[0], x[1])), data)
-                    log.debug(", ".join(values_array))
+            ebay_api = Trading(debug=self.opts.debug, config_file=self.opts.yaml,
+                               appid=self.opts.appid, certid=self.opts.certid,
+                               devid=self.opts.devid, siteid=self.opts.siteid,
+                               warnings=False)
 
-                    # execute SQL here
+            ebay_api.build_request('GetOrders', {
+                'DetailLevel': 'ReturnAll',
+                'OrderRole': self.opts.OrderRole,
+                'OrderStatus': 'All',
+                'Pagination': {
+                    'EntriesPerPage': 25,
+                    'PageNumber': 1,
+                },
+                'ModTimeFrom': from_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+                'ModTimeTo': to_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+            }, None)
 
-            else:
-                log.debug("no orders to process")
+            for resp in ebay_api.pages():
+
+                if resp.reply.OrderArray:
+
+                    for order in resp.reply.OrderArray.Order:
+                        if self.storage:
+                            self.storage.set(order)
+                        else:
+                            log.debug("storage object not defined")
+                else:
+                    log.debug("no orders to process")
 
 
 if __name__ == '__main__':
-    (opts, args) = parse_args("usage: python -u -m ebaysdk.poller.orders [options]")
-    main(opts)
+    (opts, args) = parse_args("usage: python -m ebaysdk.poller.orders [options]")
+
+    poller = Orders(opts, Storage())
+    poller.run()
