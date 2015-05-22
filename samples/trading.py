@@ -218,6 +218,28 @@ def uploadPicture(opts):
         print(e)
         print(e.response.dict())
 
+def uploadPictureFromFilesystem(opts, filepath):
+
+    try:
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+                      certid=opts.certid, devid=opts.devid, warnings=True)
+
+        # pass in an open file
+        # the Requests module will close the file
+        files = {'file': ('EbayImage', open(filepath, 'rb'))}
+
+        pictureData = {
+            "WarningLevel": "High",
+            "PictureName": "WorldLeaders"
+        }
+
+        api.execute('UploadSiteHostedPictures', pictureData, files=files)
+        dump(api)
+
+    except ConnectionError as e:
+        print(e)
+        print(e.response.dict())
+
 def memberMessages(opts):
 
     try:
@@ -320,6 +342,7 @@ if __name__ == "__main__":
     getTokenStatus(opts)
     verifyAddItemErrorCodes(opts)
     uploadPicture(opts)
+    uploadPictureFromFilesystem(opts, "c:/temp/samplefile.jpg")
     memberMessages(opts)
     categories(opts)
     getUser(opts)
