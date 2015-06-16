@@ -11,10 +11,17 @@ from ebaysdk.poller import parse_args
 
 class CustomStorage(object):
     def set(self, order):
-        print(order.OrderID)
-        print(order.OrderStatus)
-        print(order.SellerEmail)
-        print(order.TransactionArray.Transaction.Item.Title)
+        try:
+            print(order.OrderID)
+            print(order.OrderStatus)
+            print(order.SellerEmail)
+
+            for txn in order.TransactionArray.Transaction:
+                print("%s: %s" % (txn.TransactionID, txn.Item.Title))
+
+        except Exception as e:
+            pass
+            #from IPython import embed; embed()
 
 if __name__ == '__main__':
     (opts, args) = parse_args("usage: python -m samples.poller [options]")

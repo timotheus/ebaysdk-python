@@ -69,7 +69,7 @@ class Poller(object):
             ebay_api.build_request('GetOrders', {
                 'DetailLevel': 'ReturnAll',
                 'OrderRole': self.opts.OrderRole,
-                'OrderStatus': 'All',
+                'OrderStatus': self.opts.OrderStatus,
                 'Pagination': {
                     'EntriesPerPage': 25,
                     'PageNumber': 1,
