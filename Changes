@@ -1,5 +1,6 @@
 Changes for ebaysdk
 
+- merge in rowbare PR that support file upload
 - refactor order poller into a Class and implement a base Storage class
   that can be used for any domain specific actions (e.g. inserting into a DB)
 - merged in backend support for inventory management (from bimusiek)
