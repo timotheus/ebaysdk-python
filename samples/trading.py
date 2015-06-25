@@ -43,6 +43,7 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
+
 def run(opts):
 
     try:
@@ -57,6 +58,7 @@ def run(opts):
         print(e)
         print(e.response.dict())
 
+
 def feedback(opts):
     try:
         api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
@@ -69,10 +71,11 @@ def feedback(opts):
             print("Doing good!")
         else:
             print("Sell more, buy more..")
-    
+
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def getTokenStatus(opts):
 
@@ -86,6 +89,7 @@ def getTokenStatus(opts):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def verifyAddItem(opts):
     """http://www.utilities-online.info/xmltojson/#.UXli2it4avc
@@ -186,7 +190,7 @@ def verifyAddItemErrorCodes(opts):
         }
 
         api.execute('VerifyAddItem', myitem)
-    
+
     except ConnectionError as e:
         # traverse the DOM to look for error codes
         for node in api.response.dom().findall('ErrorCode'):
@@ -198,6 +202,7 @@ def verifyAddItemErrorCodes(opts):
 
         print(e)
         print(e.response.dict())
+
 
 def uploadPicture(opts):
 
@@ -217,6 +222,7 @@ def uploadPicture(opts):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def uploadPictureFromFilesystem(opts, filepath):
 
@@ -239,6 +245,7 @@ def uploadPictureFromFilesystem(opts, filepath):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def memberMessages(opts):
 
@@ -268,7 +275,7 @@ def memberMessages(opts):
             messages = api.response.reply.MemberMessage.MemberMessageExchange
 
             if type(messages) != list:
-                    messages = [ messages ]
+                    messages = [messages]
 
             for m in messages:
                 print("%s: %s" % (m.CreationDate, m.Question.Subject[:50]))
@@ -276,6 +283,7 @@ def memberMessages(opts):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def getUser(opts):
     try:
@@ -285,10 +293,11 @@ def getUser(opts):
 
         api.execute('GetUser', {'UserID': 'biddergoat'})
         dump(api, full=False)
-    
+
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def getOrders(opts):
 
@@ -342,7 +351,7 @@ if __name__ == "__main__":
     getTokenStatus(opts)
     verifyAddItemErrorCodes(opts)
     uploadPicture(opts)
-    uploadPictureFromFilesystem(opts, "c:/temp/samplefile.jpg")
+    uploadPictureFromFilesystem(opts, ("%s/test_image.jpg" % os.path.dirname(__file__)))
     memberMessages(opts)
     categories(opts)
     getUser(opts)

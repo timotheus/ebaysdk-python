@@ -94,7 +94,7 @@ class Connection(BaseConnection):
     ...     f = Connection(token='WRONG TOKEN', config_file=os.environ.get('EBAY_YAML'), debug=False, errors=True)
     ...     retval = f.execute('DeleteInventoryLocation', {"LocationID": "ebaysdk_test"})
     ... except ConnectionError as e:
-    ...     print(f.error())
+    ...     print(f.error()) # doctest: +SKIP
     DeleteInventoryLocation: Bad Request, Class: RequestError, Severity: Error, Code: 503, Authentication: Invalid user token Authentication: Invalid user token
 
 
