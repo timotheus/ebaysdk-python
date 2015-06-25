@@ -103,7 +103,7 @@ class BaseConnection(object):
                 if not nodes[i].startswith(verb.lower()):
                     nodes[i] = "%sresponse.%s" % (verb.lower(), nodes[i].lower())
 
-    def execute(self, verb, data=None, list_nodes=[], verb_attrs=None):
+    def execute(self, verb, data=None, list_nodes=[], verb_attrs=None, files=None):
         "Executes the HTTP request."
         log.debug('execute: verb=%s data=%s' % (verb, data))
         
@@ -115,7 +115,7 @@ class BaseConnection(object):
         if hasattr(self, 'base_list_nodes'):
             self._list_nodes += self.base_list_nodes
 
-        self.build_request(verb, data, verb_attrs)
+        self.build_request(verb, data, verb_attrs, files)
         self.execute_request()        
 
         if hasattr(self.response, 'content'):
@@ -126,7 +126,7 @@ class BaseConnection(object):
 
         return self.response        
 
-    def build_request(self, verb, data, verb_attrs):
+    def build_request(self, verb, data, verb_attrs, files=None):
  
         self.verb = verb
         self._request_dict = data
@@ -137,12 +137,24 @@ class BaseConnection(object):
         headers = self.build_request_headers(verb)
         headers.update({'User-Agent': UserAgent, 
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
+                        
+        # if we are adding files, we ensure there is no Content-Type header already defined
+        # otherwise Request will use the existing one which is likely not to be multipart/form-data
+        # data must also be a dict so we make it so if needed
 
-        request = Request(self.method, 
+        requestData = self.build_request_data(verb, data, verb_attrs)
+        if files:
+            del(headers['Content-Type'])
+            if isinstance(requestData, basestring):
+                requestData = {'XMLPayload':requestData}
+
+        request = Request(self.method,
             url,
-            data=self.build_request_data(verb, data, verb_attrs),
+            data=requestData,
             headers=headers,
+            files=files,
         )
+
 
         self.request = request.prepare()
 
