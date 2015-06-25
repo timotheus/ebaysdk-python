@@ -13,9 +13,9 @@ sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 from common import dump
 
-import ebaysdk
 from ebaysdk.merchandising import Connection as merchandising
 from ebaysdk.exception import ConnectionError
+
 
 def init_options():
     usage = "usage: %prog [options]"
@@ -33,6 +33,7 @@ def init_options():
 
     (opts, args) = parser.parse_args()
     return opts, args
+
 
 def run(opts):
     try:
