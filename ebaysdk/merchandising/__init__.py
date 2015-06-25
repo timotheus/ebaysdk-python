@@ -11,6 +11,7 @@ import os
 from ebaysdk.finding import Connection as FindingConnection
 from ebaysdk.utils import dict2xml
 
+
 class Connection(FindingConnection):
     """Connection class for the Merchandising service
 
@@ -69,18 +70,18 @@ class Connection(FindingConnection):
             'getrelatedcategoryitemsresponse.itemfilter.value',
             'getsimilaritemsresponse.itemfilter.value',
         ]
-        
+
     def build_request_headers(self, verb):
         return {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
             "EBAY-SOA-CONSUMER-ID": self.config.get('appid', ''),
-            "X-EBAY-API-SITEID":  self.config.get('siteid', ''),
+            "X-EBAY-SOA-GLOBAL-ID":  self.config.get('siteid', ''),
             "X-EBAY-SOA-OPERATION-NAME": verb,
+            "X-EBAY-SOA-REQUEST-DATA-FORMAT": "XML",
             "X-EBAY-API-REQUEST-ENCODING": "XML",
             "X-EBAY-SOA-SERVICE-NAME": self.config.get('service', ''),
             "Content-Type": "text/xml"
         }
-
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
