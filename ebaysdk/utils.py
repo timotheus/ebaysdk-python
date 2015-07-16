@@ -35,7 +35,7 @@ def parse_yaml(yaml_file):
 
             # parse the key: value line
             elif line[0].isspace():
-                values = line.strip().split(':')
+                values = line.strip().split(':', 1)
 
                 if len(values) == 2:
                     cval = values[1].strip()
