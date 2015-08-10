@@ -114,7 +114,7 @@ class BaseConnection(object):
 
         if hasattr(self, 'base_list_nodes'):
             self._list_nodes += self.base_list_nodes
-
+        
         self.build_request(verb, data, verb_attrs)
         self.execute_request()        
 
@@ -143,7 +143,7 @@ class BaseConnection(object):
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
         request = Request(self.method, 
             url,
-            data=self.build_request_data(verb, data, verb_attrs),
+            data=self.build_request_data(verb, data, verb_attrs).encode('utf-8', 'ignore'),
             headers=headers,
         )
 

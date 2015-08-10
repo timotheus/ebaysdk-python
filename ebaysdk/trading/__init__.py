@@ -693,12 +693,8 @@ class Connection(BaseConnection):
                     xml += u"<Password>%s</Password>" % self.config.get('password', '')
             xml += u"</RequesterCredentials>"
 
-        try:        
-            xml += dict2xml(data)
-        except:
-            print data
-            print dict2xml(data)
-            raise        
+        xml += dict2xml(data)
+        #print dict2xml(data)
 
         xml += u"</" + self.verb + u"Request>"
         return xml

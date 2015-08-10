@@ -46,7 +46,7 @@ def attribute_check(root):
 def smart_encode(value):
     try:
         if sys.version_info[0] < 3:
-            return unicode(value).encode('utf-8', 'ignore')
+            return unicode(value) #.encode('utf-8', 'ignore')
         else:
             return value
             #return str(value)
@@ -131,7 +131,7 @@ def dict2xml(root):
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
     '''
 
-    xml = ''
+    xml = u''
     if root is None:
         return xml
 
@@ -146,12 +146,12 @@ def dict2xml(root):
                 elif isinstance(value, dict):
                     value = dict2xml(value)
 
-                attrs_sp = ''
+                attrs_sp = u''
                 if len(attrs) > 0:
-                    attrs_sp = ' '
+                    attrs_sp = u' '
 
-                xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
-                    {'tag': key, 'xml': xml, 'attrs': ' '.join(attrs), 
+                xml = u'%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
+                    {'tag': key, 'xml': xml, 'attrs': u' '.join(attrs), 
                      'value': smart_encode(value), 'attrs_sp': attrs_sp}                          
 
             elif isinstance(root[key], list):
@@ -168,19 +168,19 @@ def dict2xml(root):
                     if len(attrs) > 0:
                         attrs_sp = ' '
 
-                    xml = '%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
+                    xml = u'%(xml)s<%(tag)s%(attrs_sp)s%(attrs)s>%(value)s</%(tag)s>' % \
                         {'xml': xml, 'tag': key, 'attrs': ' '.join(attrs),
                          'value': smart_encode(value), 'attrs_sp': attrs_sp}
  
             else:
                 value = root[key]
-                xml = '%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
+                xml = u'%(xml)s<%(tag)s>%(value)s</%(tag)s>' % \
                     {'xml': xml, 'tag': key, 'value': smart_encode(value)}
 
     elif isinstance(root, str) or isinstance(root, int) \
         or isinstance(root, unicode) or isinstance(root, long) \
         or isinstance(root, float):
-        xml = '%s%s' % (xml, root)
+        xml = u'%s%s' % (xml, root)
     else:
         raise Exception('Unable to serialize node of type %s (%s)' % \
             (type(root), root))
