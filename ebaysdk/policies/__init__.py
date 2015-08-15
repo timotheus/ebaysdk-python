@@ -60,7 +60,9 @@ class Connection(BaseConnection):
         self.config.set('https', True)
         self.config.set('warnings', True)
         self.config.set('errors', True)
-        self.config.set('siteid', 'EBAY-US')
+        #self.config.set('siteid', 'EBAY-US')
+        self.config.set('siteid', kwargs.get('siteid', 'EBAY-US'))
+        
         self.config.set('response_encoding', 'XML')
         self.config.set('request_encoding', 'XML')
         self.config.set('proxy_host', None)

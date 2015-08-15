@@ -138,9 +138,12 @@ class BaseConnection(object):
             self.config.get('uri')
         )
 
+        
         headers = self.build_request_headers(verb)
+        #print headers
         headers.update({'User-Agent': UserAgent, 
                         'X-EBAY-SDK-REQUEST-ID': str(self._request_id)})
+
         request = Request(self.method, 
             url,
             data=self.build_request_data(verb, data, verb_attrs).encode('utf-8', 'ignore'),

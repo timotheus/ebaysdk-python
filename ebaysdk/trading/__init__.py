@@ -67,6 +67,7 @@ class Connection(BaseConnection):
         response_encoding -- API encoding (default: XML)
         request_encoding  -- API encoding (default: XML)
         """
+        
         super(Connection, self).__init__(method='POST', **kwargs)
 
         self.config=Config(domain=kwargs.get('domain', 'api.ebay.com'),
@@ -80,7 +81,7 @@ class Connection(BaseConnection):
         self.config.set('warnings', True)
         self.config.set('errors', True)
         self.config.set('https', True)
-        self.config.set('siteid', 0)
+        self.config.set('siteid', kwargs.get('siteid', 0))
         self.config.set('response_encoding', 'XML')
         self.config.set('request_encoding', 'XML')
         self.config.set('proxy_host', None)
@@ -665,7 +666,7 @@ class Connection(BaseConnection):
             'getwantitnowsearchresultsresponse.wantitnowpostarraytype.wantitnowpost',
         ]
 
-    def build_request_headers(self, verb):
+    def build_request_headers(self, verb):        
         headers = {
             "X-EBAY-API-COMPATIBILITY-LEVEL": self.config.get('compatibility', ''),
             "X-EBAY-API-DEV-NAME": self.config.get('devid', ''),
