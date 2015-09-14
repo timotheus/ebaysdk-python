@@ -52,6 +52,10 @@ class ResponseDataObject(object):
         setattr(self, name, value)
 
     def _load_dict(self, mydict, datetime_nodes):
+        if sys.version_info[0] >= 3:
+            datatype = bytes
+        else:
+            datatype = unicode
         
         for a in mydict.items():
 
@@ -62,7 +66,7 @@ class ResponseDataObject(object):
             elif isinstance(a[1], list):
                 objs = []
                 for i in a[1]:
-                    if i is None or isinstance(i, str) or isinstance(i, unicode):
+                    if i is None or isinstance(i, str) or isinstance(i, datatype):
                         objs.append(i)
                     else:
                         objs.append(ResponseDataObject(i, datetime_nodes))
