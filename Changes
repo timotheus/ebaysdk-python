@@ -1,5 +1,7 @@
 Changes for ebaysdk
 
+- merge in py3 datatype fix from MartiONE
+
 2.1.2 Thu Jun 25 14:54:12 PDT 2015 
 - merge in rowbare PR that support file upload
 - refactor order poller into a Class and implement a base Storage class
