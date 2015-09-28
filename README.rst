@@ -45,6 +45,10 @@ Getting Started
 
 2) SDK Configuration
 
+* Using the SDK without YAML configuration
+  
+   ebaysdk.finding.Connection(appid='...', config_file=None)
+
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
 
