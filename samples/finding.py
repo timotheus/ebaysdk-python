@@ -111,13 +111,13 @@ def run_motors(opts):
         raise Exception(api.error())
 
     if api.response_content():
-        print "Call Success: %s in length" % len(api.response_content())
+        print("Call Success: %s in length" % len(api.response_content()))
 
-    print "Response code: %s" % api.response_code()
-    print "Response DOM: %s" % api.response_dom()
+    print("Response code: %s" % api.response_code())
+    print("Response DOM: %s" % api.response_dom())
 
     dictstr = "%s" % api.response_dict()
-    print "Response dictionary: %s..." % dictstr[:250]
+    print("Response dictionary: %s..." % dictstr[:250])
     
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())

@@ -98,6 +98,14 @@ def smart_encode(value):
     except UnicodeDecodeError:
         return value
 
+def smart_decode(str):
+    """
+    Wrapper to str.decode method.
+    Under Python 3 this function does nothing since a string is already decoded.
+    """
+    if sys.version_info[0] < 3:
+        return str.decode('utf-8')
+    return str
 
 def to_xml(root):
     return dict2xml(root)
