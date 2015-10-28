@@ -20,7 +20,7 @@ from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
 from ebaysdk import set_stream_logger, UserAgent
-from ebaysdk.utils import getNodeText as getNodeTextUtils, smart_encode
+from ebaysdk.utils import getNodeText as getNodeTextUtils, smart_encode, smart_decode
 from ebaysdk.utils import getValue
 from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
@@ -239,7 +239,7 @@ class BaseConnection(object):
                 log.warn('DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
 
             self._response_soup = BeautifulStoneSoup(
-                self.response_content.decode('utf-8')
+                smart_decode(self.response_content)
             )
 
         return self._response_soup
@@ -322,7 +322,7 @@ class BaseConnection(object):
 
         if len(error_array) > 0:
             # Force all errors to be unicode in a proper way
-            error_array = [smart_encode(e).decode('utf-8') for e in error_array]
+            error_array = [smart_decode(smart_encode(e)) for e in error_array]
             error_string = u"{verb}: {message}".format(verb=self.verb, message=u", ".join(error_array))
 
             return error_string

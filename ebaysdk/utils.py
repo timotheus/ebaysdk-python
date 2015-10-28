@@ -98,7 +98,14 @@ def smart_encode(value):
     except UnicodeDecodeError:
         return value
 
-
+def smart_decode(str):
+    try:
+        if sys.version_info[0] < 3:
+            return str.decode('utf-8')
+        return str
+    except UnicodeEncodeError:
+        return str
+        
 def to_xml(root):
     return dict2xml(root)
 
