@@ -92,16 +92,16 @@ class Connection(BaseConnection):
             'estimateddeliverymaxtime', 'endtime', 'starttime']
 
         self.base_list_nodes=[
-            'findhalfproductsresponse.halfcatalogproducttype.productid',
-            'findhalfproductsresponse.halfproductstype.product',
-            'getshippingcostsresponse.internationalshippingserviceoptiontype.shipsto',
+            'findhalfproductsresponse.halfcatalogproduct.productid',
+            'findhalfproductsresponse.halfproducts.product',
+            'getshippingcostsresponse.internationalshippingserviceoption.shipsto',
             'getsingleitemresponse.itemcompatibility.compatibility',
             'getsingleitemresponse.itemcompatibility.namevaluelist',
             'getsingleitemresponse.variationspecifics.namevaluelist',
             'getsingleitemresponse.namevaluelist.value',
             'getsingleitemresponse.pictures.variationspecificpictureset',
             'getmultipleitemsresponse.pictures.variationspecificpictureset',
-            'findreviewsandguidesresponse.reviewdetailstype.review',
+            'findreviewsandguidesresponse.reviewdetails.review',
             'getshippingcostsresponse.shippingdetails.internationalshippingserviceoption',
             'getshippingcostsresponse.shippingdetails.shippingserviceoption',
             'getshippingcostsresponse.shippingdetails.excludeshiptolocation',
