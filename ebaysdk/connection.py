@@ -21,7 +21,7 @@ from xml.parsers.expat import ExpatError
 
 from ebaysdk import set_stream_logger, UserAgent
 from ebaysdk.utils import getNodeText as getNodeTextUtils, smart_encode, smart_decode
-from ebaysdk.utils import getValue
+from ebaysdk.utils import getValue, smart_encode_request_data
 from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
 
@@ -150,11 +150,10 @@ class BaseConnection(object):
 
         request = Request(self.method,
             url,
-            data=requestData,
+            data=smart_encode_request_data(requestData),
             headers=headers,
             files=files,
         )
-
 
         self.request = request.prepare()
 
