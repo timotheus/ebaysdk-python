@@ -6,6 +6,7 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 Quick Example::
 
     import datetime
+    from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection
 
     try:
