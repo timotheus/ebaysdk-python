@@ -47,8 +47,9 @@ class Connection(BaseConnection):
     Proof that utf8 errors work (calling .error() was triggering UTF8 Errors
     >>> t3 = Connection(token="WRONG_TOKEN", errors=False, debug=False, config_file=os.environ.get('EBAY_YAML'))
     >>> response = t3.execute(u'VerifyAddItem', {u'ErrorLanguage': u'de_DE'})
-    >>> t3.error()
-    u'VerifyAddItem: Class: RequestError, Severity: Error, Code: 931, Ung\\xfcltiges Authentifizierungs-Token. Die Pr\\xfcfung des Authentifizierungs-Tokens in der API-Anforderung war nicht erfolgreich.'
+    >>> error = t3.error()
+    >>> error.startswith('VerifyAddItem: Class: RequestError, Severity:')
+    True
     """
 
     def __init__(self, **kwargs):
@@ -775,9 +776,11 @@ class Connection(BaseConnection):
             except IndexError:
                 pass
 
-            msg = "Class: {eClass}, Severity: {severity}, Code: {code}, {shortMsg} {longMsg}" \
+            msg = str("Class: {eClass}, Severity: {severity}, Code: {code}, {shortMsg} {longMsg}") \
                 .format(eClass=eClass, severity=eSeverity, code=eCode, shortMsg=eShortMsg,
                         longMsg=eLongMsg)
+
+            #from IPython import embed; embed()
 
             if eSeverity == 'Warning':
                 warnings.append(msg)

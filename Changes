@@ -1,5 +1,8 @@
 Changes for ebaysdk
 
+- fix unicode issue between py2 and py3
+- add a unicode example in the samples dir
+- fix for issue #127 (false-ish check)
 - merge in py3 datatype fix from MartiONE
 
 2.1.2 Thu Jun 25 14:54:12 PDT 2015 
