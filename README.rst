@@ -6,10 +6,11 @@ This SDK is a programmatic interface into the eBay APIs. It simplifies developme
 Quick Example::
 
     import datetime
+    from ebaysdk.exception import ConnectionError
     from ebaysdk.finding import Connection
 
     try:
-        api = Connection(appid='YOUR_APPID_HERE')
+        api = Connection(appid='YOUR_APPID_HERE', config_file=None)
         response = api.execute('findItemsAdvanced', {'keywords': 'legos'})        
 
         assert(response.reply.ack == 'Success')  
