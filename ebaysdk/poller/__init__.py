@@ -52,7 +52,7 @@ def parse_args(usage):
     parser.add_option("-o", "--OrderRole",
                       dest="OrderRole", default='Buyer',
                       help="Specifies which OrderRole value to use. [default: %default]")
-    parser.add_option("-o", "--OrderStatus",
+    parser.add_option("-O", "--OrderStatus",
                       dest="OrderStatus", default='All',
                       help="Specifies which OrderStatus value to use. [default: %default]")
 
