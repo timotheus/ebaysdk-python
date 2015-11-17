@@ -18,20 +18,20 @@ class Storage(object):
             ("ID", order.OrderID),
             ("Status", order.OrderStatus),
             ("Seller Email", order.SellerEmail),
-            ("Title", order.TransactionArray.Transaction.Item.Title),
-            ("ItemID", order.TransactionArray.Transaction.Item.ItemID),
-            ("QTY", order.TransactionArray.Transaction.QuantityPurchased),
+            ("Title", order.TransactionArray.Transaction[0].Item.Title),
+            ("ItemID", order.TransactionArray.Transaction[0].Item.ItemID),
+            ("QTY", order.TransactionArray.Transaction[0].QuantityPurchased),
             ("Payment Method", order.CheckoutStatus.PaymentMethod),
-            ("Payment Date", order.PaidTime),
+            ("Payment Date", getattr(order, 'PaidTime', 'Not Paid')),
             ("Total", (order.Total._currencyID + ' ' + order.Total.value))
         ]
 
-        if order.TransactionArray.Transaction.get('Variation', None):
-            data.append(("SKU", order.TransactionArray.Transaction.Variation.SKU)),
+        if order.TransactionArray.Transaction[0].get('Variation', None):
+            data.append(("SKU", order.TransactionArray.Transaction[0].Variation.SKU)),
 
         data.extend([
-            ("Shipped Time", order.ShippedTime),
-            ("Shipping Service", order.ShippingServiceSelected)
+            ("Shipped Time", getattr(order, 'ShippedTime', 'Not Shipped')),
+            ("Shipping Service", getattr(order, 'ShippingServiceSelected', 'N/A'))
         ])
 
         if order.ShippingDetails.get('ShipmentTrackingDetails', None):
@@ -58,8 +58,10 @@ class Poller(object):
         with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
             log.debug("Started poller %s" % __file__)
 
-            to_time = datetime.utcnow() #- timedelta(days=80)
-            from_time = to_time - timedelta(hours=self.opts.hours)
+            to_time = datetime.utcnow()# - timedelta(days=4)
+
+            from_time = to_time - timedelta(hours=self.opts.hours,
+                                            minutes=self.opts.minutes)
 
             ebay_api = Trading(debug=self.opts.debug, config_file=self.opts.yaml,
                                appid=self.opts.appid, certid=self.opts.certid,
