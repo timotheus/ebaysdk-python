@@ -32,17 +32,17 @@ except ImportError:
 def getTestSuite():
     suite = unittest.TestSuite()
 
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.poller.orders))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.poller.orders))
     suite.addTest(doctest.DocTestSuite(ebaysdk.utils))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.config))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.response))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.http))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
-    # suite.addTest(doctest.DocTestSuite(ebaysdk.inventorymanagement))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.config))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.response))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.http))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.finding))
+    suite.addTest(doctest.DocTestSuite(ebaysdk.inventorymanagement))
 
     if not sys.version_info[0] >= 3 \
         and sys.modules.has_key('grequests') is True:
