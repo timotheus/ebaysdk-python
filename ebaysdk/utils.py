@@ -192,6 +192,9 @@ def dict2xml(root):
     >>> print(dict2xml(attrdict))
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
 
+    >>> dict2xml("łśżźć")
+    '\\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87'
+
     >>> dict_special = {
     ...     'searchFilter': {'categoryId': {'#text': 'SomeID - łśżźć', '@attrs': {'site': 'US - łśżźć'} }},
     ...     'paginationInput': {
@@ -206,7 +209,7 @@ def dict2xml(root):
     ...     ],
     ...     'sortOrder': 'StartTimeNewest - łśżźć'
     ... }
-    >>> dict2xml(dict_special) # doctest: +SKIP  
+    >>> dict2xml(dict_special)
     '<itemFilter><name>Condition - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>Used - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><itemFilter><name>LocatedIn - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>GB - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><paginationInput><pageNumber>1 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageNumber><pageSize>25 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageSize></paginationInput><searchFilter><categoryId site="US - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87">SomeID - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</categoryId></searchFilter><sortOrder>StartTimeNewest - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</sortOrder>'
     '''
 
@@ -259,7 +262,7 @@ def dict2xml(root):
     elif isinstance(root, str) or isinstance(root, int) \
         or isinstance(root, unicode) or isinstance(root, long) \
         or isinstance(root, float):
-        xml = str('{0}{1}').format(str(xml), root)
+        xml = str('{0}{1}').format(str(xml), smart_encode(root))
     else:
         raise Exception('Unable to serialize node of type %s (%s)' % \
             (type(root), root))
