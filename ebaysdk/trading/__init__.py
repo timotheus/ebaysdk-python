@@ -701,7 +701,7 @@ class Connection(BaseConnection):
                 if self.config.get('password', None):
                     xml += "<Password>{password}</Password>".format(password=self.config.get('password', None))
             xml += "</RequesterCredentials>"
-        xml += dict2xml(data)
+        xml += dict2xml(data, self.escape_xml)
         xml += "</{verb}Request>".format(verb=self.verb)
         return xml
 

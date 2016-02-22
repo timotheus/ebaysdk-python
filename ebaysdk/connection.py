@@ -35,7 +35,7 @@ class BaseConnection(object):
 
     def __init__(self, debug=False, method='GET',
                  proxy_host=None, timeout=20, proxy_port=80,
-                 parallel=None, **kwargs):
+                 parallel=None, escape_xml=False, **kwargs):
 
         if debug:
             set_stream_logger()
@@ -48,6 +48,7 @@ class BaseConnection(object):
         self.timeout = timeout
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
+        self.escape_xml = escape_xml
         self.datetime_nodes = []
         self._list_nodes = []
 
