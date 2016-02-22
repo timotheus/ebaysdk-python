@@ -191,7 +191,7 @@ class Connection(BaseConnection):
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         xml += "<{verb}Request>".format(verb=verb)
-        xml += dict2xml(data)
+        xml += dict2xml(data, self.escape_xml)
         xml += "</{verb}Request>".format(verb=verb)
 
         return xml
