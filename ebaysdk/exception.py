@@ -6,7 +6,7 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
-class EbaySDKError(StandardError):
+class EbaySDKError(Exception):
     def __init__(self, msg, response=None):
         super(EbaySDKError, self).__init__(u'%s' % msg)
         self.message = u'%s' % msg
