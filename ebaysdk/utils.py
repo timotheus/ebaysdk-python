@@ -257,7 +257,7 @@ def dict2xml(root, escape_xml=False):
 
             else:
                 value = root[key]
-                if escape_xml and (isinstance(value, str) or isinstance(value, unicode)) and not value.startswith('<![CDATA['):
+                if escape_xml and hasattr(value, 'startswith') and not value.startswith('<![CDATA['):
                     value = escape(value)
                 xml = str('{xml}<{tag}>{value}</{tag}>') \
                     .format(**{'xml': str(xml), 'tag': key, 'value': smart_encode(value)})
