@@ -119,7 +119,7 @@ class Connection(BaseConnection):
         xml += "<" + verb + "Request"
         xml += ' xmlns="http://www.ebay.com/marketplace/search/v1/services"'
         xml += '>'
-        xml += dict2xml(data)
+        xml += dict2xml(data, self.escape_xml)
         xml += "</" + verb + "Request>"
 
         return xml

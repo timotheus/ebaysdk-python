@@ -8,6 +8,7 @@ Licensed under CDDL 1.0
 '''
 import sys
 from lxml import etree as ET
+from xml.sax.saxutils import escape
 
 
 def parse_yaml(yaml_file):
@@ -119,7 +120,7 @@ def to_xml(root):
     return dict2xml(root)
 
 
-def dict2xml(root):
+def dict2xml(root, escape_xml=False):
     '''
     Doctests:
     >>> dict1 = {'Items': {'ItemId': ['1234', '2222']}}
@@ -224,9 +225,9 @@ def dict2xml(root):
                 attrs, value = attribute_check(root[key])
 
                 if value is None:
-                    value = dict2xml(root[key])
+                    value = dict2xml(root[key], escape_xml)
                 elif isinstance(value, dict):
-                    value = dict2xml(value)
+                    value = dict2xml(value, escape_xml)
 
                 attrs_sp = str('')
                 if len(attrs) > 0:
@@ -242,9 +243,9 @@ def dict2xml(root):
                     attrs, value = attribute_check(item)
 
                     if value is None:
-                        value = dict2xml(item)
+                        value = dict2xml(item, escape_xml)
                     elif isinstance(value, dict):
-                        value = dict2xml(value)
+                        value = dict2xml(value, escape_xml)
 
                     attrs_sp = ''
                     if len(attrs) > 0:
@@ -256,6 +257,8 @@ def dict2xml(root):
 
             else:
                 value = root[key]
+                if escape_xml and hasattr(value, 'startswith') and not value.startswith('<![CDATA['):
+                    value = escape(value)
                 xml = str('{xml}<{tag}>{value}</{tag}>') \
                     .format(**{'xml': str(xml), 'tag': key, 'value': smart_encode(value)})
 

@@ -152,7 +152,7 @@ class Connection(BaseConnection):
 
         xml = "<?xml version='1.0' encoding='utf-8'?>"
         xml += "<" + verb + "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
-        xml += dict2xml(data)
+        xml += dict2xml(data, self.escape_xml)
         xml += "</" + verb + "Request>"
 
         return xml
