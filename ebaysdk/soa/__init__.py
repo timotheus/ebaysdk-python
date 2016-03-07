@@ -90,7 +90,7 @@ class Connection(BaseConnection):
         xml += ' xmlns:ser="%s" >' % self.config.get('soap_env_str')
         xml += '<soap:Body>'
         xml += '<ser:%sRequest>' % verb
-        xml += dict2xml(self.soapify(data))
+        xml += dict2xml(self.soapify(data), self.escape_xml)
         xml += '</ser:%sRequest>' % verb
         xml += '</soap:Body>'
         xml += '</soap:Envelope>'
