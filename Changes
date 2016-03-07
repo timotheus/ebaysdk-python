@@ -1,5 +1,6 @@
 Changes for ebaysdk
-
+2.1.3
+- Merged PR for XML escaping option (https://github.com/timotheus/ebaysdk-python/pull/139)
 - fix unicode issue between py2 and py3
 - add a unicode example in the samples dir
 - fix for issue #127 (false-ish check)
