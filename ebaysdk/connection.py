@@ -13,8 +13,9 @@ import time
 import uuid
 import webbrowser
 
-from requests import Request, Session
-from requests.adapters import HTTPAdapter
+import requests
+import requests_toolbelt.adapters.appengine
+requests_toolbelt.adapters.appengine.monkeypatch()
 
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
@@ -60,9 +61,7 @@ class BaseConnection(object):
                 'https': proxy
             }
 
-        self.session = Session()
-        self.session.mount('http://', HTTPAdapter(max_retries=3))
-        self.session.mount('https://', HTTPAdapter(max_retries=3))
+        self.session = requests.Session()
 
         self.parallel = parallel
 
@@ -149,7 +148,7 @@ class BaseConnection(object):
             if isinstance(requestData, basestring):
                 requestData = {'XMLPayload':requestData}
 
-        request = Request(self.method,
+        request = requests.Request(self.method,
             url,
             data=smart_encode_request_data(requestData),
             headers=headers,
