@@ -72,7 +72,7 @@ class Connection(BaseConnection):
         self.config.set('warnings', True)
         self.config.set('errors', True)
         self.config.set('https', False)
-        self.config.set('siteid', 0)
+        self.config.set('siteid', '0')
         self.config.set('response_encoding', 'XML')
         self.config.set('request_encoding', 'XML')
         self.config.set('proxy_host', None)

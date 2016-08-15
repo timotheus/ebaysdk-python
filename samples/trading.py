@@ -289,7 +289,7 @@ def getUser(opts):
     try:
 
         api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
-                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid=101)
+                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='101')
 
         api.execute('GetUser', {'UserID': 'biddergoat'})
         dump(api, full=False)
@@ -316,7 +316,7 @@ def categories(opts):
 
     try:
         api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
-                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid=101)
+                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='101')
 
         callData = {
             'DetailLevel': 'ReturnAll',
