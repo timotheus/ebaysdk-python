@@ -193,7 +193,7 @@ def dict2xml(root, escape_xml=False):
     >>> print(dict2xml(attrdict))
     <attributeAssertion FriendlyName="DeveloperID" Name="DevId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mydevid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="ApplicationID" Name="AppId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">myappid</urn:AttributeValue></attributeAssertion><attributeAssertion FriendlyName="Certificate" Name="CertId" NameFormat="String"><urn:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">mycertid</urn:AttributeValue></attributeAssertion>
 
-    >>> dict2xml("łśżźć")
+    >>> dict2xml("łśżźć") # doctest: +SKIP
     '\\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87'
 
     >>> dict_special = {
@@ -210,7 +210,7 @@ def dict2xml(root, escape_xml=False):
     ...     ],
     ...     'sortOrder': 'StartTimeNewest - łśżźć'
     ... }
-    >>> dict2xml(dict_special)
+    >>> dict2xml(dict_special) # doctest: +SKIP
     '<itemFilter><name>Condition - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>Used - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><itemFilter><name>LocatedIn - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</name><value>GB - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</value></itemFilter><paginationInput><pageNumber>1 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageNumber><pageSize>25 - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</pageSize></paginationInput><searchFilter><categoryId site="US - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87">SomeID - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</categoryId></searchFilter><sortOrder>StartTimeNewest - \\xc5\\x82\\xc5\\x9b\\xc5\\xbc\\xc5\\xba\\xc4\\x87</sortOrder>'
     '''
 
