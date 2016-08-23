@@ -1,4 +1,9 @@
 Changes for ebaysdk
+
+2.1.4 Tue Aug 23 11:21:37 PDT 2016
+- Merge PR from listingmirror for site-id fix
+- Added a few performance tests
+
 2.1.3
 - Merged PR for XML escaping option (https://github.com/timotheus/ebaysdk-python/pull/139)
 - fix unicode issue between py2 and py3
