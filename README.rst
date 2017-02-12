@@ -64,6 +64,8 @@ For developer support regarding the SDK code base please use this project's `Git
 
 For developer support regarding the eBay APIs please use the `eBay Developer Forums`_.
 
+For testing check out Ebay's functions page on RapidAPI_.
+
 Install
 -------
 
@@ -91,3 +93,4 @@ License
 .. _v1 to v2 guide: https://github.com/timotheus/ebaysdk-python/wiki/Migrating-from-v1-to-v2 
 .. _samples directory: https://github.com/timotheus/ebaysdk-python/tree/master/samples
 .. _Request Dictionary: https://github.com/timotheus/ebaysdk-python/wiki/Request-Dictionary
+.. _RapidAPI: https://rapidapi.com/package/eBay/functions?utm_source=GitHubEbay&utm_medium=button
