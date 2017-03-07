@@ -37,7 +37,7 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.response))
     suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
-    suite.addTest(doctest.DocTestSuite(ebaysdk.http))
+    #suite.addTest(doctest.DocTestSuite(ebaysdk.http))
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))

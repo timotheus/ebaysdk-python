@@ -9,6 +9,7 @@ import sys
 import lxml
 import copy
 import datetime
+from lxml.etree import XMLSyntaxError # pylint: disable-msg=E0611
 
 from collections import defaultdict
 import json
@@ -55,7 +56,7 @@ class ResponseDataObject(object):
         if sys.version_info[0] >= 3:
             datatype = bytes
         else:
-            datatype = unicode
+            datatype = unicode # pylint: disable-msg=E0602
         
         for a in mydict.items():
 
@@ -113,7 +114,7 @@ class Response(object):
     >>> len(r.dom().getchildren()) > 2
     True
     >>> import json
-    >>> j = json.loads(r.json(), 'utf8')
+    >>> j = json.loads(r.json(), encoding='utf8')
     >>> json.dumps(j, sort_keys=True)
     '{"ack": "Success", "itemSearchURL": "http://www.ebay.com/ctg/53039031?_ddo=1&_ipg=2&_pgn=1", "paginationOutput": {"entriesPerPage": "2", "pageNumber": "1", "totalEntries": "179", "totalPages": "90"}, "searchResult": {"_count": "2", "item": [{"name": "Item Two", "shipping": {"c": ["US", "MX"]}}, {"name": "Item One"}]}, "timestamp": "2014-02-07T23:31:13.941Z", "version": "1.12.0"}'
     >>> sorted(r.dict().keys())
@@ -153,7 +154,7 @@ class Response(object):
 
                 self.reply = ResponseDataObject(self._dict,
                                                 datetime_nodes=copy.copy(datetime_nodes))
-            except lxml.etree.XMLSyntaxError as e:
+            except XMLSyntaxError as e:
                 log.debug('response parse failed: %s' % e)
                 self.reply = ResponseDataObject({}, [])
         else:
@@ -180,7 +181,7 @@ class Response(object):
             return v
 
     def _etree_to_dict(self, t):
-        if type(t) == lxml.etree._Comment:
+        if type(t) == lxml.etree._Comment: # pylint: disable=no-member
             return {}
 
         # remove xmlns from nodes, I find them meaningless

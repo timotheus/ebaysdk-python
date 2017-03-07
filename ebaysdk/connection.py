@@ -43,6 +43,7 @@ class BaseConnection(object):
         self.response = None
         self.request = None
         self.verb = None
+        self.config = None
         self.debug = debug
         self.method = method
         self.timeout = timeout
@@ -146,7 +147,7 @@ class BaseConnection(object):
         requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
-            if isinstance(requestData, basestring):
+            if isinstance(requestData, basestring): # pylint: disable-msg=E0602
                 requestData = {'XMLPayload':requestData}
 
         request = Request(self.method,
@@ -157,6 +158,12 @@ class BaseConnection(object):
         )
 
         self.request = request.prepare()
+
+    def build_request_headers(self, verb):
+        return {}
+
+    def build_request_data(self, verb, data, verb_attrs):
+        return ""
 
     def build_request_url(self, verb):
         url = "%s://%s%s" % (
