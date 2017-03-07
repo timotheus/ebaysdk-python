@@ -10,6 +10,9 @@ import sys
 from lxml import etree as ET
 from xml.sax.saxutils import escape
 
+if sys.version_info[0] >= 3:
+    unicode = str
+    long = int
 
 def parse_yaml(yaml_file):
     """
@@ -70,7 +73,7 @@ def python_2_unicode_compatible(klass):
 
 
 def get_dom_tree(xml):
-    tree = ET.fromstring(xml)
+    tree = ET.fromstring(xml) # pylint: disable=no-member
     return tree.getroottree().getroot()
 
 
@@ -100,7 +103,7 @@ def smart_encode_request_data(value):
 def smart_encode(value):
     try:
         if sys.version_info[0] < 3:
-            return unicode(value).encode('utf-8')
+            return unicode(value).encode('utf-8') # pylint: disable-msg=E0602
         else:
             return value
             #return str(value)
@@ -263,8 +266,8 @@ def dict2xml(root, escape_xml=False):
                     .format(**{'xml': str(xml), 'tag': key, 'value': smart_encode(value)})
 
     elif isinstance(root, str) or isinstance(root, int) \
-        or isinstance(root, unicode) or isinstance(root, long) \
-        or isinstance(root, float):
+        or isinstance(root, float) or isinstance(root, long) \
+        or isinstance(root, unicode): 
         xml = str('{0}{1}').format(str(xml), smart_encode(root))
     else:
         raise Exception('Unable to serialize node of type %s (%s)' % \
