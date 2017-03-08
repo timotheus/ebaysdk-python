@@ -11,17 +11,18 @@ from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml
 
+
 class Connection(BaseConnection):
     """Connection class for a base SOA service"""
 
     def __init__(self, app_config=None, site_id='EBAY-US', debug=False, **kwargs):
         """SOA Connection class constructor"""
-        
+
         super(Connection, self).__init__(method='POST', debug=debug, **kwargs)
 
-        self.config=Config(domain=kwargs.get('domain', ''),
-                           connection_kwargs=kwargs,
-                           config_file=kwargs.get('config_file', 'ebay.yaml'))
+        self.config = Config(domain=kwargs.get('domain', ''),
+                             connection_kwargs=kwargs,
+                             config_file=kwargs.get('config_file', 'ebay.yaml'))
 
         self.config.set('https', False)
         self.config.set('site_id', site_id)
@@ -29,7 +30,8 @@ class Connection(BaseConnection):
         self.config.set('request_encoding', 'XML')
         self.config.set('response_encoding', 'XML')
         self.config.set('message_protocol', 'SOAP12')
-        self.config.set('soap_env_str', '') ## http://www.ebay.com/marketplace/fundraising/v1/services',
+        # http://www.ebay.com/marketplace/fundraising/v1/services',
+        self.config.set('soap_env_str', '')
 
         ph = None
         pp = 80
@@ -38,13 +40,13 @@ class Connection(BaseConnection):
             ph = self.config.get('proxy_host', ph)
             pp = self.config.get('proxy_port', pp)
 
-
     # override this method, to provide setup through a config object, which
     # should provide a get() method for extracting constants we care about
-    # this method should then set the .api_config[] dict (e.g. the comment below)
+    # this method should then set the .api_config[] dict (e.g. the comment
+    # below)
     def load_from_app_config(self, app_config):
-        #self.api_config['domain'] = app_config.get('API_SERVICE_DOMAIN')
-        #self.api_config['uri'] = app_config.get('API_SERVICE_URI')
+        # self.api_config['domain'] = app_config.get('API_SERVICE_DOMAIN')
+        # self.api_config['uri'] = app_config.get('API_SERVICE_URI')
         pass
 
     # Note: this method will always return at least an empty object_dict!
@@ -103,13 +105,13 @@ class Connection(BaseConnection):
             for k, v in list(xml.items()):
                 if k == '@attrs' or k == '#text':
                     soap[k] = v
-                    
+
                 # skip nodes that have ns defined
                 elif ':' in k:
                     soap[k] = self.soapify(v)
                 else:
                     soap['ser:%s' % (k)] = self.soapify(v)
-                
+
         elif xml_type == list:
             soap = []
             for x in xml:
@@ -134,7 +136,7 @@ class Connection(BaseConnection):
         XML response body look like. They can choose to look at the 'ack',
         'Errors', 'errorMessage' or whatever other fields the service returns.
         the implementation below is the original code that was part of error()
-        
+
         <errorMessage xmlns="http://www.ebay.com/marketplace/search/v1/services"><error><errorId>5014</errorId><domain>CoreRuntime</domain><severity>Error</severity><category>System</category><message>
         """
 

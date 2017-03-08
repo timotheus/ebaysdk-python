@@ -18,6 +18,7 @@ from ebaysdk.finding import Connection as finding
 from ebaysdk.http import Connection as html
 from ebaysdk.exception import ConnectionError
 
+
 def init_options():
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
@@ -45,7 +46,8 @@ def run(opts):
         calls = []
 
         for page in range(1, 10):
-            api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+            api = finding(debug=opts.debug, appid=opts.appid,
+                          config_file=opts.yaml)
             call = gevent.spawn(api.execute,
                                 'findItemsAdvanced',
                                 {'keywords': 'python',

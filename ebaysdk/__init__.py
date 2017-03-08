@@ -16,6 +16,7 @@ try:
     from logging import NullHandler
 except ImportError:
     class NullHandler(logging.Handler):
+
         def emit(self, record):
             pass
 
@@ -31,11 +32,13 @@ log = logging.getLogger('ebaysdk')
 if not log.handlers:
     log.addHandler(NullHandler())
 
+
 def get_version():
     return __version__
 
+
 def set_stream_logger(level=logging.DEBUG, format_string=None):
-    log.handlers=[]
+    log.handlers = []
 
     if not format_string:
         format_string = "%(asctime)s %(name)s [%(levelname)s]:%(message)s"
@@ -47,6 +50,7 @@ def set_stream_logger(level=logging.DEBUG, format_string=None):
     fh.setFormatter(formatter)
     log.addHandler(fh)
 
+
 def trading(*args, **kwargs):
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
@@ -54,6 +58,7 @@ def trading(*args, **kwargs):
             'from ebaysdk.trading import Connection as trading',
         )
     )
+
 
 def shopping(*args, **kwargs):
     raise ImportError(
@@ -63,6 +68,7 @@ def shopping(*args, **kwargs):
         )
     )
 
+
 def finding(*args, **kwargs):
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
@@ -70,6 +76,7 @@ def finding(*args, **kwargs):
             'from ebaysdk.finding import Connection as finding',
         )
     )
+
 
 def merchandising(*args, **kwargs):
     raise ImportError(
@@ -79,6 +86,7 @@ def merchandising(*args, **kwargs):
         )
     )
 
+
 def html(*args, **kwargs):
     raise ImportError(
         'SDK import must be changed as follows:\n\n- %s\n+ %s\n\n' % (
@@ -86,6 +94,7 @@ def html(*args, **kwargs):
             'from ebaysdk.http import Connection as html',
         )
     )
+
 
 def parallel(*args, **kwargs):
     raise ImportError(

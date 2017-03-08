@@ -54,7 +54,8 @@ class Connection(BaseConnection):
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'svcs.ebay.com'))
-        self.config.set('uri', '/services/selling/v1/SellerProfilesManagementService')
+        self.config.set(
+            'uri', '/services/selling/v1/SellerProfilesManagementService')
         self.config.set('https', True)
         self.config.set('warnings', True)
         self.config.set('errors', True)
@@ -68,7 +69,8 @@ class Connection(BaseConnection):
         self.config.set('appid', None)
         self.config.set('version', '1.0.0')
         self.config.set('service', 'SellerProfilesManagementService')
-        self.config.set('doc_url', 'http://developer.ebay.com/Devzone/business-policies/CallRef/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/Devzone/business-policies/CallRef/index.html')
 
         self.datetime_nodes = ['deleteddate', 'timestamp', 'maxdeliverydate',
                                'mindeliverydate']
@@ -126,7 +128,8 @@ class Connection(BaseConnection):
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += "<{verb}Request xmlns=\"http://www.ebay.com/marketplace/selling/v1/services\">".format(verb=verb)
+        xml += "<{verb}Request xmlns=\"http://www.ebay.com/marketplace/selling/v1/services\">".format(
+            verb=verb)
         xml += dict2xml(data, self.escape_xml)
         xml += "</{verb}Request>".format(verb=verb)
 

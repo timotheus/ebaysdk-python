@@ -18,6 +18,7 @@ import ebaysdk
 from ebaysdk.http import Connection as HTTP
 from ebaysdk.exception import ConnectionError
 
+
 def init_options():
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
@@ -28,6 +29,7 @@ def init_options():
 
     (opts, args) = parser.parse_args()
     return opts, args
+
 
 def run(opts):
 

@@ -14,6 +14,7 @@ from ebaysdk.exception import RequestPaginationError, PaginationLimit
 from ebaysdk.config import Config
 from ebaysdk.utils import dict2xml
 
+
 class Connection(BaseConnection):
     """Connection class for the Finding service
 
@@ -65,9 +66,9 @@ class Connection(BaseConnection):
 
         super(Connection, self).__init__(method='POST', **kwargs)
 
-        self.config=Config(domain=kwargs.get('domain', 'svcs.ebay.com'),
-                           connection_kwargs=kwargs,
-                           config_file=kwargs.get('config_file', 'ebay.yaml'))
+        self.config = Config(domain=kwargs.get('domain', 'svcs.ebay.com'),
+                             connection_kwargs=kwargs,
+                             config_file=kwargs.get('config_file', 'ebay.yaml'))
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'svcs.ebay.com'))
@@ -85,7 +86,8 @@ class Connection(BaseConnection):
         self.config.set('appid', None)
         self.config.set('version', '1.12.0')
         self.config.set('service', 'FindingService')
-        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/finding/CallRef/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/DevZone/finding/CallRef/index.html')
 
         self.datetime_nodes = ['starttimefrom', 'timestamp', 'starttime',
                                'endtime']
@@ -285,9 +287,11 @@ class Connection(BaseConnection):
 
     def next_page(self):
         if type(self._request_dict) is not dict:
-            raise RequestPaginationError("request data is not of type dict", self.response) 
+            raise RequestPaginationError(
+                "request data is not of type dict", self.response)
 
-        epp = self._request_dict.get('paginationInput', {}).get('enteriesPerPage', None)
+        epp = self._request_dict.get(
+            'paginationInput', {}).get('enteriesPerPage', None)
         num = int(self.response.reply.paginationOutput.pageNumber)
 
         if num >= int(self.response.reply.paginationOutput.totalPages):
@@ -300,5 +304,5 @@ class Connection(BaseConnection):
             self._request_dict['paginationInput']['enteriesPerPage'] = epp
 
         self._request_dict['paginationInput']['pageNumber'] = int(num) + 1
-        
+
         return self.execute(self.verb, self._request_dict)

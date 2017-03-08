@@ -9,13 +9,14 @@ import sys
 import lxml
 import copy
 import datetime
-from lxml.etree import XMLSyntaxError # pylint: disable-msg=E0611
+from lxml.etree import XMLSyntaxError  # pylint: disable-msg=E0611
 
 from collections import defaultdict
 import json
 
 from ebaysdk.utils import get_dom_tree, python_2_unicode_compatible
 from ebaysdk import log
+
 
 @python_2_unicode_compatible
 class ResponseDataObject(object):
@@ -45,7 +46,8 @@ class ResponseDataObject(object):
     def _setattr(self, name, value, datetime_nodes):
         if name.lower() in datetime_nodes:
             try:
-                ts = "%s %s" % (value.partition('T')[0], value.partition('T')[2].partition('.')[0])
+                ts = "%s %s" % (value.partition(
+                    'T')[0], value.partition('T')[2].partition('.')[0])
                 value = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
             except ValueError:
                 pass
@@ -56,8 +58,8 @@ class ResponseDataObject(object):
         if sys.version_info[0] >= 3:
             datatype = bytes
         else:
-            datatype = unicode # pylint: disable-msg=E0602
-        
+            datatype = unicode  # pylint: disable-msg=E0602
+
         for a in mydict.items():
 
             if isinstance(a[1], dict):
@@ -71,11 +73,12 @@ class ResponseDataObject(object):
                         objs.append(i)
                     else:
                         objs.append(ResponseDataObject(i, datetime_nodes))
-                
+
                 setattr(self, a[0], objs)
             else:
                 self._setattr(a[0], a[1], datetime_nodes)
-                
+
+
 class Response(object):
     '''
     <?xml version='1.0' encoding='UTF-8'?>
@@ -129,9 +132,9 @@ class Response(object):
     >>> len(item.shipping.c) == 2
     True
     '''
-    
+
     def __init__(self, obj, verb=None, list_nodes=[], datetime_nodes=[], parse_response=True):
-        self._list_nodes=copy.copy(list_nodes)
+        self._list_nodes = copy.copy(list_nodes)
         self._obj = obj
 
         if parse_response:
@@ -144,13 +147,15 @@ class Response(object):
                     if elem is not None:
                         self._dom = elem
 
-                    self._dict = self._dict['Envelope']['Body'].get('%sResponse' % verb, self._dict)
+                    self._dict = self._dict['Envelope'][
+                        'Body'].get('%sResponse' % verb, self._dict)
                 elif verb:
                     elem = self._dom.find('%sResponse' % verb)
                     if elem is not None:
                         self._dom = elem
 
-                    self._dict = self._dict.get('%sResponse' % verb, self._dict)
+                    self._dict = self._dict.get(
+                        '%sResponse' % verb, self._dict)
 
                 self.reply = ResponseDataObject(self._dict,
                                                 datetime_nodes=copy.copy(datetime_nodes))
@@ -181,7 +186,7 @@ class Response(object):
             return v
 
     def _etree_to_dict(self, t):
-        if type(t) == lxml.etree._Comment: # pylint: disable=no-member
+        if type(t) == lxml.etree._Comment:  # pylint: disable=no-member
             return {}
 
         # remove xmlns from nodes, I find them meaningless
@@ -196,7 +201,7 @@ class Response(object):
                     dd[k].append(v)
 
             d = {t.tag: dict((k, self._pullval(v)) for k, v in dd.items())}
-            #d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}    
+            # d = {t.tag: {k:v[0] if len(v) == 1 else v for k, v in dd.items()}}
 
             # TODO: Optimizations? Forces a node to type list
             parent_path = self._get_node_path(t)
@@ -204,7 +209,7 @@ class Response(object):
                 path = "%s.%s" % (parent_path, k)
                 if path.lower() in self._list_nodes:
                     if not isinstance(d[t.tag][k], list):
-                        d[t.tag][k] = [ d[t.tag][k] ]
+                        d[t.tag][k] = [d[t.tag][k]]
 
         if t.attrib:
             d[t.tag].update(('_' + k, v) for k, v in t.attrib.items())
@@ -212,7 +217,7 @@ class Response(object):
             text = t.text.strip()
             if children or t.attrib:
                 if text:
-                  d[t.tag]['value'] = text
+                    d[t.tag]['value'] = text
             else:
                 d[t.tag] = text
         return d
@@ -222,7 +227,7 @@ class Response(object):
 
     def _parse_xml(self, xml):
         return get_dom_tree(xml)
-        
+
     def _get_node_tag(self, node):
         return node.tag.replace('{' + node.nsmap.get(node.prefix, '') + '}', '')
 

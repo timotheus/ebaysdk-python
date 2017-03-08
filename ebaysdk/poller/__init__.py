@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from optparse import OptionParser
 from ebaysdk import log, set_stream_logger
 
+
 @contextmanager
 def file_lock(lock_file):
     if os.path.exists(lock_file):
@@ -24,8 +25,9 @@ def file_lock(lock_file):
         finally:
             os.remove(lock_file)
 
+
 def parse_args(usage):
-    
+
     parser = OptionParser(usage=usage)
 
     parser.add_option("-d", "--debug",
@@ -33,7 +35,7 @@ def parse_args(usage):
                       help="Enabled debugging [default: %default]")
     parser.add_option("-H", "--hours",
                       dest="hours", default=12, type='int',
-                      help="Specifies the number of hours [default: %default]")    
+                      help="Specifies the number of hours [default: %default]")
     parser.add_option("-M", "--minutes",
                       dest="minutes", default=0, type='int',
                       help="Specifies the number of minutes [default: %default]")
@@ -63,5 +65,5 @@ def parse_args(usage):
 
     if opts.debug:
         set_stream_logger(level=logging.DEBUG)
-    
+
     return opts, args

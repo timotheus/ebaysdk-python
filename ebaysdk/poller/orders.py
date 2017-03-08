@@ -13,6 +13,7 @@ from ebaysdk import log
 
 
 class Storage(object):
+
     def set(self, order):
         data = [
             ("ID", order.OrderID),
@@ -27,7 +28,8 @@ class Storage(object):
         ]
 
         if order.TransactionArray.Transaction[0].get('Variation', None):
-            data.append(("SKU", order.TransactionArray.Transaction[0].Variation.SKU)),
+            data.append(
+                ("SKU", order.TransactionArray.Transaction[0].Variation.SKU)),
 
         data.extend([
             ("Shipped Time", getattr(order, 'ShippedTime', 'Not Shipped')),
@@ -36,11 +38,14 @@ class Storage(object):
 
         if order.ShippingDetails.get('ShipmentTrackingDetails', None):
             data.extend([
-                ("Min Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
-                ("Max Shipping Days", order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
+                ("Min Shipping Days",
+                 order.ShippingDetails.ShippingServiceOptions.ShippingTimeMin),
+                ("Max Shipping Days",
+                 order.ShippingDetails.ShippingServiceOptions.ShippingTimeMax),
                 ("Tracking", order.ShippingDetails.ShipmentTrackingDetails.ShipmentTrackingNumber),
                 ("Carrier", order.ShippingDetails.ShipmentTrackingDetails.ShippingCarrierUsed),
-                ("Cost", (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID, order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
+                ("Cost", (order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost._currencyID,
+                          order.ShippingDetails.ShippingServiceOptions.ShippingServiceCost.value))
             ])
 
         values_array = map((lambda x: "%s=%s" % (x[0], x[1])), data)
@@ -58,7 +63,7 @@ class Poller(object):
         with file_lock("/tmp/.ebaysdk-poller-orders.lock"):
             log.debug("Started poller %s" % __file__)
 
-            to_time = datetime.utcnow()# - timedelta(days=4)
+            to_time = datetime.utcnow()  # - timedelta(days=4)
 
             from_time = to_time - timedelta(hours=self.opts.hours,
                                             minutes=self.opts.minutes)
@@ -94,7 +99,8 @@ class Poller(object):
 
 
 if __name__ == '__main__':
-    (opts, args) = parse_args("usage: python -m ebaysdk.poller.orders [options]")
+    (opts, args) = parse_args(
+        "usage: python -m ebaysdk.poller.orders [options]")
 
     poller = Poller(opts, Storage())
     poller.run()

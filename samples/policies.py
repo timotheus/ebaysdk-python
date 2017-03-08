@@ -72,7 +72,8 @@ def getConsolidationJobStatus(opts):
 if __name__ == "__main__":
     (opts, args) = init_options()
 
-    print("Business Policies API Samples for version %s" % ebaysdk.get_version())
+    print("Business Policies API Samples for version %s" %
+          ebaysdk.get_version())
 
     getSellerProfiles(opts)
     getConsolidationJobStatus(opts)

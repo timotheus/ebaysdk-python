@@ -7,7 +7,7 @@ from ebaysdk.utils import dict2xml
 
 dict1 = {'a': 'b'}
 
-assert(dict2xml(dict1)=='<a>b</a>')
+assert(dict2xml(dict1) == '<a>b</a>')
 
 ''' dict2 XML Output
 <tag attr2="attr2value" site="US">222</tag>
@@ -20,7 +20,7 @@ dict2 = {
     }
 }
 
-assert(dict2xml(dict2)=='<tag attr2="attr2value" site="US">222</tag>')
+assert(dict2xml(dict2) == '<tag attr2="attr2value" site="US">222</tag>')
 
 ''' dict3 XML Output
 <itemFilter>
@@ -45,7 +45,7 @@ dict3 = {
     ]
 }
 
-assert(dict2xml(dict3)=='<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><itemFilter><name>More</name><value>more</value></itemFilter>')
+assert(dict2xml(dict3) == '<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><itemFilter><name>More</name><value>more</value></itemFilter>')
 
 ''' dict4 XML Output
 <tag1 attr2="attr2value" site="US">
@@ -60,7 +60,8 @@ dict4 = {
     }
 }
 
-assert(dict2xml(dict4)=='<tag1 attr2="attr2value" site="US"><tag2>tag2 value</tag2></tag1>')
+assert(dict2xml(dict4) ==
+       '<tag1 attr2="attr2value" site="US"><tag2>tag2 value</tag2></tag1>')
 
 ''' dict5 XML Output
 <tag1 site="US" tag1attr="myvalue">
@@ -78,7 +79,8 @@ dict5 = {
     }
 }
 
-assert(dict2xml(dict5)=='<tag1 site="US" tag1attr="myvalue"><tag2 tag2attr="myvalue">tag2 value</tag2></tag1>')
+assert(dict2xml(dict5) ==
+       '<tag1 site="US" tag1attr="myvalue"><tag2 tag2attr="myvalue">tag2 value</tag2></tag1>')
 
 ''' dict6 outputSelector
 <outputSelector>SellerInfo</outputSelector>
@@ -92,4 +94,5 @@ dict6 = {
     ]
 }
 
-assert(dict2xml(dict6)=='<outputSelector>SellerInfo</outputSelector><outputSelector>GalleryInfo</outputSelector>')
+assert(dict2xml(dict6) ==
+       '<outputSelector>SellerInfo</outputSelector><outputSelector>GalleryInfo</outputSelector>')

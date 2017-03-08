@@ -17,6 +17,7 @@ from ebaysdk.http import Connection as html
 from ebaysdk.parallel import Parallel
 from ebaysdk.exception import ConnectionError
 
+
 def init_options():
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
@@ -41,7 +42,8 @@ def run(opts):
         p = Parallel()
         apis = []
 
-        api1 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api1 = finding(parallel=p, debug=opts.debug,
+                       appid=opts.appid, config_file=opts.yaml)
         api1.execute('findItemsAdvanced', {'keywords': 'python'})
         apis.append(api1)
 
@@ -49,11 +51,13 @@ def run(opts):
         api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
         apis.append(api4)
 
-        api2 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api2 = finding(parallel=p, debug=opts.debug,
+                       appid=opts.appid, config_file=opts.yaml)
         api2.execute('findItemsAdvanced', {'keywords': 'perl'})
         apis.append(api2)
 
-        api3 = finding(parallel=p, debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
+        api3 = finding(parallel=p, debug=opts.debug,
+                       appid=opts.appid, config_file=opts.yaml)
         api3.execute('findItemsAdvanced', {'keywords': 'php'})
         apis.append(api3)
 

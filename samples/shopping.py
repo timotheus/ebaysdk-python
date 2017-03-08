@@ -40,6 +40,7 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
+
 def run(opts):
     api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                    warnings=True)
@@ -58,6 +59,7 @@ def run(opts):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def popularSearches(opts):
 
@@ -83,10 +85,12 @@ def popularSearches(opts):
 
             dump(api, full=False)
 
-            print("Related: %s" % response.reply.PopularSearchResult.RelatedSearches)
+            print("Related: %s" %
+                  response.reply.PopularSearchResult.RelatedSearches)
 
             for term in response.reply.PopularSearchResult.AlternativeSearches.split(';')[:3]:
-                api.execute('FindPopularItems', {'QueryKeywords': term, 'MaxEntries': 3})
+                api.execute('FindPopularItems', {
+                            'QueryKeywords': term, 'MaxEntries': 3})
 
                 print("Term: %s" % term)
 
@@ -104,6 +108,7 @@ def popularSearches(opts):
             print(e)
             print(e.response.dict())
 
+
 def categoryInfo(opts):
 
     try:
@@ -113,10 +118,11 @@ def categoryInfo(opts):
         response = api.execute('GetCategoryInfo', {"CategoryID": 3410})
 
         dump(api, full=False)
-    
+
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def with_affiliate_info(opts):
     try:
@@ -124,7 +130,7 @@ def with_affiliate_info(opts):
                        config_file=opts.yaml, warnings=True,
                        trackingid=1234, trackingpartnercode=9)
 
-        mySearch = {    
+        mySearch = {
             "MaxKeywords": 10,
             "QueryKeywords": 'shirt',
         }
@@ -136,6 +142,7 @@ def with_affiliate_info(opts):
         print(e)
         print(e.response.dict())
 
+
 def using_attributes(opts):
 
     try:
@@ -143,7 +150,7 @@ def using_attributes(opts):
                        config_file=opts.yaml, warnings=True)
 
         response = api.execute('FindProducts', {
-            "ProductID": {'@attrs': {'type': 'ISBN'}, 
+            "ProductID": {'@attrs': {'type': 'ISBN'},
                           '#text': '0596154488'}})
 
         dump(api, full=False)

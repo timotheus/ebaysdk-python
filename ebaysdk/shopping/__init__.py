@@ -13,6 +13,7 @@ from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml
 
+
 class Connection(BaseConnection):
     """Shopping API class
 
@@ -62,9 +63,9 @@ class Connection(BaseConnection):
         """
         super(Connection, self).__init__(method='POST', **kwargs)
 
-        self.config=Config(domain=kwargs.get('domain', 'open.api.ebay.com'),
-                           connection_kwargs=kwargs,
-                           config_file=kwargs.get('config_file', 'ebay.yaml'))
+        self.config = Config(domain=kwargs.get('domain', 'open.api.ebay.com'),
+                             connection_kwargs=kwargs,
+                             config_file=kwargs.get('config_file', 'ebay.yaml'))
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'open.api.ebay.com'))
@@ -81,17 +82,18 @@ class Connection(BaseConnection):
         self.config.set('version', '799')
         self.config.set('trackingid', None)
         self.config.set('trackingpartnercode', None)
-        self.config.set('doc_url', 'http://developer.ebay.com/DevZone/Shopping/docs/CallRef/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/DevZone/Shopping/docs/CallRef/index.html')
 
         if self.config.get('https') and self.debug:
             print("HTTPS is not supported on the Shopping API.")
 
         self.datetime_nodes = ['timestamp', 'registrationdate', 'creationtime',
-            'commenttime', 'updatetime', 'estimateddeliverymintime',
-            'estimateddeliverymaxtime', 'creationtime', 'estimateddeliverymintime',
-            'estimateddeliverymaxtime', 'endtime', 'starttime']
+                               'commenttime', 'updatetime', 'estimateddeliverymintime',
+                               'estimateddeliverymaxtime', 'creationtime', 'estimateddeliverymintime',
+                               'estimateddeliverymaxtime', 'endtime', 'starttime']
 
-        self.base_list_nodes=[
+        self.base_list_nodes = [
             'findhalfproductsresponse.halfcatalogproduct.productid',
             'findhalfproductsresponse.halfproducts.product',
             'getshippingcostsresponse.internationalshippingserviceoption.shipsto',
@@ -129,8 +131,8 @@ class Connection(BaseConnection):
     def build_request_headers(self, verb):
         headers = {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
-            "X-EBAY-API-APP-ID":  self.config.get('appid', ''),
-            "X-EBAY-API-SITE-ID":  self.config.get('siteid', ''),
+            "X-EBAY-API-APP-ID": self.config.get('appid', ''),
+            "X-EBAY-API-SITE-ID": self.config.get('siteid', ''),
             "X-EBAY-API-CALL-NAME": verb,
             "X-EBAY-API-REQUEST-ENCODING": "XML",
             "Content-Type": "text/xml"

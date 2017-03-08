@@ -10,6 +10,7 @@ from ebaysdk.poller import parse_args
 
 
 class CustomStorage(object):
+
     def set(self, order):
         try:
             print(order.OrderID)

@@ -14,6 +14,7 @@ from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml, smart_encode
 from ebaysdk.exception import RequestPaginationError, PaginationLimit
 
+
 class Connection(BaseConnection):
     """Trading API class
 
@@ -77,10 +78,9 @@ class Connection(BaseConnection):
         """
         super(Connection, self).__init__(method='POST', **kwargs)
 
-        self.config=Config(domain=kwargs.get('domain', 'api.ebay.com'),
-                           connection_kwargs=kwargs,
-                           config_file=kwargs.get('config_file', 'ebay.yaml'))
-
+        self.config = Config(domain=kwargs.get('domain', 'api.ebay.com'),
+                             connection_kwargs=kwargs,
+                             config_file=kwargs.get('config_file', 'ebay.yaml'))
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'api.ebay.com'))
@@ -99,7 +99,8 @@ class Connection(BaseConnection):
         self.config.set('devid', None)
         self.config.set('certid', None)
         self.config.set('compatibility', '837')
-        self.config.set('doc_url', 'http://developer.ebay.com/devzone/xml/docs/reference/ebay/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/devzone/xml/docs/reference/ebay/index.html')
 
         self.datetime_nodes = [
             'shippingtime',
@@ -691,15 +692,19 @@ class Connection(BaseConnection):
 
     def build_request_data(self, verb, data, verb_attrs):
         xml = "<?xml version='1.0' encoding='utf-8'?>"
-        xml += "<{verb}Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">".format(verb=self.verb)
+        xml += "<{verb}Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">".format(
+            verb=self.verb)
         if not self.config.get('iaf_token', None):
             xml += "<RequesterCredentials>"
             if self.config.get('token', None):
-                xml += "<eBayAuthToken>{token}</eBayAuthToken>".format(token=self.config.get('token'))
+                xml += "<eBayAuthToken>{token}</eBayAuthToken>".format(
+                    token=self.config.get('token'))
             elif self.config.get('username', None):
-                xml += "<Username>{username}</Username>".format(username=self.config.get('username', ''))
+                xml += "<Username>{username}</Username>".format(
+                    username=self.config.get('username', ''))
                 if self.config.get('password', None):
-                    xml += "<Password>{password}</Password>".format(password=self.config.get('password', None))
+                    xml += "<Password>{password}</Password>".format(
+                        password=self.config.get('password', None))
             xml += "</RequesterCredentials>"
         xml += dict2xml(data, self.escape_xml)
         xml += "</{verb}Request>".format(verb=self.verb)
@@ -772,7 +777,7 @@ class Connection(BaseConnection):
             try:
                 eCode = e.findall('ErrorCode')[0].text
                 if int(eCode) not in resp_codes:
-                    resp_codes.append(int(eCode))    
+                    resp_codes.append(int(eCode))
             except IndexError:
                 pass
 
@@ -792,12 +797,14 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(warnings)))
+            log.warn("{verb}: {message}\n\n".format(
+                verb=self.verb, message="\n".join(warnings)))
 
         if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
-                log.error("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(errors)))
-            
+                log.error("{verb}: {message}\n\n".format(
+                    verb=self.verb, message="\n".join(errors)))
+
             return errors
 
         return []
@@ -805,13 +812,13 @@ class Connection(BaseConnection):
     def pages(self):
 
         tot_pages = 0
-        epp = self._request_dict.get('Pagination', {}).get('EntriesPerPage', None)
+        epp = self._request_dict.get(
+            'Pagination', {}).get('EntriesPerPage', None)
 
         if not self.response:
             resp = self.execute(self.verb, self._request_dict)
             tot_pages = int(resp.reply.PaginationResult.TotalNumberOfPages)
             yield resp
-
 
         for page in range(tot_pages)[1:]:
             self._request_dict['Pagination'] = {}

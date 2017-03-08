@@ -17,6 +17,7 @@ import ebaysdk
 from ebaysdk.finding import Connection as finding
 from ebaysdk.exception import ConnectionError
 
+
 def init_options():
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
@@ -85,19 +86,20 @@ def run_unicode(opts):
         print(e.response.dict())
 
 
-
 def run2(opts):
     try:
-        api = finding(debug=opts.debug, appid=opts.appid, config_file=opts.yaml)
-        
-        response = api.execute('findItemsByProduct', 
-          '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>')
-        
+        api = finding(debug=opts.debug, appid=opts.appid,
+                      config_file=opts.yaml)
+
+        response = api.execute('findItemsByProduct',
+                               '<productId type="ReferenceID">53039031</productId><paginationInput><entriesPerPage>1</entriesPerPage></paginationInput>')
+
         dump(api)
 
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def run_motors(opts):
     api = finding(siteid='EBAY-MOTOR', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
@@ -118,7 +120,7 @@ def run_motors(opts):
 
     dictstr = "%s" % api.response_dict()
     print("Response dictionary: %s..." % dictstr[:250])
-    
+
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())
     (opts, args) = init_options()

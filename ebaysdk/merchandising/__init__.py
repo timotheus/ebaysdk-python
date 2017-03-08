@@ -58,7 +58,8 @@ class Connection(FindingConnection):
 
         self.config.set('uri', '/MerchandisingService', force=True)
         self.config.set('service', 'MerchandisingService', force=True)
-        self.config.set('doc_url', 'http://developer.ebay.com/Devzone/merchandising/docs/CallRef/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/Devzone/merchandising/docs/CallRef/index.html')
 
         self.datetime_nodes = ['endtimeto', 'endtimefrom', 'timestamp']
         self.base_list_nodes = [
@@ -75,7 +76,7 @@ class Connection(FindingConnection):
         return {
             "X-EBAY-API-VERSION": self.config.get('version', ''),
             "EBAY-SOA-CONSUMER-ID": self.config.get('appid', ''),
-            "X-EBAY-SOA-GLOBAL-ID":  self.config.get('siteid', ''),
+            "X-EBAY-SOA-GLOBAL-ID": self.config.get('siteid', ''),
             "X-EBAY-SOA-OPERATION-NAME": verb,
             "X-EBAY-SOA-REQUEST-DATA-FORMAT": "XML",
             "X-EBAY-API-REQUEST-ENCODING": "XML",

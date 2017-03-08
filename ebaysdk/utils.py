@@ -14,6 +14,7 @@ if sys.version_info[0] >= 3:
     unicode = str
     long = int
 
+
 def parse_yaml(yaml_file):
     """
     This is simple approach to parsing a yaml config that is only
@@ -73,7 +74,7 @@ def python_2_unicode_compatible(klass):
 
 
 def get_dom_tree(xml):
-    tree = ET.fromstring(xml) # pylint: disable=no-member
+    tree = ET.fromstring(xml)  # pylint: disable=no-member
     return tree.getroottree().getroot()
 
 
@@ -90,26 +91,29 @@ def attribute_check(root):
 
     return attrs, value
 
+
 def smart_encode_request_data(value):
     try:
         if sys.version_info[0] < 3:
             return value
 
         return value.encode('utf-8')
-    
+
     except UnicodeDecodeError:
         return value
+
 
 def smart_encode(value):
     try:
         if sys.version_info[0] < 3:
-            return unicode(value).encode('utf-8') # pylint: disable-msg=E0602
+            return unicode(value).encode('utf-8')  # pylint: disable-msg=E0602
         else:
             return value
-            #return str(value)
+            # return str(value)
 
     except UnicodeDecodeError:
         return value
+
 
 def smart_decode(str):
     try:
@@ -118,7 +122,8 @@ def smart_decode(str):
         return str
     except UnicodeEncodeError:
         return str
-        
+
+
 def to_xml(root):
     return dict2xml(root)
 
@@ -266,12 +271,12 @@ def dict2xml(root, escape_xml=False):
                     .format(**{'xml': str(xml), 'tag': key, 'value': smart_encode(value)})
 
     elif isinstance(root, str) or isinstance(root, int) \
-        or isinstance(root, float) or isinstance(root, long) \
-        or isinstance(root, unicode): 
+            or isinstance(root, float) or isinstance(root, long) \
+            or isinstance(root, unicode):
         xml = str('{0}{1}').format(str(xml), smart_encode(root))
     else:
-        raise Exception('Unable to serialize node of type %s (%s)' % \
-            (type(root), root))
+        raise Exception('Unable to serialize node of type %s (%s)' %
+                        (type(root), root))
 
     return xml
 
@@ -342,9 +347,9 @@ def perftest_dict2xml():
 if __name__ == '__main__':
 
     import timeit
-    print("perftest_dict2xml() %s" % \
-        timeit.timeit("perftest_dict2xml()", number=50000,
-                      setup="from __main__ import perftest_dict2xml"))
+    print("perftest_dict2xml() %s" %
+          timeit.timeit("perftest_dict2xml()", number=50000,
+                        setup="from __main__ import perftest_dict2xml"))
 
     import doctest
     failure_count, test_count = doctest.testmod()

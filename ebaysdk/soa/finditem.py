@@ -11,6 +11,7 @@ import os
 from ebaysdk.soa import Connection as BaseConnection
 from ebaysdk.utils import dict2xml, getNodeText
 
+
 class Connection(BaseConnection):
     """
     Not to be confused with Finding service
@@ -48,7 +49,8 @@ class Connection(BaseConnection):
         self.config.set('domain', 'apifindingcore.vip.ebay.com')
         self.config.set('service', 'FindItemServiceNextGen', force=True)
         self.config.set('https', False)
-        self.config.set('uri', "/services/search/FindItemServiceNextGen/v1", force=True)
+        self.config.set(
+            'uri', "/services/search/FindItemServiceNextGen/v1", force=True)
         self.config.set('consumer_id', consumer_id)
 
         self.read_set = None
@@ -67,7 +69,7 @@ class Connection(BaseConnection):
         }
 
     def findItemsByIds(self, ebay_item_ids,
-         read_set=['ITEM_ID', 'TITLE', 'SELLER_NAME', 'ALL_CATS', 'ITEM_CONDITION_NEW']):
+                       read_set=['ITEM_ID', 'TITLE', 'SELLER_NAME', 'ALL_CATS', 'ITEM_CONDITION_NEW']):
 
         self.read_set = read_set
         read_set_node = []
@@ -105,7 +107,7 @@ class Connection(BaseConnection):
 
                     mydict.update({self.read_set[i]: value_data})
 
-                    i = i+1
+                    i = i + 1
 
             records.append(mydict)
 
@@ -123,4 +125,3 @@ class Connection(BaseConnection):
         xml += "</" + verb + "Request>"
 
         return xml
-

@@ -143,9 +143,9 @@ class Connection(BaseConnection):
 
         super(Connection, self).__init__(method='POST', **kwargs)
 
-        self.config=Config(domain=kwargs.get('domain', 'api.ebay.com'),
-                           connection_kwargs=kwargs,
-                           config_file=kwargs.get('config_file', 'ebay.yaml'))
+        self.config = Config(domain=kwargs.get('domain', 'api.ebay.com'),
+                             connection_kwargs=kwargs,
+                             config_file=kwargs.get('config_file', 'ebay.yaml'))
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'api.ebay.com'))
@@ -163,7 +163,8 @@ class Connection(BaseConnection):
         self.config.set('appid', None)
         self.config.set('version', '1.0.0')
         self.config.set('service', 'InventoryManagement')
-        self.config.set('doc_url', 'http://developer.ebay.com/Devzone/store-pickup/InventoryManagement/index.html')
+        self.config.set(
+            'doc_url', 'http://developer.ebay.com/Devzone/store-pickup/InventoryManagement/index.html')
 
         self.datetime_nodes = ['starttimefrom', 'timestamp', 'starttime',
                                'endtime']
@@ -204,7 +205,6 @@ class Connection(BaseConnection):
                 .format(verb=self.verb, message=", ".join(self._resp_body_warnings))
 
         return warning_string
-
 
     def _get_resp_body_errors(self):
         """Parses the response content to pull errors.
@@ -296,16 +296,19 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(warnings)))
+            log.warn("{verb}: {message}\n\n".format(
+                verb=self.verb, message="\n".join(warnings)))
 
-        # In special case of error 500 on ebay side, we get really weird response so I need to fallback to this one
+        # In special case of error 500 on ebay side, we get really weird
+        # response so I need to fallback to this one
         Ack = getattr(self.response.reply, 'Ack', None)
         if Ack is None:
             Ack = self.response.reply.Envelope.Body.Response.Ack
 
         if Ack == 'Failure':
             if self.config.get('errors'):
-                log.error("{verb}: {message}\n\n".format(verb=self.verb, message="\n".join(errors)))
+                log.error("{verb}: {message}\n\n".format(
+                    verb=self.verb, message="\n".join(errors)))
 
             return errors
 

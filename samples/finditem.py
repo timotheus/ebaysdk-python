@@ -19,6 +19,7 @@ from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.utils import getNodeText
 from ebaysdk.exception import ConnectionError
 
+
 def init_options():
     usage = "usage: %prog [options]"
     parser = OptionParser(usage=usage)
@@ -39,22 +40,23 @@ def init_options():
     (opts, args) = parser.parse_args()
     return opts, args
 
+
 def run(opts):
 
     try:
 
-        shopping = Shopping(debug=opts.debug, appid=opts.appid, 
-            config_file=opts.yaml, warnings=False)
+        shopping = Shopping(debug=opts.debug, appid=opts.appid,
+                            config_file=opts.yaml, warnings=False)
 
         response = shopping.execute('FindPopularItems',
-            {'QueryKeywords': 'Python'})
+                                    {'QueryKeywords': 'Python'})
 
         nodes = response.dom().xpath('//ItemID')
         itemIds = [n.text for n in nodes]
 
         api = FindItem(debug=opts.debug,
-            consumer_id=opts.consumer_id, config_file=opts.yaml)
-        
+                       consumer_id=opts.consumer_id, config_file=opts.yaml)
+
         records = api.find_items_by_ids([itemIds[0]])
 
         for r in records:
@@ -68,7 +70,7 @@ def run(opts):
             print("ID(%s) TITLE(%s)" % (r['ITEM_ID'], r['TITLE'][:35]))
 
         dump(api)
-        
+
     except ConnectionError as e:
         print(e)
         print(e.response.dict())

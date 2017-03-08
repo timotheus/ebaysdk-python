@@ -37,7 +37,7 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.config))
     suite.addTest(doctest.DocTestSuite(ebaysdk.response))
     suite.addTest(doctest.DocTestSuite(ebaysdk.connection))
-    #suite.addTest(doctest.DocTestSuite(ebaysdk.http))
+    # suite.addTest(doctest.DocTestSuite(ebaysdk.http))
     suite.addTest(doctest.DocTestSuite(ebaysdk.shopping))
     suite.addTest(doctest.DocTestSuite(ebaysdk.trading))
     suite.addTest(doctest.DocTestSuite(ebaysdk.merchandising))
@@ -45,15 +45,14 @@ def getTestSuite():
     suite.addTest(doctest.DocTestSuite(ebaysdk.inventorymanagement))
 
     if not sys.version_info[0] >= 3 \
-        and sys.modules.has_key('grequests') is True:
-        #suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
+            and sys.modules.has_key('grequests') is True:
+        # suite.addTest(doctest.DocTestSuite(ebaysdk.parallel))
         pass
 
     # inside only
-    #suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
+    # suite.addTest(doctest.DocTestSuite(ebaysdk.soa.finditem))
 
     return suite
 
 runner = unittest.TextTestRunner()
 runner.run(getTestSuite())
-

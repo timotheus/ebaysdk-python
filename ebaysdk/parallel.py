@@ -12,6 +12,7 @@ if sys.version_info[0] >= 3:
 import grequests
 from ebaysdk.exception import ConnectionError
 
+
 class Parallel(object):
     """
     >>> from ebaysdk.finding import Connection as finding
@@ -62,11 +63,12 @@ class Parallel(object):
                                         allow_redirects=True)
 
                 self._grequests.append(req)
-                
+
             def exception_handler(request, exception):
                 self._errors.append("%s" % exception)
 
-            gresponses = grequests.map(self._grequests, exception_handler=exception_handler)
+            gresponses = grequests.map(
+                self._grequests, exception_handler=exception_handler)
 
             for idx, r in enumerate(self._requests):
                 r.response = gresponses[idx]

@@ -5,6 +5,7 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
+
 def dump(api, full=False):
 
     print("\n")
@@ -16,7 +17,7 @@ def dump(api, full=False):
         print("Call Success: %s in length" % len(api.response.content))
 
     print("Response code: %s" % api.response_code())
-    print("Response DOM1: %s" % api.response_dom()) # deprecated
+    print("Response DOM1: %s" % api.response_dom())  # deprecated
     print("Response ETREE: %s" % api.response.dom())
 
     if full:

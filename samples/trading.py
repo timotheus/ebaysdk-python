@@ -275,7 +275,7 @@ def memberMessages(opts):
             messages = api.response.reply.MemberMessage.MemberMessageExchange
 
             if type(messages) != list:
-                    messages = [messages]
+                messages = [messages]
 
             for m in messages:
                 print("%s: %s" % (m.CreationDate, m.Question.Subject[:50]))
@@ -291,7 +291,7 @@ def getUser(opts):
         api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
                       certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='101')
 
-        api.execute('GetUser', {'UserID': 'biddergoat'})
+        api.execute('GetUser', {'UserID': 'sallyma789'})
         dump(api, full=False)
 
     except ConnectionError as e:
@@ -311,6 +311,7 @@ def getOrders(opts):
     except ConnectionError as e:
         print(e)
         print(e.response.dict())
+
 
 def categories(opts):
 
@@ -345,6 +346,7 @@ if __name__ == "__main__":
 
     print("Trading API Samples for version %s" % ebaysdk.get_version())
 
+    """
     run(opts)
     feedback(opts)
     verifyAddItem(opts)
@@ -354,5 +356,6 @@ if __name__ == "__main__":
     uploadPictureFromFilesystem(opts, ("%s/test_image.jpg" % os.path.dirname(__file__)))
     memberMessages(opts)
     categories(opts)
+    """
     getUser(opts)
-    getOrders(opts)
+    # getOrders(opts)
