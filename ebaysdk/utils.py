@@ -87,6 +87,15 @@ def attribute_check(root):
         if '@attrs' in root:
             for ak, av in sorted(root.pop('@attrs').items()):
                 attrs.append(str('{0}="{1}"').format(ak, smart_encode(av)))
+        _attrs = {k.replace('_', '', 1): v
+                    for k, v in root.items()
+                    if k.startswith('_')}
+        if (len(_attrs) == (len(root) - 1)) and 'value' in root:
+            # ^check that root contains only 'value and '_foo' keys
+            value = root['value']
+            for ak, av in _attrs.items():
+                attrs.append(str('{0}="{1}"').format(ak, smart_encode(av)))
+
 
     return attrs, value
 
@@ -96,7 +105,7 @@ def smart_encode_request_data(value):
             return value
 
         return value.encode('utf-8')
-    
+
     except UnicodeDecodeError:
         return value
 
@@ -118,7 +127,7 @@ def smart_decode(str):
         return str
     except UnicodeEncodeError:
         return str
-        
+
 def to_xml(root):
     return dict2xml(root)
 
@@ -164,6 +173,22 @@ def dict2xml(root, escape_xml=False):
     ...     'sortOrder': 'StartTimeNewest'
     ... }
     >>> dict2xml(dict4)
+    '<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><searchFilter><categoryId site="US">0</categoryId></searchFilter><sortOrder>StartTimeNewest</sortOrder>'
+    >>> dict4b = {
+    ...     'searchFilter': {'categoryId': {'value': 0, '_site': 'US' }},
+    ...     'paginationInput': {
+    ...         'pageNumber': '1',
+    ...         'pageSize': '25'
+    ...     },
+    ...     'itemFilter': [
+    ...         {'name': 'Condition',
+    ...          'value': 'Used'},
+    ...          {'name': 'LocatedIn',
+    ...          'value': 'GB'},
+    ...     ],
+    ...     'sortOrder': 'StartTimeNewest'
+    ... }
+    >>> dict2xml(dict4b)
     '<itemFilter><name>Condition</name><value>Used</value></itemFilter><itemFilter><name>LocatedIn</name><value>GB</value></itemFilter><paginationInput><pageNumber>1</pageNumber><pageSize>25</pageSize></paginationInput><searchFilter><categoryId site="US">0</categoryId></searchFilter><sortOrder>StartTimeNewest</sortOrder>'
     >>> dict2xml({})
     ''
