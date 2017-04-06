@@ -17,8 +17,6 @@ class Config(object):
     """Config Class for all APIs connections
 
     >>> c = Config(domain='api.ebay.com')
-    >>> print(c.file())
-    ebay.yaml
     >>> c.set('fname', 'tim')
     >>> c.get('fname')
     'tim'
