@@ -1,0 +1,27 @@
+name: ebay_api_config
+
+# Trading API Sandbox - https://www.x.com/developers/ebay/products/trading-api
+api.sandbox.ebay.com:
+    compatability: 719
+    appid: ENTER_YOUR_APPID_HERE
+    certid: ENTER_YOUR_CERTID_HERE
+    devid: ENTER_YOUR_DEVID_HERE
+    token: ENTER_YOUR_TOKEN_HERE
+
+# Trading API - https://www.x.com/developers/ebay/products/trading-api
+api.ebay.com:
+    compatability: 719
+    appid: ENTER_YOUR_APPID_HERE
+    certid: ENTER_YOUR_CERTID_HERE
+    devid: ENTER_YOUR_DEVID_HERE
+    token: ENTER_YOUR_TOKEN_HERE
+
+# Finding API - https://www.x.com/developers/ebay/products/finding-api
+svcs.ebay.com:
+    appid: ENTER_YOUR_APPID_HERE
+    version: 1.0.0
+
+# Shopping API - https://www.x.com/developers/ebay/products/shopping-api
+open.api.ebay.com:
+    appid: ENTER_YOUR_APPID_HERE
+    version: 671
