@@ -785,7 +785,7 @@ class Connection(BaseConnection):
                 .format(eClass=eClass, severity=eSeverity, code=eCode, shortMsg=eShortMsg,
                         longMsg=eLongMsg)
 
-            #from IPython import embed; embed()
+            # from IPython import embed; embed()
 
             if eSeverity == 'Warning':
                 warnings.append(msg)

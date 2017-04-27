@@ -55,24 +55,6 @@ class Connection(BaseConnection):
     def response_dict(self):
         return self.response.dict()
 
-        '''
-        if self._response_dict:
-            return self._response_dict
-
-        if self._response_content:
-
-            mydict = self.response.dict()
-            
-            try:
-                verb = self.verb + 'Response'
-                self._response_dict = mydict['Envelope']['Body'][verb]
-
-            except KeyError:
-                self._response_dict = mydict.get(self.verb + 'Response', mydict)
-
-        return self._response_dict
-        '''
-
     def build_request_headers(self, verb):
         return {
             'Content-Type': self.config.get('content_type'),
