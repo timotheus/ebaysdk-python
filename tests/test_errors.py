@@ -17,7 +17,7 @@ os.environ.setdefault("EBAY_YAML", "ebay.yaml")
 class TestErrors(unittest.TestCase):
 
     def test_single_item(self):
-        connection = ebaysdk.shopping.Connection(debug=True, version='799')
+        connection = ebaysdk.shopping.Connection(version='799', config_file=os.environ.get('EBAY_YAML'))
 
         for i in range(20):
             connection.execute('GetSingleItem', {

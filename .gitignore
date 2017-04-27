@@ -13,3 +13,4 @@ ebaysdk.egg-info/
 \.tox
 venv/
 venv*
+\.virtualenvs

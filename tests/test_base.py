@@ -30,7 +30,7 @@ try:
 except ImportError:
     pass
 
-os.environ.setdefault("EBAY_YAML", "ebay.yaml")
+# os.environ.setdefault("EBAY_YAML", "ebay.yaml")
 
 
 class TestBase(unittest.TestCase):
@@ -54,7 +54,13 @@ class TestBase(unittest.TestCase):
         self.doctest(ebaysdk.connection)
 
     def test_run_doctest_shopping(self):
-        self.doctest(ebaysdk.shopping)
+        s = ebaysdk.shopping.Connection(config_file=os.environ.get('EBAY_YAML'))
+        resp = s.execute('GetCategoryInfo',
+            {'CategoryID': '-1',
+             'IncludeSelector': ['ChildCategories']})
+        self.assertEqual(s.response.reply.Ack, 'Success')
+        self.assertEqual(s.error(), None)
+        #self.doctest(ebaysdk.shopping)
 
     def test_run_doctest_trading(self):
         self.doctest(ebaysdk.trading)

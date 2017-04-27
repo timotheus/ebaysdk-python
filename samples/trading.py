@@ -189,6 +189,25 @@ def verifyAddItemErrorCodes(opts):
             }
         }
 
+        motors_item = {
+            'Item': {
+                'Category': '101',
+                'Title': 'My Title',
+                'ItemCompatibilityList': {
+                    'Compatibility': [
+                        {
+                            'CompatibilityNotes': 'Fits for all trims and engines.',
+                            'NameValueList': [
+                                {'Name': 'Year', 'Value': '2001'},
+                                {'Name': 'Make', 'Value': 'Honda'},
+                                {'Name': 'Model', 'Value': 'Accord'}
+                            ]
+                         },
+                    ]
+                }
+            }
+        }
+
         api.execute('VerifyAddItem', myitem)
 
     except ConnectionError as e:
