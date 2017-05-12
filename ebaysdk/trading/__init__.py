@@ -681,7 +681,7 @@ class Connection(BaseConnection):
             "X-EBAY-API-DEV-NAME": self.config.get('devid', ''),
             "X-EBAY-API-APP-NAME": self.config.get('appid', ''),
             "X-EBAY-API-CERT-NAME": self.config.get('certid', ''),
-            "X-EBAY-API-SITEID": self.config.get('siteid', ''),
+            "X-EBAY-API-SITEID": str(self.config.get('siteid', '')),
             "X-EBAY-API-CALL-NAME": self.verb,
             "Content-Type": "text/xml"
         }
