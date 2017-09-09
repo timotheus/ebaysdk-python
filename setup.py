@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import codecs
 from setuptools import setup, find_packages
 import re
 import os
@@ -23,8 +24,8 @@ PKG = 'ebaysdk'
 # Get the version
 VERSIONFILE = os.path.join(PKG, "__init__.py")
 version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                    open(VERSIONFILE, "rt").read(), re.M).group(1)
-
+                    codecs.open(VERSIONFILE, "r", encoding="utf-8").read(),
+                    re.M).group(1)
 
 long_desc = """This SDK is a programatic inteface into the eBay
 APIs. It simplifies development and cuts development time by standerizing
