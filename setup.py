@@ -20,11 +20,7 @@ import os
 
 PKG = 'ebaysdk'
 
-# Get the version
-VERSIONFILE = os.path.join(PKG, "__init__.py")
-version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                    open(VERSIONFILE, "rt").read(), re.M).group(1)
-
+version = __import__(PKG).get_version()
 
 long_desc = """This SDK is a programatic inteface into the eBay
 APIs. It simplifies development and cuts development time by standerizing

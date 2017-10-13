@@ -9,8 +9,8 @@ Licensed under CDDL 1.0
 import platform
 import logging
 
-__version__ = '2.1.4'
-Version = __version__  # for backware compatibility
+__version__ = '2.1.5'
+Version = __version__  # for backward compatibility
 
 try:
     from logging import NullHandler
