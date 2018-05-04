@@ -31,6 +31,9 @@ def init_options():
     parser.add_option("-a", "--appid",
                       dest="appid", default=None,
                       help="Specifies the eBay application id to use.")
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args
@@ -39,7 +42,7 @@ def init_options():
 def run(opts):
 
     try:
-        api = finding(debug=opts.debug, appid=opts.appid,
+        api = finding(debug=opts.debug, appid=opts.appid, domain=opts.domain,
                       config_file=opts.yaml, warnings=True)
 
         api_request = {
@@ -66,7 +69,7 @@ def run(opts):
 def run_unicode(opts):
 
     try:
-        api = finding(debug=opts.debug, appid=opts.appid,
+        api = finding(debug=opts.debug, appid=opts.appid, domain=opts.domain,
                       config_file=opts.yaml, warnings=True)
 
         api_request = {
@@ -88,7 +91,7 @@ def run_unicode(opts):
 
 def run2(opts):
     try:
-        api = finding(debug=opts.debug, appid=opts.appid,
+        api = finding(debug=opts.debug, appid=opts.appid, domain=opts.domain,
                       config_file=opts.yaml)
 
         response = api.execute('findItemsByProduct',
@@ -103,7 +106,7 @@ def run2(opts):
 
 def run_motors(opts):
     api = finding(siteid='EBAY-MOTOR', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                  warnings=True)
+                  domain=opts.domain, warnings=True)
 
     api.execute('findItemsAdvanced', {
         'keywords': 'tesla',
