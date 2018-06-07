@@ -99,6 +99,7 @@ class Connection(BaseConnection):
             'finditemsbykeywordsresponse.categoryhistogramcontainer.categoryhistogram',
             'finditemsbyproductresponse.categoryhistogramcontainer.categoryhistogram',
             'finditemsinebaystoresresponse.categoryhistogramcontainer.categoryhistogram',
+            'finditemsinebaystoresresponse.categoryhistogramcontainer.categoryhistogram.childcategoryhistogram',
             'findcompleteditemsresponse.aspecthistogramcontainer.aspect',
             'finditemsadvancedresponse.aspecthistogramcontainer.aspect',
             'finditemsbycategoryresponse.aspecthistogramcontainer.aspect',

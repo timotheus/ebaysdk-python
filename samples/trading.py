@@ -336,7 +336,7 @@ def categories(opts):
 
     try:
         api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
-                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='101')
+                      certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='0')
 
         callData = {
             'DetailLevel': 'ReturnAll',
@@ -365,7 +365,6 @@ if __name__ == "__main__":
 
     print("Trading API Samples for version %s" % ebaysdk.get_version())
 
-    """
     run(opts)
     feedback(opts)
     verifyAddItem(opts)
@@ -375,6 +374,6 @@ if __name__ == "__main__":
     uploadPictureFromFilesystem(opts, ("%s/test_image.jpg" % os.path.dirname(__file__)))
     memberMessages(opts)
     categories(opts)
-    """
-    getUser(opts)
+    
+    # getUser(opts)
     # getOrders(opts)
