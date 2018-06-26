@@ -149,8 +149,13 @@ class BaseConnection(object):
         requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
-            if isinstance(requestData, basestring):  # pylint: disable-msg=E0602
-                requestData = {'XMLPayload': requestData}
+            # Python 3 compatibility
+            try:
+                if isinstance(requestData, basestring):  # pylint: disable-msg=E0602
+                    requestData = {'XMLPayload': requestData}
+            except NameError:
+                if isinstance(requestData, str):  # pylint: disable-msg=E0602
+                    requestData = {'XMLPayload': requestData}
 
         request = Request(self.method,
                           url,
