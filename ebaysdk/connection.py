@@ -149,14 +149,16 @@ class BaseConnection(object):
         requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
-            requestData = smart_encode_request_data(requestData)
             # Python 3 compatibility
             try:
-                if isinstance(requestData, basestring):  # pylint: disable-msg=E0602
-                    requestData = {'XMLPayload': requestData}
+                CLS_TO_COMPARE=basestring
             except NameError:
-                if isinstance(requestData, str):  # pylint: disable-msg=E0602
-                    requestData = {'XMLPayload': requestData}
+                CLS_TO_COMPARE=str
+            if isinstance(requestData, CLS_TO_COMPARE):  # pylint: disable-msg=E0602
+                requestData = {'XMLPayload': smart_encode_request_data(requestData)}
+            else:
+                requestData = smart_encode_request_data(requestData)
+
 
         request = Request(self.method,
                           url,
