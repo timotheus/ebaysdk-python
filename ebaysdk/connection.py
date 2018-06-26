@@ -149,6 +149,7 @@ class BaseConnection(object):
         requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
+            requestData = smart_encode_request_data(requestData)
             # Python 3 compatibility
             try:
                 if isinstance(requestData, basestring):  # pylint: disable-msg=E0602
@@ -159,7 +160,7 @@ class BaseConnection(object):
 
         request = Request(self.method,
                           url,
-                          data=smart_encode_request_data(requestData),
+                          data=requestData,
                           headers=headers,
                           files=files,
                           )
