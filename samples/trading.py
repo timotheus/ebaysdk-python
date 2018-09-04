@@ -104,7 +104,8 @@ def verifyAddItem(opts):
                 "Title": "Harry Potter and the Philosopher's Stone",
                 "Description": "This is the first book in the Harry Potter series. In excellent condition!",
                 "PrimaryCategory": {"CategoryID": "377"},
-                "StartPrice": "1.0",
+                "StartPrice": "10.0",
+                "BuyItNowPrice": "15.0",
                 "CategoryMappingAllowed": "true",
                 "Country": "US",
                 "ConditionID": "3000",
@@ -124,12 +125,29 @@ def verifyAddItem(opts):
                     "Description": "If you are not satisfied, return the book for refund.",
                     "ShippingCostPaidByOption": "Buyer"
                 },
+                "SellerProfiles": {
+                    "SellerPaymentProfile": {
+                        "PaymentProfileName": "PayPal:Immediate pay",
+                    },
+                    "SellerReturnProfile": {
+                        "ReturnProfileName": "30 Day Return Policy",
+                    },
+                    "SellerShippingProfile": {
+                        "ShippingProfileName": "USPS First Class, Priority, Priority Express Flat Rate Envelope",
+                    }
+                },
                 "ShippingDetails": {
-                    "ShippingType": "Flat",
+                    "ShippingType": "Calculated",
                     "ShippingServiceOptions": {
                         "ShippingServicePriority": "1",
-                        "ShippingService": "USPSMedia",
-                        "ShippingServiceCost": "2.50"
+                        "ShippingService": "USPSMedia"
+                    },
+                    "CalculatedShippingRate": {
+                        "OriginatingPostalCode": "95125",
+                        "PackagingHandlingCosts": "0.0",
+                        "ShippingPackage": "PackageThickEnvelope",
+                        "WeightMajor": "1",
+                        "WeightMinor": "0"
                     }
                 },
                 "Site": "US"
