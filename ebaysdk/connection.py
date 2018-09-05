@@ -208,6 +208,7 @@ class BaseConnection(object):
                                  datetime_nodes=self.datetime_nodes,
                                  parse_response=parse_response)
 
+        self.session.close()
         # set for backward compatibility
         self._response_content = self.response.content
 
