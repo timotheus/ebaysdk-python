@@ -97,7 +97,10 @@ def smart_encode_request_data(value):
         if sys.version_info[0] < 3:
             return value
 
-        return value.encode('utf-8')
+        if isinstance(value,str):
+           return value.encode('utf-8')
+        else:
+           return value 
 
     except UnicodeDecodeError:
         return value
