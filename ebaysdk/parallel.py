@@ -7,7 +7,10 @@ Licensed under CDDL 1.0
 '''
 import sys
 from ebaysdk.exception import ConnectionError
+
+# pylint: disable=import-error
 import grequests
+# pylint: enable=import-error
 
 if sys.version_info[0] >= 3:
     raise ImportError('grequests does not work with python3+')

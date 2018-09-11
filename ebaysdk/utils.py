@@ -97,12 +97,12 @@ def smart_encode_request_data(value):
         if sys.version_info[0] < 3:
             return value
 
-        if isinstance(value,str):
-           return value.encode('utf-8')
+        if isinstance(value, str):
+            return value.encode('utf-8')
         else:
-           return value 
+            return value
 
-    except UnicodeDecodeError:
+    except UnicodeDecodeError as e:
         return value
 
 
@@ -298,7 +298,7 @@ def getValue(response_dict, *args, **kwargs):
     if len(args) == 1:
         try:
             return h.get('value', None)
-        except:
+        except Exception as e:
             return h
 
     last = args_a.pop()
@@ -310,7 +310,7 @@ def getValue(response_dict, *args, **kwargs):
 
     try:
         return h.get('value', None)
-    except:
+    except Exception as e:
         return h
 
 
@@ -346,6 +346,7 @@ def perftest_dict2xml():
     }
 
     xml = dict2xml(sample_dict)
+
 
 if __name__ == '__main__':
 
