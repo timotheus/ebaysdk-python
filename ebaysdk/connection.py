@@ -30,6 +30,12 @@ HTTP_SSL = {
     True: 'https',
 }
 
+# Added compatibility for Python 3
+try:
+    basestring
+except NameError:
+    basestring = str
+
 
 class BaseConnection(object):
     """Base Connection Class."""
@@ -149,7 +155,7 @@ class BaseConnection(object):
         requestData = self.build_request_data(verb, data, verb_attrs)
         if files:
             del(headers['Content-Type'])
-            if isinstance(requestData, str):  # pylint: disable-msg=E0602
+            if isinstance(requestData, basestring):  # pylint: disable-msg=E0602
                 requestData = {'XMLPayload': requestData}
 
         request = Request(self.method,
@@ -208,7 +214,6 @@ class BaseConnection(object):
                                  datetime_nodes=self.datetime_nodes,
                                  parse_response=parse_response)
 
-        self.session.close()
         # set for backward compatibility
         self._response_content = self.response.content
 
