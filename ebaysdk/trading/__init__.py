@@ -217,6 +217,7 @@ class Connection(BaseConnection):
             'getmembermessagesresponse.abstractrequest.outputselector',
             'getmyebaybuyingresponse.abstractrequest.outputselector',
             'getmyebaysellingresponse.abstractrequest.outputselector',
+            'getmyebaysellingresponse.activelist.itemarray.item',
             'getmymessagesresponse.abstractrequest.outputselector',
             'getnotificationpreferencesresponse.abstractrequest.outputselector',
             'getordersresponse.abstractrequest.outputselector',
