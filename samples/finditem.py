@@ -36,6 +36,9 @@ def init_options():
     parser.add_option("-c", "--consumer_id",
                       dest="consumer_id", default=None,
                       help="Specifies the eBay consumer_id id to use.")
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args
@@ -45,7 +48,7 @@ def run(opts):
 
     try:
 
-        shopping = Shopping(debug=opts.debug, appid=opts.appid,
+        shopping = Shopping(debug=opts.debug, appid=opts.appid, domain=opts.domain,
                             config_file=opts.yaml, warnings=False)
 
         response = shopping.execute('FindPopularItems',
