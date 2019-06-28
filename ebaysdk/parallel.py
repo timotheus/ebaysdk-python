@@ -12,9 +12,6 @@ from ebaysdk.exception import ConnectionError
 import grequests
 # pylint: enable=import-error
 
-if sys.version_info[0] >= 3:
-    raise ImportError('grequests does not work with python3+')
-
 
 class Parallel(object):
     """
