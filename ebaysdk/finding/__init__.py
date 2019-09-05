@@ -55,7 +55,7 @@ class Connection(BaseConnection):
         appid         -- eBay application id
         siteid        -- eBay country site id (default: EBAY-US)
         version       -- version number (default: 1.0.0)
-        https         -- execute of https (default: False)
+        https         -- execute of https (default: True)
         proxy_host    -- proxy hostname
         proxy_port    -- proxy port number
         timeout       -- HTTP request timeout (default: 20)
@@ -73,7 +73,7 @@ class Connection(BaseConnection):
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'svcs.ebay.com'))
         self.config.set('uri', '/services/search/FindingService/v1')
-        self.config.set('https', False)
+        self.config.set('https', True)
         self.config.set('warnings', True)
         self.config.set('errors', True)
         self.config.set('siteid', 'EBAY-US')
