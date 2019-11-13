@@ -9,12 +9,8 @@ import sys
 from ebaysdk.exception import ConnectionError
 
 
-# pylint: enable=import-error
 if sys.version_info[0] >= 3:
     raise ImportError('grequests does not work with python3+')
-
-
-# pylint: disable=import-error
 import grequests
 
 
