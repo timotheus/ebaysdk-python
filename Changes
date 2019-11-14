@@ -1,5 +1,11 @@
 Changes for ebaysdk
 
+2.1.6
+- Update Copyright
+
+2.1.5 Oct 13, 2017
+- Bug fix release
+
 2.1.4 Tue Aug 23 11:21:37 PDT 2016
 - Merge PR from listingmirror for site-id fix
 - Added a few performance tests

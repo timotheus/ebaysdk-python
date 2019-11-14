@@ -11,6 +11,7 @@ ebaysdk.egg-info/
 \.DS_Store
 \.eggs
 \.tox
-venv/
-venv*
+.venv/
+.venv*
 \.virtualenvs
+
