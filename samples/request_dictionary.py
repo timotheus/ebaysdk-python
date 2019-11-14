@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+'''
+Copyright 2012-2019 eBay Inc.
+Authored by: Tim Keefer
+Licensed under CDDL 1.0
+'''
 import os
 import sys
 

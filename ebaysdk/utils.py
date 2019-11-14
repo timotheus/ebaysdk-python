@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 '''
-© 2012-2013 eBay Software Foundation
+Copyright 2012-2019 eBay Inc.
 Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
