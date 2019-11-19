@@ -27,7 +27,7 @@ Quick Example::
 
 
 Migrating from v1 to v2
------------------------
+-------------=----------
 
 For a complete guide on migrating from ebaysdk v1 to v2 and see an overview of the additional features in v2 please read the `v1 to v2 guide`_
 
