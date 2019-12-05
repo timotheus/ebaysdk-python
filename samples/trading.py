@@ -39,6 +39,9 @@ def init_options():
     parser.add_option("-c", "--certid",
                       dest="certid", default=None,
                       help="Specifies the eBay cert id to use.")
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args
@@ -47,7 +50,7 @@ def init_options():
 def run(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid)
 
         api.execute('GetCharities', {'CharityID': 3897})
@@ -61,7 +64,7 @@ def run(opts):
 
 def feedback(opts):
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=False)
 
         api.execute('GetFeedback', {'UserID': 'tim0th3us'})
@@ -80,7 +83,7 @@ def feedback(opts):
 def getTokenStatus(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=False)
 
         api.execute('GetTokenStatus')
@@ -96,7 +99,7 @@ def verifyAddItem(opts):
     """
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=False)
 
         myitem = {
@@ -167,7 +170,7 @@ def verifyAddItemErrorCodes(opts):
     """
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=False)
 
         myitem = {
@@ -244,7 +247,7 @@ def verifyAddItemErrorCodes(opts):
 def uploadPicture(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True)
 
         pictureData = {
@@ -264,7 +267,7 @@ def uploadPicture(opts):
 def uploadPictureFromFilesystem(opts, filepath):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True)
 
         # pass in an open file
@@ -287,7 +290,7 @@ def uploadPictureFromFilesystem(opts, filepath):
 def memberMessages(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True)
 
         now = datetime.datetime.now()
@@ -325,7 +328,7 @@ def memberMessages(opts):
 def getUser(opts):
     try:
 
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='101')
 
         api.execute('GetUser', {'UserID': 'sallyma789'})
@@ -339,7 +342,7 @@ def getUser(opts):
 def getOrders(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True, timeout=20)
 
         api.execute('GetOrders', {'NumberOfDays': 30})
@@ -353,7 +356,7 @@ def getOrders(opts):
 def categories(opts):
 
     try:
-        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid,
+        api = Trading(debug=opts.debug, config_file=opts.yaml, appid=opts.appid, domain=opts.domain,
                       certid=opts.certid, devid=opts.devid, warnings=True, timeout=20, siteid='0')
 
         callData = {
@@ -392,6 +395,6 @@ if __name__ == "__main__":
     uploadPictureFromFilesystem(opts, ("%s/test_image.jpg" % os.path.dirname(__file__)))
     memberMessages(opts)
     categories(opts)
-    
+
     # getUser(opts)
     # getOrders(opts)

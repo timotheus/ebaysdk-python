@@ -36,13 +36,16 @@ def init_options():
     parser.add_option("-a", "--appid",
                       dest="appid", default=None,
                       help="Specifies the eBay application id to use.")
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args
 
 
 def run(opts):
-    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml, domain=opts.domain,
                    warnings=True)
 
     print("Shopping samples for SDK version %s" % ebaysdk.get_version())
@@ -63,7 +66,7 @@ def run(opts):
 
 def popularSearches(opts):
 
-    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+    api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml, domain=opts.domain,
                    warnings=True)
 
     choice = True
@@ -93,7 +96,6 @@ def popularSearches(opts):
                             'QueryKeywords': term, 'MaxEntries': 3})
 
                 print("Term: %s" % term)
-
                 try:
                     for item in response.reply.ItemArray.Item:
                         print(item.Title)
@@ -101,7 +103,6 @@ def popularSearches(opts):
                     pass
 
                 dump(api)
-
             print("\n")
 
         except ConnectionError as e:
@@ -112,7 +113,7 @@ def popularSearches(opts):
 def categoryInfo(opts):
 
     try:
-        api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
+        api = Shopping(debug=opts.debug, appid=opts.appid, config_file=opts.yaml, domain=opts.domain,
                        warnings=True)
 
         response = api.execute('GetCategoryInfo', {"CategoryID": 3410})
