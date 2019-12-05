@@ -46,6 +46,9 @@ def init_options():
     parser.add_option("-e", "--line_end",
                       dest="line_end", default=None,
                       help="Input file lines.")
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args
@@ -129,7 +132,7 @@ def get_store_meta(store_name):
 
     try:
         api = finding(debug=opts.debug, appid=opts.appid,
-                      config_file=opts.yaml)
+                      config_file=opts.yaml, domain=opts.domain)
 
         response = api.execute('findItemsIneBayStores', {
             'storeName': store_name,
@@ -278,5 +281,4 @@ def analyze_items(items, category_id, agg_data):
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())
     (opts, args) = init_options()
-
     run(opts)

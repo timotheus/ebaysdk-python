@@ -31,7 +31,9 @@ def init_options():
     parser.add_option("-a", "--appid",
                       dest="appid", default=None,
                       help="Specifies the eBay application id to use.")
-
+    parser.add_option("-n", "--domain",
+                      dest="domain", default='svcs.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
     (opts, args) = parser.parse_args()
     return opts, args
 
@@ -42,7 +44,7 @@ def run(opts):
         p = Parallel()
         apis = []
 
-        api1 = finding(parallel=p, debug=opts.debug,
+        api1 = finding(parallel=p, debug=opts.debug, domain=opts.domain,
                        appid=opts.appid, config_file=opts.yaml)
         api1.execute('findItemsAdvanced', {'keywords': 'python'})
         apis.append(api1)
@@ -51,12 +53,12 @@ def run(opts):
         api4.execute('http://www.ebay.com/sch/i.html?_nkw=Shirt&_rss=1')
         apis.append(api4)
 
-        api2 = finding(parallel=p, debug=opts.debug,
+        api2 = finding(parallel=p, debug=opts.debug, domain=opts.domain,
                        appid=opts.appid, config_file=opts.yaml)
         api2.execute('findItemsAdvanced', {'keywords': 'perl'})
         apis.append(api2)
 
-        api3 = finding(parallel=p, debug=opts.debug,
+        api3 = finding(parallel=p, debug=opts.debug, domain=opts.domain,
                        appid=opts.appid, config_file=opts.yaml)
         api3.execute('findItemsAdvanced', {'keywords': 'php'})
         apis.append(api3)
