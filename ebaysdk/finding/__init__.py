@@ -73,7 +73,7 @@ class Connection(BaseConnection):
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'svcs.ebay.com'))
         self.config.set('uri', '/services/search/FindingService/v1')
-        self.config.set('https', True)
+        self.config.set('https', True, force=True)
         self.config.set('warnings', True)
         self.config.set('errors', True)
         self.config.set('siteid', 'EBAY-US')
