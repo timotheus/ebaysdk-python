@@ -1,5 +1,10 @@
 Changes for ebaysdk
 
+2.2.0 Mon Apr 20 15:23:53 PDT 2020
+- Forced HTTPS for finding, shopping, and trading calls
+- fixed sample code so that it uses the appropriate domain
+- added py38 to tox testing
+
 2.1.6
 - Update Copyright
 

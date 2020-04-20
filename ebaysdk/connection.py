@@ -169,7 +169,7 @@ class BaseConnection(object):
 
     def build_request_url(self, verb):
         url = "%s://%s%s" % (
-            HTTP_SSL[self.config.get('https', False)],
+            HTTP_SSL[self.config.get('https', True)],
             self.config.get('domain'),
             self.config.get('uri')
         )

@@ -72,7 +72,7 @@ class Connection(BaseConnection):
         self.config.set('uri', '/shopping')
         self.config.set('warnings', True)
         self.config.set('errors', True)
-        self.config.set('https', False)
+        self.config.set('https', True, force=True)
         self.config.set('siteid', '0')
         self.config.set('response_encoding', 'XML')
         self.config.set('request_encoding', 'XML')
@@ -85,15 +85,13 @@ class Connection(BaseConnection):
         self.config.set(
             'doc_url', 'http://developer.ebay.com/DevZone/Shopping/docs/CallRef/index.html')
 
-        if self.config.get('https') and self.debug:
-            print("HTTPS is not supported on the Shopping API.")
-
         self.datetime_nodes = ['timestamp', 'registrationdate', 'creationtime',
                                'commenttime', 'updatetime', 'estimateddeliverymintime',
                                'estimateddeliverymaxtime', 'creationtime', 'estimateddeliverymintime',
                                'estimateddeliverymaxtime', 'endtime', 'starttime']
 
         self.base_list_nodes = [
+            'getcategoryinforesponse.categoryarray.category',
             'findhalfproductsresponse.halfcatalogproduct.productid',
             'findhalfproductsresponse.halfproducts.product',
             'getshippingcostsresponse.internationalshippingserviceoption.shipsto',
