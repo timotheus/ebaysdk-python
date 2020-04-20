@@ -5,6 +5,19 @@ Authored by: Tim Keefer
 Licensed under CDDL 1.0
 '''
 
+from ebaysdk.finding import Connection as finding
+
+def get_one_item(opts):
+    api = finding(debug=opts.debug, appid=opts.appid,
+                  config_file=opts.yaml, warnings=True)
+
+    api_request = {
+        'keywords': u'GRAMMY Foundation®',
+    }
+
+    response = api.execute('findItemsAdvanced', api_request)
+    return response.reply.searchResult.item[0].itemId
+
 
 def dump(api, full=False):
 
@@ -17,7 +30,7 @@ def dump(api, full=False):
         print("Call Success: %s in length" % len(api.response.content))
 
     print("Response code: %s" % api.response_code())
-    print("Response DOM1: %s" % api.response_dom())  # deprecated
+    print("Response DOM1: %s" % api.response.dom())  # deprecated
     print("Response ETREE: %s" % api.response.dom())
 
     if full:

@@ -40,8 +40,8 @@ def init_options():
                       dest="certid", default=None,
                       help="Specifies the eBay cert id to use.")
     parser.add_option("-n", "--domain",
-                      dest="domain", default='svcs.ebay.com',
-                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
+                      dest="domain", default='api.ebay.com',
+                      help="Specifies the eBay domain to use (e.g. api.sandbox.ebay.com).")
 
     (opts, args) = parser.parse_args()
     return opts, args

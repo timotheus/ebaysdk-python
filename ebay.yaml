@@ -19,9 +19,7 @@ api.ebay.com:
 # Finding API - https://www.x.com/developers/ebay/products/finding-api
 svcs.ebay.com:
     appid: ENTER_YOUR_APPID_HERE
-    version: 1.0.0
 
 # Shopping API - https://www.x.com/developers/ebay/products/shopping-api
 open.api.ebay.com:
     appid: ENTER_YOUR_APPID_HERE
-    version: 671

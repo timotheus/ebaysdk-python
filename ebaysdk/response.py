@@ -161,7 +161,10 @@ class Response(object):
                                                 datetime_nodes=copy.copy(datetime_nodes))
             except XMLSyntaxError as e:
                 log.debug('response parse failed: %s' % e)
+                self._dom = self._parse_xml("<%sResponse>parse error <![CDATA[%s]]></%sResponse>" % (verb, e, verb))
+                self._dict = self._etree_to_dict(self._dom)
                 self.reply = ResponseDataObject({}, [])
+
         else:
             self.reply = ResponseDataObject({}, [])
 
