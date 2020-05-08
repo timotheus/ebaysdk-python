@@ -11,9 +11,10 @@ Installing ebaysdk on Mac, Linux, Unix:
    Ubuntu:
    sudo apt-get install python-lxml
 
-2) Install the SDK with easy_install
+2) Install the SDK with pip
    
-   sudo easy_install ebaysdk
+   python3 -m pip install ebaysdk
+
    
    Or install the latest version from github,
 
