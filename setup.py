@@ -42,7 +42,7 @@ setup(
     author_email="tkeefer@gmail.com",
     url="https://github.com/timotheus/ebaysdk-python",
     license="COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
-    packages=find_packages(),
+    packages=find_packages(include=['ebaysdk', 'ebaysdk.*'),
     provides=[PKG],
     install_requires=['lxml', 'requests'], #requirements_file_to_list(),
     test_suite='tests',
