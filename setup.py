@@ -27,13 +27,6 @@ APIs. It simplifies development and cuts development time by standerizing
 calls, response processing, error handling, debugging across the Finding,
 Shopping, Merchandising, & Trading APIs. """
 
-def requirements_file_to_list(fn="requirements.txt"):
-    """read a requirements file and create a list that can be used in setup.
-    """
-
-    with open(fn, 'r') as f:
-        return [x.rstrip() for x in list(f) if x and not x.startswith('#')]
-
 setup(
     name=PKG,
     version=version,
@@ -42,9 +35,9 @@ setup(
     author_email="tkeefer@gmail.com",
     url="https://github.com/timotheus/ebaysdk-python",
     license="COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
-    packages=find_packages(include=['ebaysdk', 'ebaysdk.*'),
+    packages=find_packages(include=['ebaysdk', 'ebaysdk.*']),
     provides=[PKG],
-    install_requires=['lxml', 'requests'], #requirements_file_to_list(),
+    install_requires=['lxml', 'requests'],
     test_suite='tests',
     long_description=long_desc,
     classifiers=[
