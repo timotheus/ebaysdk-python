@@ -25,13 +25,13 @@ Changes for ebaysdk
 2.1.2 Thu Jun 25 14:54:12 PDT 2015 
 - merge in rowbare PR that support file upload
 - refactor order poller into a Class and implement a base Storage class
-  that can be used for any domain specific actions (e.g. inserting into a DB)
+  for any domain-specific actions (e.g. inserting into a DB)
 - merged in backend support for inventory management (from bimusiek)
 - add backend for Business Policy API (from nickspring)
 - set ssl verify to True in connection class
 
 2.1.1 Tue Apr 14 20:16:47 PDT 2015
-- merge in pull request to fix unicode issues
+- merge in a pull request to fix Unicode issues
 - remove PyYAML dependency
 - add poller package for pulling orders
 
@@ -51,17 +51,17 @@ Changes for ebaysdk
 - Modified utils.py (dict2xml, xml2dict)
 
 1.0.3
-- rework unicode fix
+- rework Unicode fix
 - fix logging handler
 
 1.0.2 Sat Feb  8 20:44:00 PST 2014
 - fix unicode issue is dict to xml routine
-- add a unicode test
-- fix http back-end
+- add a Unicode test
+- fix http backend
 
 1.0.0
 - Major refactor
-  + changes are backward compatible unless your subclassing any of the 
+  + changes are backward compatible unless you're subclassing any of the
     SDK classes
   + moved from PyCurl to Python Requests
   + code organization
@@ -69,13 +69,13 @@ Changes for ebaysdk
   + add exceptions
 
 0.1.11
-- Add affiliate headers to the Shopping API back-end
+- Add affiliate headers to the Shopping API backend
 - https://github.com/timotheus/ebaysdk-python/issues/40
   fix datatype issue with error codes from the shopping API
   
 - added py3 support thanks to Nikolay Derkach
 - store response error codes in an array when processing response.
-  The reponse error codes can be accessed by the api.response_codes()
+  The response error codes are accessible by the api.response_codes()
   accessor.
 
   if api.error():
@@ -84,10 +84,10 @@ Changes for ebaysdk
 
 0.1.10
 - added error checking for html() class
-- all class return response_data regardless of the http status code
+- all class return response_data regardless of the HTTP status code
 - added Merchandising API class
 - update SOA class default value
-- add more trading api samples
+- add more trading API samples
 
 0.1.9 Wed Apr 24 14:38:40 PDT 2013
 - update error handling
@@ -100,12 +100,12 @@ Changes for ebaysdk
 - pep8 cleanup
 - handle utf-8 when parsing with BeautifulStoneSoup
 - add retry to standard & parallel calls
-- bug fix for SOA class
+- a bug fix for SOA class
 - add documentation and sample scripts
 - clean up YAML file
 - YAML values are now overridden by values defined
   when building the object
-- remove silent depedency on simplejson, at least for Python >= 2.6
+- remove silent dependency on simplejson, at least for Python >= 2.6
 - fix bug in html class that allows for POST 
 - refactor and style cleanup
 - added parallel support using the parallel class
@@ -140,7 +140,7 @@ for example,
 - added response_obj() which turns a dict into a Struct
   e.g. { a : { 'name' : 'tim' } } can be accessed like a.name
 - add support to dict args in the execute call. execute will now check the 
-  data type and convert to xml if necessary
+  datatype and convert to XML if necessary
 - clean doctests
     
 0.0.4
