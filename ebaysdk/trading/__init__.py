@@ -19,7 +19,7 @@ class Connection(BaseConnection):
     """Trading API class
 
     API documentation:
-    https://www.x.com/developers/ebay/products/trading-api
+    https://developer.ebay.com/Devzone/XML/docs/Reference/eBay/index.html
 
     Supported calls:
     AddItem

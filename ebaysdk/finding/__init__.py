@@ -19,7 +19,7 @@ class Connection(BaseConnection):
     """Connection class for the Finding service
 
     API documentation:
-    https://www.x.com/developers/ebay/products/finding-api
+    https://developer.ebay.com/Devzone/finding/Concepts/FindingAPIGuide.html
 
     Supported calls:
     findItemsAdvanced

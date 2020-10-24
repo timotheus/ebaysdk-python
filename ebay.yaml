@@ -1,6 +1,6 @@
 name: ebay_api_config
 
-# Trading API Sandbox - https://www.x.com/developers/ebay/products/trading-api
+# Trading API Sandbox - https://developer.ebay.com/Devzone/XML/docs/Reference/eBay/index.html
 api.sandbox.ebay.com:
     compatability: 719
     appid: ENTER_YOUR_APPID_HERE
@@ -8,7 +8,7 @@ api.sandbox.ebay.com:
     devid: ENTER_YOUR_DEVID_HERE
     token: ENTER_YOUR_TOKEN_HERE
 
-# Trading API - https://www.x.com/developers/ebay/products/trading-api
+# Trading API - https://developer.ebay.com/Devzone/XML/docs/Reference/eBay/index.html
 api.ebay.com:
     compatability: 719
     appid: ENTER_YOUR_APPID_HERE
@@ -16,10 +16,10 @@ api.ebay.com:
     devid: ENTER_YOUR_DEVID_HERE
     token: ENTER_YOUR_TOKEN_HERE
 
-# Finding API - https://www.x.com/developers/ebay/products/finding-api
+# Finding API - https://developer.ebay.com/Devzone/finding/Concepts/FindingAPIGuide.html
 svcs.ebay.com:
     appid: ENTER_YOUR_APPID_HERE
 
-# Shopping API - https://www.x.com/developers/ebay/products/shopping-api
+# Shopping API - https://developer.ebay.com/Devzone/shopping/docs/Concepts/ShoppingAPIGuide.html
 open.api.ebay.com:
     appid: ENTER_YOUR_APPID_HERE
