@@ -98,7 +98,10 @@ class Connection(BaseConnection):
         self.config.set('appid', None)
         self.config.set('devid', None)
         self.config.set('certid', None)
-        self.config.set('compatibility', '837')
+        # Older versions had this yaml setting misspelled. Here, we attempt to pull in the misspelled version.
+        # The correct setting "compatibility" will still take priority over it.
+        compata = self.config.get('compatability', '837')
+        self.config.set('compatibility', compata)
         self.config.set(
             'doc_url', 'http://developer.ebay.com/devzone/xml/docs/reference/ebay/index.html')
 
