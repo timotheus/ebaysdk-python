@@ -39,7 +39,7 @@ ncludeSelector><ItemID>262809803926</ItemID><version>981</version></GetSingleIte
 2017-02-28 06:18:42,157 ebaysdk [DEBUG]:REQUEST (3ff5f071-04c3-40c0-a4f0-57f04a9e9972): POST http://open.api.ebay.com/shopping
 2017-02-28 06:18:42,157 ebaysdk [DEBUG]:headers={'Content-Length': '219', 'X-EBAY-API-REQUEST-ENCODING': 'XML', 'X-EBAY-API-VERSION': '799', 'User-Agent': 'eBaySDK/2.1.4 Pytho
 n/2.7.6 Linux/3.13.0-91-generic', 'X-EBAY-SDK-REQUEST-ID': '3ff5f071-04c3-40c0-a4f0-57f04a9e9972', 'X-EBAY-API-SITE-ID': '0', 'X-EBAY-API-CALL-NAME': 'GetSingleItem', 'Content
--Type': 'text/xml', 'X-EBAY-API-APP-ID': 'LogoGrab-logograb-PRD-42f530923-a70f22b2'}
+-Type': 'text/xml', 'X-EBAY-API-APP-ID': 'asdf'}
 2017-02-28 06:18:42,157 ebaysdk [DEBUG]:body=<?xml version='1.0' encoding='utf-8'?><GetSingleItemRequest xmlns="urn:ebay:apis:eBLBaseComponents"><IncludeSelector>Variations</I
 ncludeSelector><ItemID>262809803926</ItemID><version>981</version></GetSingleItemRequest>
 2017-02-28 06:18:42,511 ebaysdk [DEBUG]:RESPONSE (3ff5f071-04c3-40c0-a4f0-57f04a9e9972):
