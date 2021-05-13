@@ -48,7 +48,7 @@ ncludeSelector><ItemID>262809803926</ItemID><version>981</version></GetSingleIte
 2017-02-28 06:18:42,511 ebaysdk [DEBUG]:headers={'breadcrumbid': 'ID-slc4b03c-6483-stratus-slc-ebay-com-53764-1487075486325-0-1105919761', 'content-length': '25', 'accept-enco
 ding': 'identity', 'x-ebay-api-request-encoding': 'XML', 'x-ebay-api-version': '799', 'user-agent': 'eBaySDK/2.1.4 Python/2.7.6 Linux/3.13.0-91-generic', 'connection': 'keep-a
 live', 'x-ebay-sdk-request-id': '3ff5f071-04c3-40c0-a4f0-57f04a9e9972', 'x-ebay-api-site-id': '0', 'x-ebay-api-call-name': 'GetSingleItem', 'content-type': 'text/plain;charset
-=utf-8', 'x-forwarded-for': '52.19.146.95', 'x-ebay-api-app-id': 'LogoGrab-logograb-PRD-42f530923-a70f22b2'}
+=utf-8', 'x-forwarded-for': '52.19.146.95', 'x-ebay-api-app-id': 'asdf'}
 2017-02-28 06:18:42,511 ebaysdk [DEBUG]:content=an internal error occured
 2017-02-28 06:18:42,512 ebaysdk [DEBUG]:response parse failed: Start tag expected, '<' not found, line 1, column 1
 ERROR - 2017-02-28 06:18:42,512 - utils.firehose_util - MainProcess - MainThread: Shopping Call error: {"ItemID": "262809803926", "version": 981, "IncludeSelector": "Variation
