@@ -96,13 +96,11 @@ def smart_encode_request_data(value):
     try:
         if sys.version_info[0] < 3:
             return value
+        if type(value) == dict:  # Added compatibility for Python 3
+            return {k: v.encode('utf-8') for (k, v) in value.items()}
+        return value.encode('utf-8')
 
-        if isinstance(value, str):
-            return value.encode('utf-8')
-        else:
-            return value
-
-    except UnicodeDecodeError as e:
+    except UnicodeDecodeError:
         return value
 
 
@@ -298,7 +296,7 @@ def getValue(response_dict, *args, **kwargs):
     if len(args) == 1:
         try:
             return h.get('value', None)
-        except Exception as e:
+        except:
             return h
 
     last = args_a.pop()
@@ -310,7 +308,7 @@ def getValue(response_dict, *args, **kwargs):
 
     try:
         return h.get('value', None)
-    except Exception as e:
+    except:
         return h
 
 
@@ -349,7 +347,6 @@ def perftest_dict2xml():
 
 
 if __name__ == '__main__':
-
     import timeit
     print("perftest_dict2xml() %s" %
           timeit.timeit("perftest_dict2xml()", number=50000,
