@@ -22,8 +22,8 @@ PKG = 'ebaysdk'
 
 version = __import__(PKG).get_version()
 
-long_desc = """This SDK is a programatic inteface into the eBay
-APIs. It simplifies development and cuts development time by standerizing
+long_desc = """This SDK is a programmatic interface into the eBay
+APIs. It simplifies development and cuts development time by standardizing
 calls, response processing, error handling, debugging across the Finding,
 Shopping, Merchandising, & Trading APIs. """
 

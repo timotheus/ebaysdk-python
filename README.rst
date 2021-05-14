@@ -29,7 +29,7 @@ Quick Example::
 Migrating from v1 to v2
 -----------------------
 
-For a complete guide on migrating from ebaysdk v1 to v2 and see an overview of the additional features in v2 please read the `v1 to v2 guide`_
+For a complete guide on migrating from ebaysdk v1 to v2 and see an overview of the additional features in v2, please read the `v1 to v2 guide`_
 
 
 Getting Started
@@ -38,10 +38,10 @@ Getting Started
 1) SDK Classes
 
 * `Trading API Class`_ - secure, authenticated access to private eBay data.
-* `Finding API Class`_ - access eBay's next generation search capabilities.
+* `Finding API Class`_ - access eBay's next-generation search capabilities.
 * `Shopping API Class`_ - performance-optimized, lightweight APIs for accessing public eBay data.
 * `Merchandising API Class`_ - find items and products on eBay that provide good value or are otherwise popular with eBay buyers.
-* `HTTP Class`_ - generic back-end class the enbles and standardized way to make API calls.
+* `HTTP Class`_ - generic back-end class the enables and standardized way to make API calls.
 * `Parallel Class`_ - SDK support for concurrent API calls.
 
 2) SDK Configuration
@@ -53,21 +53,21 @@ Getting Started
 * `YAML Configuration`_ 
 * `Understanding eBay Credentials`_
 
-3) Sample code can be found in the `samples directory`_.
+3) Some sample code is in the `samples directory`_.
 
 4) Understanding the `Request Dictionary`_.
 
 Support
 -------
 
-For developer support regarding the SDK code base please use this project's `Github issue tracking`_.
+For developer support regarding the SDK code base, please use this project's `Github issue tracking`_.
 
 For developer support regarding the eBay APIs please use the `eBay Developer Forums`_.
 
 Install
 -------
 
-Installation instructions for *nix and windows can be found in the `INSTALL file`_.
+Installation instructions for *nix and windows are in the `INSTALL file`_.
 
 License
 -------
