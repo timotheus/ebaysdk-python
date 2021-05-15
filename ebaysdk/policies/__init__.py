@@ -32,7 +32,8 @@ class Connection(BaseConnection):
         domain        -- API endpoint (default: svcs.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
-        warnings      -- warnings enabled (default: False)
+        warnings      -- warnings enabled (default: True)
+        errors        -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /services/selling/v1/SellerProfilesManagementService)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: EBAY-US)

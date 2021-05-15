@@ -128,7 +128,8 @@ class Connection(BaseConnection):
         domain        -- API endpoint (default: api.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
-        warnings      -- warnings enabled (default: False)
+        warnings      -- warnings enabled (default: True)
+        errors        -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /selling/inventory/v1)
         token         -- eBay application/user token
         version       -- version number (default: 1.0.0)

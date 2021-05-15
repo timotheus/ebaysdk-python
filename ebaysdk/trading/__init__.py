@@ -60,7 +60,8 @@ class Connection(BaseConnection):
         domain        -- API endpoint (default: api.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
-        warnings      -- warnings enabled (default: False)
+        warnings      -- warnings enabled (default: True)
+        errors        -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /ws/api.dll)
         appid         -- eBay application id
         devid         -- eBay developer id

@@ -40,7 +40,8 @@ class Connection(FindingConnection):
         domain        -- API endpoint (default: open.api.ebay.com)
         config_file   -- YAML defaults (default: ebay.yaml)
         debug         -- debugging enabled (default: False)
-        warnings      -- warnings enabled (default: False)
+        warnings      -- warnings enabled (default: True)
+        errors        -- errors enabled (default: True)
         uri           -- API endpoint uri (default: /MerchandisingService)
         appid         -- eBay application id
         siteid        -- eBay country site id (default: 0 (US))
