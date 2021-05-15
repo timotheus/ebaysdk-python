@@ -45,10 +45,12 @@ class ResponseDataObject(object):
 
     def _setattr(self, name, value, datetime_nodes):
         if name.lower() in datetime_nodes:
+            assert value.endswith('Z')
             try:
-                ts = "%s %s" % (value.partition(
-                    'T')[0], value.partition('T')[2].partition('.')[0])
-                value = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+                value = datetime.datetime.strptime(
+                    value.replace('Z', 'UTC'),
+                    '%Y-%m-%dT%H:%M:%S.%f%Z'
+                ).replace(tzinfo=datetime.timezone.utc)
             except ValueError:
                 pass
 
