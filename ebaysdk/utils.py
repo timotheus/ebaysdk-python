@@ -86,7 +86,7 @@ def attribute_check(root):
         if '#text' in root:
             value = root['#text']
         if '@attrs' in root:
-            for ak, av in sorted(root.pop('@attrs').items()):
+            for ak, av in sorted(root['@attrs'].items()):
                 attrs.append(str('{0}="{1}"').format(ak, smart_encode(av)))
 
     return attrs, value
