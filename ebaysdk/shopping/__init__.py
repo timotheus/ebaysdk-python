@@ -244,7 +244,7 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+            log.warning("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
