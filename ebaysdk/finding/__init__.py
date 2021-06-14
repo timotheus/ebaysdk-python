@@ -270,7 +270,7 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+            log.warning("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         try:
             if self.response.reply.ack == 'Success' and len(errors) > 0 and self.config.get('errors'):

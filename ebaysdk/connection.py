@@ -246,7 +246,7 @@ class BaseConnection(object):
                 from bs4 import BeautifulStoneSoup
             except ImportError:
                 from BeautifulSoup import BeautifulStoneSoup
-                log.warn(
+                log.warning(
                     'DeprecationWarning: BeautifulSoup 3 or earlier is deprecated; install bs4 instead\n')
 
             self._response_soup = BeautifulStoneSoup(
@@ -256,14 +256,14 @@ class BaseConnection(object):
         return self._response_soup
 
     def response_obj(self):
-        log.warn('response_obj() DEPRECATED, use response.reply instead')
+        log.warning('response_obj() DEPRECATED, use response.reply instead')
         return self.response.reply
 
     def response_dom(self):
         """ Deprecated: use self.response.dom() instead
         Returns the response DOM (xml.dom.minidom).
         """
-        log.warn('response_dom() DEPRECATED, use response.dom instead')
+        log.warning('response_dom() DEPRECATED, use response.dom instead')
 
         if not self._response_dom:
             dom = None
@@ -291,14 +291,14 @@ class BaseConnection(object):
 
     def response_dict(self):
         "Returns the response dictionary."
-        log.warn(
+        log.warning(
             'response_dict() DEPRECATED, use response.dict() or response.reply instead')
 
         return self.response.reply
 
     def response_json(self):
         "Returns the response JSON."
-        log.warn('response_json() DEPRECATED, use response.json() instead')
+        log.warning('response_json() DEPRECATED, use response.json() instead')
 
         return self.response.json()
 
