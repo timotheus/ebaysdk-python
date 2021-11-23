@@ -79,6 +79,7 @@ class Connection(BaseConnection):
         self.config.set('proxy_host', None)
         self.config.set('proxy_port', None)
         self.config.set('appid', None)
+        self.config.set('iaf_token', None)
         self.config.set('version', '799')
         self.config.set('trackingid', None)
         self.config.set('trackingpartnercode', None)
@@ -145,6 +146,10 @@ class Connection(BaseConnection):
             headers.update({
                 "X-EBAY-API-TRACKING-PARTNER-CODE": self.config.get('trackingpartnercode')
             })
+
+        if self.config.get('iaf_token', None):
+            headers["X-EBAY-API-IAF-TOKEN"] = self.config.get('iaf_token')
+    
 
         return headers
 
