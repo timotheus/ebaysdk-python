@@ -178,7 +178,6 @@ class BaseConnection(object):
 
         time_now = datetime.datetime.now()
         time_difference_last_token = time_now - self.time_of_last_token
-        print('Time difference last token', time_difference_last_token)
         if time_difference_last_token.total_seconds() > 3600:
             url = 'https://api.ebay.com/identity/v1/oauth2/token'
             headers = CaseInsensitiveDict()
@@ -187,7 +186,6 @@ class BaseConnection(object):
             data = 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope'
             response = post(url, headers=headers, data=data)
             response_dict = response.json()
-            print('Oauth2.0 token request response:', json.dumps(response_dict, indent=4))
             access_token = response_dict['access_token']
             request.headers['X-EBAY-API-IAF-TOKEN'] = access_token
 
