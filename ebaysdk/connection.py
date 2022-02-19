@@ -24,17 +24,12 @@ from ebaysdk.utils import getNodeText as getNodeTextUtils, smart_encode, smart_d
 from ebaysdk.utils import getValue, smart_encode_request_data
 from ebaysdk.response import Response
 from ebaysdk.exception import ConnectionError, ConnectionResponseError
-
-## Added this / https://github.com/timotheus/ebaysdk-python/issues/347
 from ebaysdk.config import Config
 from base64 import b64encode
 
 from requests.structures import CaseInsensitiveDict
 import json
 import datetime
-time_of_last_token = datetime.datetime.min
-previous_access_token = ""
-## End of changes
 
 HTTP_SSL = {
     False: 'http',
@@ -52,8 +47,8 @@ class BaseConnection(object):
         if debug:
             set_stream_logger()
         
-        ## Added this
         self.config = Config(domain=kwargs.get('domain', 'open.api.ebay.com'), connection_kwargs=kwargs, config_file=kwargs.get('config_file', 'ebay.yaml'))
+        self.time_of_last_token = datetime.datetime.min
         
         # Building OAuth token
         client_id = self.config.get('appid', '')
@@ -62,7 +57,6 @@ class BaseConnection(object):
         token_bytes = token_string.encode('ascii')
         token_base64 = b64encode(token_bytes)
         self.final_token = token_base64.decode('ascii')
-        ## End of changes
 
         self.response = None
         self.request = None
@@ -181,24 +175,23 @@ class BaseConnection(object):
                           headers=headers,
                           files=files,
                           )
-        
-        ## Added this / https://github.com/timotheus/ebaysdk-python/issues/347
 
         time_now = datetime.datetime.now()
-        time_difference_last_token = time_now - time_of_last_token
+        time_difference_last_token = time_now - self.time_of_last_token
+        print('Time difference last token', time_difference_last_token)
         if time_difference_last_token.total_seconds() > 3600:
-            url = "https://api.ebay.com/identity/v1/oauth2/token"
+            url = 'https://api.ebay.com/identity/v1/oauth2/token'
             headers = CaseInsensitiveDict()
-            headers["Content-Type"] = "application/x-www-form-urlencoded"
-            headers["Authorization"] = f"Basic {self.final_token}"
-            data = "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope"
+            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            headers['Authorization'] = f'Basic {self.final_token}'
+            data = 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope'
             response = post(url, headers=headers, data=data)
-            response_dict = json.loads(response.text)
+            response_dict = response.json()
+            print('Oauth2.0 token request response:', json.dumps(response_dict, indent=4))
             access_token = response_dict['access_token']
-            previous_access_token = access_token
             request.headers['X-EBAY-API-IAF-TOKEN'] = access_token
-        
-        ## End of changes
+
+            self.time_of_last_token = time_now
 
         self.request = request.prepare()
 
