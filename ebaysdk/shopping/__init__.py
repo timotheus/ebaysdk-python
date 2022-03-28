@@ -13,6 +13,13 @@ from ebaysdk.connection import BaseConnection
 from ebaysdk.config import Config
 from ebaysdk.utils import getNodeText, dict2xml
 
+## Added this / https://github.com/timotheus/ebaysdk-python/issues/347
+from base64 import b64encode
+
+from requests.structures import CaseInsensitiveDict
+import json
+import datetime
+
 
 class Connection(BaseConnection):
     """Shopping API class
@@ -66,6 +73,18 @@ class Connection(BaseConnection):
         self.config = Config(domain=kwargs.get('domain', 'open.api.ebay.com'),
                              connection_kwargs=kwargs,
                              config_file=kwargs.get('config_file', 'ebay.yaml'))
+        
+        ## Added this
+        self.time_of_last_token = datetime.datetime.min
+        
+        # Building OAuth token
+        client_id = self.config.get('appid', '')
+        client_secret = self.config.get('certid', '')
+        token_string = f'{client_id}:{client_secret}'
+        token_bytes = token_string.encode('ascii')
+        token_base64 = b64encode(token_bytes)
+        self.final_token = token_base64.decode('ascii')
+        ## End of changes
 
         # override yaml defaults with args sent to the constructor
         self.config.set('domain', kwargs.get('domain', 'open.api.ebay.com'))
@@ -79,7 +98,6 @@ class Connection(BaseConnection):
         self.config.set('proxy_host', None)
         self.config.set('proxy_port', None)
         self.config.set('appid', None)
-        self.config.set('iaf_token', None)
         self.config.set('version', '799')
         self.config.set('trackingid', None)
         self.config.set('trackingpartnercode', None)
@@ -146,10 +164,28 @@ class Connection(BaseConnection):
             headers.update({
                 "X-EBAY-API-TRACKING-PARTNER-CODE": self.config.get('trackingpartnercode')
             })
+        
+        ## Added this / https://github.com/timotheus/ebaysdk-python/issues/347
 
-        if self.config.get('iaf_token', None):
-            headers["X-EBAY-API-IAF-TOKEN"] = self.config.get('iaf_token')
-    
+        time_now = datetime.datetime.now()
+        time_difference_last_token = time_now - self.time_of_last_token
+        # print('Time difference last token', time_difference_last_token)
+        if time_difference_last_token.total_seconds() > 3600:
+            url = 'https://api.ebay.com/identity/v1/oauth2/token'
+            headers = CaseInsensitiveDict()
+            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            headers['Authorization'] = f'Basic {self.final_token}'
+            data = 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope'
+            response = post(url, headers=headers, data=data)
+            response_dict = response.json()
+            print('Oauth2.0 token request response:', json.dumps(response_dict, indent=4))
+            access_token = response_dict['access_token']
+            # previous_access_token = access_token
+            request.headers['X-EBAY-API-IAF-TOKEN'] = access_token
+
+            self.time_of_last_token = time_now
+        
+        ## End of changes
 
         return headers
 
@@ -249,7 +285,7 @@ class Connection(BaseConnection):
         self._resp_codes = resp_codes
 
         if self.config.get('warnings') and len(warnings) > 0:
-            log.warning("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
+            log.warn("%s: %s\n\n" % (self.verb, "\n".join(warnings)))
 
         if self.response.reply.Ack == 'Failure':
             if self.config.get('errors'):
