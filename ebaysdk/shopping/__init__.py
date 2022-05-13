@@ -19,6 +19,7 @@ from base64 import b64encode
 from requests.structures import CaseInsensitiveDict
 import json
 import datetime
+import requests
 
 
 class Connection(BaseConnection):
@@ -176,7 +177,7 @@ class Connection(BaseConnection):
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             headers['Authorization'] = f'Basic {self.final_token}'
             data = 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope'
-            response = post(url, headers=headers, data=data)
+            response = requests.post(url, headers=headers, data=data)
             response_dict = response.json()
             print('Oauth2.0 token request response:', json.dumps(response_dict, indent=4))
             access_token = response_dict['access_token']
