@@ -13,7 +13,7 @@ import time
 import uuid
 import webbrowser
 
-from requests import Request, Session, post
+from requests import Request, Session
 from requests.adapters import HTTPAdapter
 
 from xml.dom.minidom import parseString
