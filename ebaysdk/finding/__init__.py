@@ -302,7 +302,7 @@ class Connection(BaseConnection):
         self._request_dict['paginationInput'] = {}
 
         if epp:
-            self._request_dict['paginationInput']['enteriesPerPage'] = epp
+            self._request_dict['paginationInput']['entriesPerPage'] = epp
 
         self._request_dict['paginationInput']['pageNumber'] = int(num) + 1
 
